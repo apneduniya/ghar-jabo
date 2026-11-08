@@ -8,3 +8,4 @@ research/sounds/reference/
 research/map/gmaps-*.png
 test-results/
 playwright-report/
+.claude/
