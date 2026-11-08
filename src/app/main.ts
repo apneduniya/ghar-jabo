@@ -1,4 +1,5 @@
-import { renderer, resize, capturePhoto } from '../render/gfx';
+import { renderer, resize, capturePhoto, canvas, maxPixelRatio } from '../render/gfx';
+import { Quality } from '../render/quality';
 import { game } from './game';
 import { endFrame, readInput } from '../input/input';
 import { root, el, updateHud, notify } from '../ui/ui';
@@ -55,10 +56,22 @@ function momCall() {
 }
 
 let last = performance.now();
+const quality = new Quality(renderer, maxPixelRatio);
+let contextLost = false;
+
+// iOS can drop the WebGL context when you switch apps (say, to share on WhatsApp). Pause until it's back.
+canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); contextLost = true; });
+canvas.addEventListener('webglcontextrestored', () => { contextLost = false; last = performance.now(); });
+// Don't let the clock jump while the tab was hidden.
+document.addEventListener('visibilitychange', () => { last = performance.now(); });
 
 function frame(now: number) {
-  let dt = Math.min(0.05, (now - last) / 1000);
+  requestAnimationFrame(frame);
+  if (contextLost || document.hidden) { last = now; return; }
+  const frameMs = now - last;
+  let dt = Math.min(0.05, frameMs / 1000);
   last = now;
+  quality.frame(frameMs);
   const run = game.run;
   const cur = game.current;
 
@@ -73,13 +86,14 @@ function frame(now: number) {
   if (run.clockRunning && !run.ending && run.timeUp) game.fail('still-sector-v');
 
   if (cur?.scene && cur.camera) renderer.render(cur.scene, cur.camera);
+  // Capture straight after rendering, while the frame is still in the drawing buffer.
   if (run.photoRequest && cur?.scene) {
     run.photo = { dataUrl: capturePhoto(), drama: run.photoRequest.drama, burst: run.photoRequest.burst };
     run.photoRequest = null;
   }
+  if (game.resultPending) { game.resultPending = false; game.go('result'); }
   updateHud(run);
   endFrame();
-  requestAnimationFrame(frame);
 }
 
 addEventListener('resize', () => {

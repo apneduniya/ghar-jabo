@@ -3,7 +3,6 @@
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
 import { sceneLayer, el, showHud } from '../ui/ui';
-import { capturePhoto } from '../render/gfx';
 import { clockText, START_MIN, START_MONEY, type Run } from '../sim/run';
 import { eiTakay, endingTitles, headline, quote, rankTitle } from '../content/text';
 import { sfx } from '../audio/audio';
@@ -20,7 +19,7 @@ export function result(): Scene {
       document.querySelectorAll('.call, .stream').forEach((n) => n.remove());
       const title = endingTitles[run.ending ?? 'home'];
       // No dramatic moment captured? Use the last frame on screen.
-      const photo = run.photo ?? { dataUrl: capturePhoto(), drama: 0, burst: 'EXCLUSIVE' };
+      const photo = run.photo ?? { dataUrl: '', drama: 0, burst: 'EXCLUSIVE' };
       const q = quote(run);
       const pollLine = poll(run);
       const paper = buildPaper(run, title, photo.dataUrl, photo.burst, q, pollLine);
@@ -80,7 +79,7 @@ function buildPaper(run: Run, title: string, photo: string, burst: string, q: Qu
     </header>
     <div class="dateline">${today()} · Price ₹5 · Evening edition · The voice of people stuck at College More</div>
     <h3>${headline(run)}</h3>
-    <figure>
+    <figure ${photo ? '' : 'hidden'}>
       <img src="${photo}" alt="" />
       <span class="burst">${burst}</span>
       <span class="stamp">${title}</span>
@@ -121,8 +120,8 @@ async function shareImage(run: Run, title: string, photo: string, burst: string,
   let y = 250 + lines.length * 62;
 
   const img = new Image();
-  img.src = photo;
-  await img.decode();
+  img.src = photo || 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+  await img.decode().catch(() => undefined);
   const ph = Math.round((W - 120) * (img.height / img.width));
   const photoH = Math.min(ph, 520);
   g.drawImage(img, 0, 0, img.width, img.width * (photoH / (W - 120)), 60, y, W - 120, photoH);

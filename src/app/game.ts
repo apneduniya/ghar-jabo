@@ -22,6 +22,8 @@ class Game {
   timeScale = 1;
   /** Freeze frames left (hit-stop). */
   hitStop = 0;
+  /** Set when an ending is waiting for one more rendered frame, so the newspaper has a photo. */
+  resultPending = false;
   /** Handles for automated playtests. */
   debug: Record<string, unknown> = {};
 
@@ -53,12 +55,18 @@ class Game {
     else if (r.minute < 20 * 60) r.ending = 'home-early';
     else if (r.minute < 21 * 60 + 30) r.ending = 'home';
     else r.ending = 'home-late';
-    this.go('result');
+    this.finish();
   }
 
   fail(ending: EndingId) {
     this.run.ending = ending;
-    this.go('result');
+    this.finish();
+  }
+
+  private finish() {
+    if (this.run.photo || !this.current?.scene) { this.go('result'); return; }
+    this.run.photoRequest = { drama: 0, burst: 'EXCLUSIVE' };
+    this.resultPending = true;
   }
 }
 

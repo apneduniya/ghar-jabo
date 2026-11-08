@@ -6,19 +6,27 @@ import type { Vehicle } from '../sim/traffic';
 import { ambassador, auto, bike, bus, car, toto } from './models';
 import { sign } from './gfx';
 
+// A small fixed set of looks per kind, so models can be pooled and reused instead of rebuilt.
+const LOOKS: Record<Vehicle['kind'], number> = { taxi: 1, car: 15, auto: 1, toto: 3, bike: 4, bus: 12 };
+const lookOf = (v: Vehicle) => v.variant % LOOKS[v.kind];
+const keyOf = (v: Vehicle) => `${v.kind}:${lookOf(v)}:${v.kind === 'bus' ? v.routeDir : ''}`;
+
 function modelFor(v: Vehicle): THREE.Group {
+  const look = lookOf(v);
   switch (v.kind) {
     case 'taxi': return ambassador();
-    case 'car': return car(v.variant);
+    case 'car': return car(look);
     case 'auto': return auto();
-    case 'toto': return toto(v.variant);
+    case 'toto': return toto(look);
     case 'bike': return bike();
-    case 'bus': return bus(v.variant, v.routeDir === 1);
+    case 'bus': return bus(look * 9 + 3, v.routeDir === 1);
   }
 }
 
 export class Actors {
   private models = new Map<number, THREE.Group>();
+  private keys = new Map<number, string>();
+  private pool = new Map<string, THREE.Group[]>();
   private captainSign: THREE.Mesh | null = null;
   private captainFor = 0;
 
@@ -29,12 +37,28 @@ export class Actors {
     for (const v of vehicles) {
       seen.add(v.id);
       let m = this.models.get(v.id);
-      if (!m) { m = modelFor(v); this.models.set(v.id, m); this.scene.add(m); }
+      if (!m) {
+        const key = keyOf(v);
+        m = this.pool.get(key)?.pop() ?? modelFor(v);
+        m.visible = true;
+        this.models.set(v.id, m);
+        this.keys.set(v.id, key);
+        if (!m.parent) this.scene.add(m);
+      }
       m.position.set(v.x, 0.05, v.z);
       // Models face +x; three.js turns anticlockwise seen from above, and our z points south.
       m.rotation.y = -v.heading;
     }
-    for (const [id, m] of this.models) if (!seen.has(id)) { this.scene.remove(m); this.models.delete(id); }
+    for (const [id, m] of this.models) {
+      if (seen.has(id)) continue;
+      // Hide and keep for reuse; no geometry is rebuilt or garbage-collected mid-run.
+      m.visible = false;
+      const key = this.keys.get(id)!;
+      if (!this.pool.has(key)) this.pool.set(key, []);
+      this.pool.get(key)!.push(m);
+      this.models.delete(id);
+      this.keys.delete(id);
+    }
 
     // A floating name board over the Rapi-Nah captain.
     if (captainId !== this.captainFor) {

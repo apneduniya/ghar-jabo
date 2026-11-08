@@ -5,8 +5,10 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 
 export const canvas = document.getElementById('gl') as HTMLCanvasElement;
 const phone = matchMedia('(pointer: coarse)').matches;
-export const renderer = new THREE.WebGLRenderer({ canvas, antialias: !phone, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, phone ? 1.5 : 2));
+// No preserveDrawingBuffer: photos are captured right after a render instead (see app/main.ts).
+export const renderer = new THREE.WebGLRenderer({ canvas, antialias: !phone, powerPreference: 'high-performance' });
+export const maxPixelRatio = Math.min(devicePixelRatio, phone ? 1.5 : 2);
+renderer.setPixelRatio(maxPixelRatio);
 renderer.shadowMap.enabled = false;
 
 export const C = {
