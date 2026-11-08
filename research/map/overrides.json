@@ -1,0 +1,116 @@
+{
+  "_doc": [
+    "Street View corrections applied by tools/build-map.py on top of OSM. Add entries; no code changes needed.",
+    "buildings: keyed by OSM way id (\"134101085\"), relation id with an r (\"r18783929\"), or \"new:<slug>\" for a building OSM lacks.",
+    "  lv: storeys (height = lv x 3.3 m x SCALE). t: office (glass tower) | block (concrete office/govt) | college | resi | shop | low.",
+    "  colour: facade tint \"#rrggbb\". label: parody signage only (AGENTS.md: no real brands). n: name (null removes a bad OSM name).",
+    "  hs: height source, default \"sv\" when lv is given; use \"guess\" if the floors weren't counted. drop: true removes the footprint.",
+    "  new:<slug> needs a footprint: ll = [[lat, lon], ...] (preferred) or p = [[x, z], ...] in game units.",
+    "  src: where the numbers came from and how the footprint was matched. Keep it honest about uncertainty.",
+    "pois: name -> {ll: [lat, lon]} or {osm: <node id in osm-pois.json / osm-streets.json>}, plus src.",
+    "Street View panos and satellite tiles are in research/streetview/img/ (gitignored); survey notes in research/streetview/*.md."
+  ],
+  "buildings": {
+    "134101262": {
+      "lv": 11, "t": "college", "colour": "#eceeef",
+      "src": "SOUTH.md §1: TIU main block, grey 2-storey podium, white-and-glass tower of 10-12 floors, rounded glass drum on the north end (sv01_tiugate_h288, sv01b_tiugate_fov60_h300). OSM w134101262 (building=college, 66x91 m) is the only footprint on the west side of Street 2 between 22.5756 and 22.5762; it lines up with the white building on sat275_a_tiu_pwc."
+    },
+    "new:pwc-more-sw-tower": {
+      "lv": 21, "t": "office", "colour": "#e7b59c",
+      "ll": [[22.5765386, 88.4288461], [22.5767015, 88.4289317], [22.5768299, 88.4286534], [22.5766671, 88.4285678]],
+      "src": "SOUTH.md §1/§3: new peach-and-glass tower of about 20-22 floors on the SW corner of PwC More, missing from OSM and from the (older) satellite, which still shows a vacant plot. Footprint: a 32x20 m slab parallel to Street 13, in the north part of that vacant plot on sat275_a_tiu_pwc (registered to OSM roads), west of Street 2 behind the blue hoarding, south of the west arm of Street 13, east of the service road at x=-40. Slab orientation from sv03_pwcmore_h296 (long face toward Street 13) and sv02_st2mid_h288 (seen end-on from Street 2). Exact plate size is a guess (+-5 m)."
+    },
+    "134101085": {
+      "lv": 3, "t": "block", "colour": "#f3f2ec", "label": "PWH",
+      "src": "SOUTH.md §3: PwC office is a low white building of 2-3 floors with the sign on its parapet, behind a 2 m white wall on the NE corner (sv03_pwcmore_h026, sv03_pwcmore_h116). OSM w134101085 is tagged 'PWC Office' and its south tip is the building nearest the corner."
+    },
+    "992001222": {
+      "lv": 7, "t": "office",
+      "src": "SOUTH.md §3/§4: 6-8 floor glass office with a telecom mast behind and east of PwC, also seen above the Electronics Complex police gate (sv03_pwcmore_h116, sv101_st13_h027). OSM w992001222 (office=private) is the footprint directly east of PwC; bearings from both panos point at it. Possibly the same tower the survey calls the police station's 7-storey tower."
+    },
+    "new:ec-police-station": {
+      "lv": 2, "t": "block", "colour": "#e9ecef",
+      "ll": [[22.5773257, 88.4299726], [22.5772714, 88.4301283], [22.57719, 88.4300894], [22.5772443, 88.4299337]],
+      "src": "SOUTH.md §4: Electronics Complex Police Station, 40 m east of PwC More on the north side, a white low block inside a compound (sv101_st13_h027). Not in OSM. Footprint traced from the grey-roofed building under the 'ACP Traffic Office / Police Station' pins on sat275_a_tiu_pwc, east of w992001222. Floors not counted (1-2)."
+    },
+    "new:millennium-city-tower-1": {
+      "lv": 14, "t": "office", "colour": "#9fc3cf",
+      "ll": [[22.5768643, 88.4308774], [22.5767594, 88.4311595], [22.576602, 88.4311206], [22.5764934, 88.4310428], [22.576421, 88.430926], [22.5764029, 88.4307898], [22.5764391, 88.4306439]],
+      "src": "SOUTH.md §4 (150-230 m): Millennium City IT Park, the front of two curved glass towers of about 13-14 floors, with the 2-storey podium holding the burger joint on Street 13 (sv104_st13_h027, sv104b_st13_h050). Not in OSM. Footprint fitted inside the OSM service-road loop west of the raised plaza, curved face toward the street, matching the large roof under the 'Netscribes / iMarque' pins on sat275_b_st13west (that tile is only registered to +-3 units here). The podium isn't modelled separately."
+    },
+    "193475626": {
+      "lv": 14, "t": "office", "colour": "#9fc3cf",
+      "src": "SOUTH.md §4: the rear curved glass tower of Millennium City (sv104_st13_h027, sv105_st13_h027). OSM w193475626 'Millenium City IBM DAKSH'; the bearing from the sv105 pano at the main gate points into it."
+    },
+    "382403604": {
+      "lv": 5, "t": "resi", "colour": "#e2b48f",
+      "src": "SOUTH.md §4 (about 110 m): run-down 5-storey peach residential-style block with a blue-glass stair tower by the side road north (sv103_st13_h027). OSM w382403604 is the building nearest the street at that distance on the north side."
+    },
+    "986997144": {
+      "lv": 5, "t": "block", "colour": "#a7adb3",
+      "src": "SOUTH.md §4 (about 230 m): 5-storey grey office with blue glass bands east of the Millennium City towers (sv104b_st13_h050). Matched by position to OSM w986997144, east of the Millennium City service loop; low confidence."
+    },
+    "986997145": {
+      "lv": 6, "t": "block", "colour": "#eef1f4",
+      "src": "SOUTH.md §4 (250-300 m): ERTL, a 6-storey white-and-blue-glass block set back behind a red-brown fence (sv106_st13_h027). OSM w986997145 sits under the 'Electronics Regional Test Laboratory' pin on sat275_b_st13west."
+    },
+    "986997139": {
+      "lv": 5, "t": "block", "colour": "#c9a67d",
+      "src": "SOUTH.md §4 (360-400 m): the dhaba block, 5-storey tan concrete with horizontal sun-shade bands (sv108_st13_h027, sv109_st13_h027). OSM w986997139 is under the dhaba pin on sat275_c_st13east and is the nearest building to the street there."
+    },
+    "238287187": {
+      "lv": 20, "t": "office", "colour": "#b3aea6",
+      "src": "SOUTH.md §4 (440-470 m): grey stone-and-glass tower of about 18-20 floors with the coffee chain at the kerb (sv110_st13_h027, sv111_st13_h027). OSM w238287187 is under the coffee pin on sat275_c_st13east."
+    },
+    "238287188": {
+      "lv": 8, "t": "block", "colour": "#f1efe9",
+      "src": "SOUTH.md §4/§5: bank building on the NW corner of College More, white, about 8 floors, red portal columns, blue glass band (sv20_collegemore_h027). OSM w238287188 (building=office) is the NW corner footprint."
+    },
+    "358887208": {
+      "lv": 12, "t": "office", "colour": "#e3c766",
+      "src": "SOUTH.md §5: Signet Tower (DN-2), about 12 floors, yellow and glass, west side of Street 18 north of College More (sv22_st18north_h290). OSM w358887208 is under the Signet Tower pin on sat275_c_st13east."
+    },
+    "new:college-more-ne-tower": {
+      "lv": 20, "t": "office", "colour": "#8fbcbc",
+      "ll": [[22.5749284, 88.4342922], [22.5748234, 88.4345354], [22.5746968, 88.434477], [22.5748017, 88.4342338]],
+      "src": "SOUTH.md §5: a tall blue-green glass tower of about 20 floors on the NE corner of College More (sv20_collegemore_h027, right edge). No OSM footprint there and the satellite is older. Placed 28x18 m in the NE quadrant clear of Street 18, Street 13 and the corner service roads; position is the least certain of all entries (+-15 m)."
+    },
+    "134101300": {
+      "lv": 7, "t": "college", "colour": "#a9d0d6",
+      "src": "SOUTH.md §5: IEM on the SE corner of College More, glass curtain wall of 6+ floors with a blue band (sv20_collegemore_h117). OSM w134101300 'Institute of Engineering and Management'."
+    },
+    "r18783929": {
+      "lv": 9, "t": "office", "colour": "#b9d3dc",
+      "src": "SOUTH.md §4 (300-430 m south side): Bose Institute unified campus, a big glass building of 8-9 floors with a stepped glass atrium (sv107-sv109_st13_h207). OSM relation r18783929 (multipolygon with a courtyard; geometry in osm-building-relations.json). Its round atrium lines up with sat275_c_st13east."
+    },
+    "238287189": {
+      "lv": 12, "t": "office",
+      "src": "SOUTH.md §5: Fusion CX glass tower of about 12+ floors on the south side of Street 13 east of College More (sv21_st13east). OSM w238287189 is under the Fusion CX pin on sat275_d_college."
+    },
+    "new:pwc-more-se-post": {
+      "lv": 2, "t": "block", "colour": "#3d6fae",
+      "ll": [[22.5765205, 88.4293111], [22.5764572, 88.4294512], [22.5763758, 88.4294084], [22.5764391, 88.4292683]],
+      "src": "SOUTH.md §3: small blue 2-storey building with a black-and-white chequerboard band on the SE corner of PwC More (sv03_pwcmore_h116, sv101_st13_h207). Not in OSM; placed on the corner behind the footpath. Name unknown (police/traffic-guard post?)."
+    },
+    "new:ecocentre": {
+      "lv": 8, "t": "office", "hs": "guess",
+      "ll": [[22.5768914, 88.4282798], [22.5769276, 88.4285328], [22.5766653, 88.4284355], [22.5766653, 88.4282701]],
+      "src": "Missing from OSM. Footprint traced on sat275_a_tiu_pwc under the 'Ambuja Neotia EcoCentre' pin (atrium-grid roof), south of the west arm of Street 13 and west of the service road at x=-40 (SOUTH.md calls it NW; registered against OSM roads it is SW of the junction, behind the new peach tower; d3_pwc_h270 agrees). Floors NOT counted: 8 is a placeholder until the north survey sees it."
+    },
+    "new:altair": {
+      "lv": 8, "t": "office", "hs": "guess",
+      "ll": [[22.5771918, 88.4275677], [22.576886, 88.4282079], [22.5766599, 88.4281222], [22.5770145, 88.4274996]],
+      "src": "Missing from OSM. Long slab traced on sat275_a_tiu_pwc under the 'AltAir - Capella' pin, south of the west arm of Street 13, west of the EcoCentre. Floors NOT counted: 8 is a placeholder until the north survey sees it."
+    },
+    "237896675": {
+      "n": null,
+      "src": "The OSM name on this house is crude vandalism; don't ship it. Levels stay from OSM."
+    }
+  },
+  "pois": {
+    "tiu": { "ll": [22.57603, 88.42844], "src": "OSM amenity=university node for Techno India University (unchanged)." },
+    "pwc": { "ll": [22.5770633, 88.4294356], "src": "SOUTH.md §3: the PwC sign and white wall are right on the NE corner of PwC More; this is the street-facing south tip of w134101085 (moved about 30 m SW from the old point 22.57753, 88.42967)." },
+    "burger": { "osm": 12209860058, "src": "OSM fast_food node in the Millennium City podium (was hand-typed on the road centre line)." },
+    "wiproMore": { "ll": [22.57900, 88.42660], "src": "Wipro More junction (unchanged)." }
+  }
+}

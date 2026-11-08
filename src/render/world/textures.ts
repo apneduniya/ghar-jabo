@@ -105,16 +105,48 @@ export function facadeOld() {
   });
 }
 
-/** Sector V office: blue-grey glass curtain wall with mullions and a few lit panels. */
+/**
+ * Sector V glass tower, one floor by one bay: pale glass between white spandrel bands and fins, a lit panel.
+ * Light on purpose: the vertex tint gives the glass its colour (blue-grey by default, peach or teal per building).
+ */
 export function facadeOffice() {
   return canvasTex(128, 128, (g) => {
-    g.fillStyle = '#7f97ad'; g.fillRect(0, 0, 128, 128);
+    g.fillStyle = '#b4c3cf'; g.fillRect(0, 0, 128, 128);
     const grad = g.createLinearGradient(0, 0, 128, 128);
-    grad.addColorStop(0, 'rgba(255,255,255,0.25)'); grad.addColorStop(1, 'rgba(0,0,0,0.15)');
+    grad.addColorStop(0, 'rgba(255,255,255,0.35)'); grad.addColorStop(1, 'rgba(0,0,0,0.18)');
     g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
-    g.fillStyle = 'rgba(255,236,180,0.55)'; g.fillRect(10, 14, 48, 44);
-    g.fillStyle = '#d7dde3';
-    g.fillRect(0, 0, 128, 6); g.fillRect(0, 64, 128, 4); g.fillRect(0, 0, 4, 128); g.fillRect(62, 0, 4, 128);
+    g.fillStyle = 'rgba(255,236,180,0.85)'; g.fillRect(14, 22, 40, 70); // opaque enough for litMask
+    g.fillStyle = '#f4f4f2';
+    g.fillRect(0, 0, 128, 18); g.fillRect(0, 0, 8, 128); g.fillRect(60, 0, 8, 128); // spandrel and fins
+    g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(0, 18, 128, 3);
+  });
+}
+
+/** Clad tower (stone, peach or yellow panels, per the vertex tint) with dark vertical glass strips. */
+export function facadeClad() {
+  return canvasTex(128, 128, (g) => {
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, 128, 128);
+    for (const x of [14, 78]) {
+      const grad = g.createLinearGradient(x, 0, x + 36, 128);
+      grad.addColorStop(0, '#7d8e9c'); grad.addColorStop(1, '#4f5e6b');
+      g.fillStyle = grad; g.fillRect(x, 0, 36, 128);
+    }
+    g.fillStyle = 'rgba(255,230,170,0.9)'; g.fillRect(78, 30, 36, 60); // a lit floor
+    g.fillStyle = 'rgba(0,0,0,0.1)'; g.fillRect(0, 122, 128, 6); // floor line
+    g.fillStyle = 'rgba(255,255,255,0.35)'; g.fillRect(14, 0, 36, 4); g.fillRect(78, 0, 36, 4);
+  });
+}
+
+/** Concrete office or government block: a painted band per floor over a ribbon of dark windows. */
+export function facadeBlock() {
+  return canvasTex(128, 128, (g) => {
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, 128, 128);
+    g.fillStyle = '#56626b'; g.fillRect(0, 44, 128, 52); // window ribbon
+    g.fillStyle = 'rgba(255,224,160,0.85)'; g.fillRect(20, 50, 36, 40); // a lit office
+    g.fillStyle = '#e6e2da'; g.fillRect(0, 38, 128, 8); // sunshade ledge
+    g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(0, 46, 128, 3);
+    g.fillStyle = '#c9c4ba'; for (let x = 0; x < 128; x += 32) g.fillRect(x, 44, 4, 52); // mullions
+    g.fillStyle = 'rgba(80,60,40,0.12)'; g.fillRect(0, 96, 128, 32); // grime under the sill
   });
 }
 

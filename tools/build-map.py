@@ -1,123 +1,192 @@
-"""Convert OpenStreetMap extracts (research/map/*.json) into the game's compact map: src/data/sectorv.json.
+"""Convert OpenStreetMap extracts (research/map/*.json) into the game's compact map: src/content/maps/sectorv.json.
 
-Game units: x = east, z = south (so north is -z), 1 unit = 1/SCALE metres. Centre = the Street 13 x Street 2 junction.
+Game units: x = east, z = south (so north is -z), SCALE units per metre. Centre = the Street 13 x Street 2 junction.
+Street View corrections live in research/map/overrides.json (keyed by OSM way id, 'r<relation id>' or 'new:<slug>').
 Map data (c) OpenStreetMap contributors, ODbL.
 """
-import json, math, sys, os
+import heapq, json, math, os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'map'))   # npm run map uses python -I, which drops the script dir
+
+import buildings as B   # noqa: E402
+import water as W       # noqa: E402
+from geo import HALF, SCALE, centroid, clip_square, inside_sq, line_dist, ring_of, simplify, simplify_ring, to_game  # noqa: E402
+
 SRC = os.path.join(ROOT, 'research', 'map')
 OUT = os.path.join(ROOT, 'src', 'content', 'maps', 'sectorv.json')
+CLIP = HALF * 1.15           # water and green are kept a little past the square, for the horizon
 
-CENTRE = (22.57700, 88.42935)   # Street 13 x Street 2, by PwC
-SCALE = 0.5                     # game units per metre: compresses distances so runs stay short
-RADIUS_M = 720
 
-def to_game(lat, lon):
-    x = (lon - CENTRE[1]) * 111320 * math.cos(math.radians(CENTRE[0]))
-    y = (lat - CENTRE[0]) * 110540
-    return (round(x * SCALE, 1), round(-y * SCALE, 1))
+def load(name):
+    with open(os.path.join(SRC, name)) as f: return json.load(f)
 
-def inside(p, r=RADIUS_M * SCALE):
-    return abs(p[0]) <= r and abs(p[1]) <= r
 
-def simplify(pts, tol=1.0):
-    """Ramer-Douglas-Peucker."""
-    if len(pts) < 3: return pts
-    a, b = pts[0], pts[-1]
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    L = math.hypot(dx, dy) or 1e-9
-    best, idx = 0, 0
-    for i in range(1, len(pts) - 1):
-        d = abs(dy * pts[i][0] - dx * pts[i][1] + b[0] * a[1] - b[1] * a[0]) / L
-        if d > best: best, idx = d, i
-    if best > tol: return simplify(pts[:idx + 1], tol)[:-1] + simplify(pts[idx:], tol)
-    return [a, b]
+area, osm_b, osm_rel = load('area.json'), load('osm-buildings.json'), load('osm-building-relations.json')
+osm_w, osm_lu, osm_poi, osm_st = load('osm-water.json'), load('osm-landuse.json'), load('osm-pois.json'), load('osm-streets.json')
+overrides = load('overrides.json')
+log = []
 
-area = json.load(open(os.path.join(SRC, 'area.json')))['elements']
-bld = json.load(open(os.path.join(SRC, 'buildings.json')))['elements']
-
+# --- Roads (area.json is still the road source), plus any bridge ways the water extract has and area.json lacks.
 WIDTH = {'primary': 9, 'trunk': 9, 'secondary': 7, 'tertiary': 5, 'primary_link': 4.5, 'secondary_link': 4.5,
          'tertiary_link': 4, 'residential': 3.4, 'unclassified': 3.4, 'service': 2.6}
-roads = []
-for e in area:
+roads, road_ids = [], set()
+
+
+def add_road(e, need_inside=HALF):
     t = e.get('tags', {})
-    if e['type'] != 'way' or 'highway' not in t or t['highway'] not in WIDTH: continue
+    if e['type'] != 'way' or t.get('highway') not in WIDTH or e['id'] in road_ids or 'geometry' not in e: return
     pts = [to_game(g['lat'], g['lon']) for g in e['geometry']]
-    if not any(inside(p) for p in pts): continue
-    pts = simplify(pts, 0.6)
-    roads.append({
-        'n': t.get('name', ''), 'k': t['highway'], 'w': WIDTH[t['highway']],
-        'b': 1 if t.get('bridge') else 0, 'o': 1 if t.get('oneway') == 'yes' else 0, 'p': pts,
-    })
+    if not any(inside_sq(p, need_inside) for p in pts): return
+    road_ids.add(e['id'])
+    roads.append({'n': t.get('name', ''), 'k': t['highway'], 'w': WIDTH[t['highway']],
+                  'b': 1 if t.get('bridge') not in (None, 'no') else 0, 'o': 1 if t.get('oneway') == 'yes' else 0,
+                  'p': simplify(pts, 0.6)})
+
+
+for e in area['elements']: add_road(e)
+n0 = len(roads)
+for e in osm_w['elements']:
+    if e.get('tags', {}).get('bridge') and 'highway' in e.get('tags', {}): add_road(e, CLIP)
+log.append(f'bridges added from osm-water: {len(roads) - n0}')
 
 rails = []
-for e in area:
+for e in area['elements']:
     t = e.get('tags', {})
     if e['type'] == 'way' and t.get('railway') == 'subway' and 'Line-2' in (t.get('name') or ''):
         pts = [to_game(g['lat'], g['lon']) for g in e['geometry']]
-        if any(inside(p, RADIUS_M * SCALE * 1.6) for p in pts): rails.append(simplify(pts, 0.6))
+        if any(inside_sq(p, HALF * 1.6) for p in pts): rails.append(simplify(pts, 0.6))
 
-stations, stops, pois = [], [], []
-for e in area:
+stations = []
+for e in area['elements']:
     t = e.get('tags', {})
     if e['type'] == 'node' and t.get('railway') == 'station':
         p = to_game(e['lat'], e['lon'])
-        if inside(p, RADIUS_M * SCALE * 1.6): stations.append({'n': t.get('name'), 'p': p})
-    if e['type'] == 'node' and t.get('highway') == 'bus_stop':
-        p = to_game(e['lat'], e['lon'])
-        if inside(p): stops.append({'n': t.get('name', 'Bus stop'), 'p': p})
+        if inside_sq(p, HALF * 1.6): stations.append({'n': t.get('name'), 'p': p})
 
-buildings = []
-for e in bld:
+# --- Buildings.
+plots = [ring_of(e['geometry']) for e in osm_lu['elements']
+         if e['type'] == 'way' and e.get('tags', {}).get('landuse') in ('commercial', 'industrial', 'retail') and 'geometry' in e]
+buildings, rep = B.build(osm_b['elements'], osm_rel['elements'], plots, overrides.get('buildings', {}))
+log += rep
+
+# --- Water and green.
+water, rep = W.build(osm_w['elements'], CLIP)
+log += rep
+for name, a, b in W.crossings(roads, water): log.append(f'WARNING road {name} crosses water at {a}->{b} without a bridge flag')
+
+GREEN_LEISURE, GREEN_LANDUSE = ('park', 'pitch', 'garden', 'recreation_ground'), ('grass', 'park', 'recreation_ground', 'village_green')
+green = []
+for e in osm_lu['elements']:
     t = e.get('tags', {})
-    pts = [to_game(g['lat'], g['lon']) for g in e.get('geometry', [])]
-    if len(pts) < 4 or not all(inside(p) for p in pts): continue
-    pts = simplify(pts[:-1], 0.4)
-    if len(pts) < 3: continue
-    # Footprint area (game units^2) decides the height when OSM has none.
-    a = abs(sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1] for i in range(len(pts)))) / 2
-    lv = t.get('building:levels')
-    if lv and lv.replace('.', '').isdigit(): h = float(lv) * 3.2 * SCALE
-    elif a > 900: h = 30 + (hash(e['id']) % 25)   # big Sector V office blocks
-    elif a > 250: h = 12 + (hash(e['id']) % 10)
-    else: h = 5 + (hash(e['id']) % 5)             # Salt Lake houses
-    b = {'p': pts, 'h': round(h, 1)}
-    if t.get('name') and not t['name'].isdigit(): b['n'] = t['name']
-    buildings.append(b)
+    if e['type'] != 'way' or 'geometry' not in e: continue
+    if t.get('leisure') in GREEN_LEISURE or t.get('landuse') in GREEN_LANDUSE:
+        ring = clip_square(ring_of(e['geometry']), CLIP)
+        if len(ring) >= 3: green.append(simplify_ring(ring, 0.5))
 
-# Water (the Keshtopur canal) and green spaces (parks, grounds), if the extract exists.
-water, green = [], []
-wpath = os.path.join(SRC, 'water.json')
-if os.path.exists(wpath):
-    for e in json.load(open(wpath))['elements']:
-        t = e.get('tags', {})
-        if e['type'] != 'way' or 'geometry' not in e: continue
-        pts = [to_game(g['lat'], g['lon']) for g in e['geometry']]
-        if len(pts) < 4 or not any(inside(q, RADIUS_M * SCALE * 1.3) for q in pts): continue
-        pts = simplify(pts[:-1], 0.5)
-        if t.get('natural') == 'water': water.append(pts)
-        elif t.get('leisure') in ('park', 'pitch', 'garden') or t.get('landuse') in ('grass', 'park', 'recreation_ground'): green.append(pts)
+# --- Stops: highway=bus_stop nodes and public_transport=platform bus platforms, deduped by name within 30 m,
+# and pushed off the carriageway onto the left kerb (where buses stop when you keep left).
+cands = []
+for e in area['elements'] + osm_st['elements']:
+    t = e.get('tags', {})
+    if e['type'] != 'node': continue
+    rail = 'railway' in t or any(t.get(k) == 'yes' for k in ('train', 'subway', 'tram', 'light_rail'))
+    if t.get('highway') == 'bus_stop' or (t.get('public_transport') == 'platform' and not rail):   # 'Techno India' has no bus=yes
+        p = to_game(e['lat'], e['lon'])
+        if inside_sq(p): cands.append({'n': t.get('name', 'Bus stop'), 'p': p})
+stops = []
+for s in cands:
+    if any(q['n'].lower() == s['n'].lower() and math.dist(q['p'], s['p']) < 30 * SCALE for q in stops): continue
+    stops.append(s)
 
-data = {'scale': SCALE, 'roads': roads, 'rails': rails, 'stations': stations, 'stops': stops, 'buildings': buildings, 'water': water, 'green': green,
-        'attribution': 'Map data © OpenStreetMap contributors (ODbL)'}
-json.dump(data, open(OUT, 'w'), separators=(',', ':'))
-print(f"roads {len(roads)} rails {len(rails)} stations {len(stations)} stops {len(stops)} buildings {len(buildings)} -> {os.path.getsize(OUT)//1024} KB")
-for s in stations: print('station', s)
-for s in stops: print('stop', s)
+
+CARRIAGEWAYS = [r for r in roads if r['k'] != 'service' and not r['b']]
+
+
+def on_carriageway(p, pad=0.5):
+    return any(line_dist(p, r['p']) < r['w'] / 2 + pad for r in CARRIAGEWAYS)
+
+
+def to_kerb(p):
+    """A stop node on a carriageway moves to its left kerb (keep left), or the right one, or further out,
+    whichever first lands clear of every carriageway (divided roads have two)."""
+    best = None
+    for r in CARRIAGEWAYS:
+        for a, b in zip(r['p'], r['p'][1:]):
+            L = math.dist(a, b)
+            if L < 1e-6: continue
+            ux, uz = (b[0] - a[0]) / L, (b[1] - a[1]) / L
+            t = max(0, min(L, (p[0] - a[0]) * ux + (p[1] - a[1]) * uz))
+            q = (a[0] + ux * t, a[1] + uz * t)
+            d = math.dist(p, q)
+            if d < r['w'] / 2 + 0.5 and (best is None or d < best[0]): best = (d, q, ux, uz, r)
+    if not best: return p
+    d, q, ux, uz, r = best
+    lx, lz = uz, -ux                                     # left of travel
+    side = 1 if r['o'] or (p[0] - q[0]) * lx + (p[1] - q[1]) * lz >= 0 else -1
+    for extra in (1.6, 3, 5, 8):
+        for sd in (side, -side):
+            c = [round(q[0] + lx * sd * (r['w'] / 2 + extra), 1), round(q[1] + lz * sd * (r['w'] / 2 + extra), 1)]
+            if not on_carriageway(c): return c
+    log.append(f'WARNING stop at {p} could not be moved off the road')
+    return p
+
+
+for b in buildings:   # footprints added by hand (overrides 'new:') must not sit on a road
+    if not str(b['id']).startswith('new:'): continue
+    ring = b['p']
+    edge = [(a[0] + (c[0] - a[0]) * k / 8, a[1] + (c[1] - a[1]) * k / 8) for a, c in zip(ring, ring[1:] + ring[:1]) for k in range(8)]
+    if any(on_carriageway(q, 0) for q in edge): log.append(f'WARNING {b["id"]} footprint overlaps a carriageway')
+
+for s in stops:
+    k = to_kerb(s['p'])
+    if k != s['p']: log.append(f'stop {s["n"]} moved off the carriageway {s["p"]} -> {k}'); s['p'] = k
+
+# --- Street furniture inputs for the lead: lamps, compounds (plot rings) and gates. Not rendered here.
+lamps = [to_game(e['lat'], e['lon']) for e in osm_st['elements']
+         if e['type'] == 'node' and e.get('tags', {}).get('highway') == 'street_lamp' and inside_sq(to_game(e['lat'], e['lon']))]
+COMPOUND = ('commercial', 'industrial', 'retail', 'residential', 'construction')
+compounds = []
+for e in osm_lu['elements']:
+    t = e.get('tags', {})
+    k = t.get('landuse') if t.get('landuse') in COMPOUND else t.get('amenity') if t.get('amenity') in ('college', 'university', 'school', 'hospital') else None
+    if e['type'] != 'way' or not k or 'geometry' not in e: continue
+    ring = simplify_ring(ring_of(e['geometry']), 0.5)
+    if len(ring) < 3 or not inside_sq(centroid(ring)): continue
+    c = {'t': k, 'p': ring}
+    if t.get('name'): c['n'] = t['name']
+    compounds.append(c)
+gates = []
+for e in osm_lu['elements']:
+    t = e.get('tags', {})
+    if e['type'] == 'node' and t.get('barrier') in ('gate', 'lift_gate'):
+        p = to_game(e['lat'], e['lon'])
+        if not inside_sq(p): continue
+        g = {'p': p, 'k': t['barrier']}
+        if t.get('access') in ('private', 'no'): g['a'] = 'private'
+        gates.append(g)
+
+data = {'scale': SCALE, 'roads': roads, 'rails': rails, 'stations': stations, 'stops': stops, 'buildings': buildings,
+        'water': water, 'green': green, 'lamps': lamps, 'compounds': compounds, 'gates': gates,
+        'attribution': 'Map data © OpenStreetMap contributors (ODbL)',
+        'sources': {k: v.get('osm3s', {}).get('timestamp_osm_base') for k, v in
+                    (('area', area), ('buildings', osm_b), ('buildingRelations', osm_rel), ('water', osm_w),
+                     ('landuse', osm_lu), ('pois', osm_poi), ('streets', osm_st))}}
 
 # --- Bus corridor: Street Number 13 chained from College More, through the PWH junction, past Wipro More, north-west.
-import heapq
 adj = {}
+
+
 def key(p): return (round(p[0], 1), round(p[1], 1))
+
+
 for r in roads:
     if r['n'] != 'Street Number 13': continue
     for a, b in zip(r['p'], r['p'][1:]):
         ka, kb = key(a), key(b)
         w = math.dist(a, b)
         adj.setdefault(ka, []).append((kb, w)); adj.setdefault(kb, []).append((ka, w))
-nodes = list(adj)
-start = min(nodes, key=lambda k: math.dist(k, (234.0, 114.7)))   # College More
+start = min(adj, key=lambda k: math.dist(k, (234.0, 114.7)))   # College More
 dist, prev = {start: 0}, {}
 pq = [(0, start)]
 while pq:
@@ -132,11 +201,24 @@ while u != start: u = prev[u]; path.append(u)
 path.reverse()
 data['busPath'] = [list(p) for p in path]
 
-def g(lat, lon): return list(to_game(lat, lon))
-data['pois'] = {
-    'tiu': g(22.57603, 88.42844), 'pwc': g(22.57753, 88.42967), 'burger': g(22.57620, 88.43069),
-    'wiproMore': g(22.57900, 88.42660),
-}
-json.dump(data, open(OUT, 'w'), separators=(',', ':'))
+# --- Points of interest (overrides.json -> pois): a lat/lon, or an OSM node id from osm-pois.json.
+nodes = {e['id']: e for e in osm_poi['elements'] + osm_st['elements'] if e['type'] == 'node'}
+pois = {}
+for name, o in overrides.get('pois', {}).items():
+    if name.startswith('_'): continue
+    if 'osm' in o: n = nodes[o['osm']]; pois[name] = to_game(n['lat'], n['lon'])
+    else: pois[name] = to_game(*o['ll'])
+data['pois'] = pois
+
+with open(OUT, 'w') as f: json.dump(data, f, separators=(',', ':'), ensure_ascii=False)
+
+by_src = {s: sum(1 for b in buildings if b['hs'] == s) for s in ('sv', 'osm', 'guess')}
+print(f"roads {len(roads)} rails {len(rails)} stations {len(stations)} stops {len(stops)} buildings {len(buildings)} {by_src} "
+      f"water rings {len(water)} green {len(green)} lamps {len(lamps)} compounds {len(compounds)} gates {len(gates)} "
+      f"-> {os.path.getsize(OUT) // 1024} KB")
 print('bus path points', len(path), 'from', path[0], 'to', path[-1], 'length', round(dist[end]))
-print('pois', data['pois'])
+print('pois', pois)
+for s in stops: print('stop', s['n'], s['p'])
+for line in log: print(line)
+tall = sorted(buildings, key=lambda b: -b['lv'])[:12]
+for b in tall: print('tall', b['id'], b['lv'], b['t'], b['hs'], b.get('n', ''))
