@@ -1,0 +1,8 @@
+node_modules
+dist
+# Third-party material kept locally for research only; not ours to publish.
+research/mac/media/
+research/mac/audio/
+research/archive-headless/img/
+research/sounds/reference/
+research/map/gmaps-*.png
