@@ -6,6 +6,7 @@ import { sceneLayer, el, showHud } from '../ui/ui';
 import { clockText, START_MIN, START_MONEY, type Run } from '../sim/run';
 import { eiTakay, endingTitles, headline, quote, rankTitle } from '../content/text';
 import { sfx } from '../audio/audio';
+import { isHomeEnding } from '../audio/mix';
 
 const SITE = 'gharjabo.boogles.dev';
 
@@ -36,6 +37,7 @@ export function result(): Scene {
       btns.append(share, save, again);
       layer.appendChild(btns);
       setTimeout(() => sfx.sting(), 300);
+      if (isHomeEnding(run.ending)) setTimeout(() => sfx.dhaak(), 900);
     },
     update() {},
     exit() { layer.remove(); },

@@ -35,7 +35,7 @@ export function lobby(): Scene {
       const go = el('button', 'cholo', 'CHOLO →');
       go.onclick = () => {
         unlockAudio();
-        sfx.win();
+        sfx.shankh();
         game.newRun();
       };
       const tip = el('div', 'loading-tip', pick(loadingTips));
