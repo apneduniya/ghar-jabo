@@ -90,6 +90,7 @@ export const endingTitles: Record<EndingId, string> = {
   'home-early': 'SECTOR V SURVIVOR',
   home: 'GHORE FIRLAM',
   'home-late': 'BHAAT THANDA',
+  'home-next-day': 'PORER DIN',
   'rapinah-miracle': 'RAPI-NAH MIRACLE',
   'howrah-express': 'HOWRAH EXPRESS',
   'still-sector-v': 'STILL IN SECTOR V',
@@ -109,6 +110,8 @@ export function headline(run: Run): string {
       return s.cancels >= 3
         ? `Student survives ${s.cancels} Rapi-Nah cancellations, still in Sector V at 10:30 PM`
         : 'Student declared permanent resident of Sector V';
+    case 'home-next-day':
+      return `Student leaves Sector V at 6:30 PM, reaches home on Day ${run.day}; Ma has filed a missing report`;
     case 'walked-home':
       return 'Student runs out of money, walks to Sealdah, calls it "cardio"';
     default:
@@ -128,6 +131,7 @@ export function headline(run: Run): string {
 export function quote(run: Run): { text: string; who: string } {
   const s = run.stats;
   if (run.ending === 'howrah-express') return { text: 'Ami toh bolechhilam ghumobi na.', who: 'Ma' };
+  if (run.ending === 'home-next-day') return { text: 'Kal raatre kothay chhili?', who: 'Ma' };
   if (s.cancels >= 2) return { text: `${pick(cancelReasons)}.`, who: 'Rapi-Nah captain' };
   if (s.falls >= 1) return { text: 'Pichhone egiye jete bolechhilam. Shoneni.', who: 'Bus conductor' };
   if (s.momMissed >= 3) return { text: `${s.momMissed} baar phone korechhi. ${s.momMissed}!`, who: 'Ma' };
@@ -148,6 +152,7 @@ export function eiTakay(spent: number): string {
 export function rankTitle(run: Run): string {
   if (run.ending === 'still-sector-v') return 'Sector V Resident';
   if (run.ending === 'howrah-express') return 'Howrah Explorer';
+  if (run.ending === 'home-next-day') return 'Night Owl of Sector V';
   if (run.stats.footboardStops >= 3) return 'Footboard Pro';
   if (run.ending === 'home-early') return 'Sector V Survivor';
   return 'Daily Passenger';

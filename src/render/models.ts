@@ -43,9 +43,11 @@ function wheels(g: THREE.Group, xs: number[], halfW: number, size = 0.4) {
 /** Headlights at the front (+x) and taillights at the back, at height y, half-spacing z. */
 function lights(g: THREE.Group, front: number, back: number, y: number, z: number, round = false) {
   for (const s of [-z, z]) {
-    if (round) g.add(cyl(0.09, 0.05, 0xfff2c4, front + 0.01, y, s, 'x', 10));
-    else g.add(box(0.05, 0.12, 0.22, 0xfff2c4, front, y - 0.06, s));
-    g.add(box(0.05, 0.1, 0.18, 0xc0281f, back, y - 0.05, s));
+    const head = round ? cyl(0.09, 0.05, 0xfff2c4, front + 0.01, y, s, 'x', 10) : box(0.05, 0.12, 0.22, 0xfff2c4, front, y - 0.06, s);
+    const tail = box(0.05, 0.1, 0.18, 0xc0281f, back, y - 0.05, s);
+    head.userData.glow = 1.4; // see nightUniform in gfx.ts
+    tail.userData.glow = 1;
+    g.add(head, tail);
   }
 }
 
@@ -107,7 +109,9 @@ export function auto(): THREE.Group {
   g.add(box(0.5, 0.05, 0.7, 0x111111, 0.55, 1.18, 0)); // handlebar
   g.add(box(0.14, 0.12, 0.14, 0xf2f2f2, 0.62, 1.25, 0.32)); // fare meter
   g.add(box(0.7, 0.2, 1.0, 0x3a2a20, -0.45, 0.72, 0)); // passenger bench
-  g.add(cyl(0.09, 0.05, 0xfff2c4, 1.11, 0.55, 0, 'x'));
+  const lamp = cyl(0.09, 0.05, 0xfff2c4, 1.11, 0.55, 0, 'x');
+  lamp.userData.glow = 1.4;
+  g.add(lamp);
   g.add(cyl(0.2, 0.14, 0x161616, 0.95, 0.22, 0)); // single front wheel
   for (const z of [-0.6, 0.6]) g.add(cyl(0.22, 0.14, 0x161616, -0.6, 0.24, z));
   bake(g);

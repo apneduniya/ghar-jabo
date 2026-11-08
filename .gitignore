@@ -9,3 +9,4 @@ research/map/gmaps-*.png
 test-results/
 playwright-report/
 .claude/
+research/streetview/img/

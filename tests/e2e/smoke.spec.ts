@@ -7,7 +7,7 @@ async function boot(page: Page) {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
-  await page.locator('.play-btn').click();
+  await page.locator('.play-btn').first().click();
   await page.waitForFunction(() => (window as any).gj?.current && (window as any).gjr?.info.render.calls > 0);
   return errors;
 }
@@ -79,9 +79,21 @@ test('landscape phone: title street and the start stay within budget', async ({ 
   await page.waitForFunction(() => (window as any).gjr?.info.render.calls > 0);
   await page.waitForTimeout(1500);
   expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
-  await page.locator('.play-btn').click();
+  await page.locator('.play-btn').first().click();
   await expect(page.locator('.hud-clock')).toHaveText(/PM/);
   await page.waitForTimeout(1500);
   expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  expect(errors).toEqual([]);
+});
+
+test('free roam: the clock shows the day and never runs out', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await page.locator('.play-btn.free').click();
+  await expect(page.locator('.hud-clock')).toHaveText(/Day 1 · 6:3\d PM/);
+  await page.evaluate(() => { (window as any).gj.run.minute = 24 * 60 + 74; });
+  await expect(page.locator('.hud-clock')).toHaveText(/Day 2 · 1:1\d AM/);
+  expect(await page.evaluate(() => (window as any).gj.run.ending)).toBeNull();
   expect(errors).toEqual([]);
 });

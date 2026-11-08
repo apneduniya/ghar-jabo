@@ -3,6 +3,8 @@
 
 import * as THREE from 'three';
 import { bake, box, sign } from '../gfx';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { fadeInAtNight } from '../sky';
 import { person } from '../models';
 import type { MapData, Pt } from '../../sim/mapdata';
 import type { BuildingGrid } from '../../sim/collide';
@@ -108,6 +110,7 @@ export function buildProps(scene: THREE.Object3D, map: MapData, grid: BuildingGr
   }
   // Electric poles with tangled, sagging wires along the main roads; the odd bundle crosses the road.
   const wire: number[] = [];
+  const pools: number[] = [];
   const poleCol = 0x8d8d8d;
   for (const r of map.roads) {
     if (!MAIN.has(r.k) || r.b) continue;
@@ -117,6 +120,15 @@ export function buildProps(scene: THREE.Object3D, map: MapData, grid: BuildingGr
       const x = p.x - p.dz * off, z = p.z + p.dx * off;
       if (grid.blocked(x, z, 0.8)) { prev = null; continue; }
       statics.add(box(0.28, 7.5, 0.28, poleCol, x, 0, z), box(1.6, 0.12, 0.12, 0x6b6b6b, x, 7.0, z));
+      // A sodium lamp on an arm over the road, and the orange pool it throws at night.
+      const lx = x + p.dz * 1.4, lz = z - p.dx * 1.4;
+      const arm = box(0.1, 0.1, 1.5, 0x6b6b6b, (x + lx) / 2, 7.3, (z + lz) / 2);
+      arm.rotation.y = Math.atan2(p.dz, -p.dx);
+      const lamp = box(0.55, 0.16, 0.3, 0xffc278, lx, 7.15, lz);
+      lamp.rotation.y = arm.rotation.y;
+      lamp.userData.glow = 2;
+      statics.add(arm, lamp);
+      pools.push(x + p.dz * 3, z - p.dx * 3);
       const top = new THREE.Vector3(x, 7.0, z);
       if (prev && prev.distanceTo(top) < 30) {
         for (let k = 0; k < 4; k++) {
@@ -134,6 +146,10 @@ export function buildProps(scene: THREE.Object3D, map: MapData, grid: BuildingGr
       prev = top;
     }
   }
+  const poolGeo = mergeGeometries(Array.from({ length: pools.length / 2 }, (_, i) =>
+    new THREE.CircleGeometry(3.6, 14).rotateX(-Math.PI / 2).translate(pools[i * 2], 0.07, pools[i * 2 + 1])));
+  const poolMat = fadeInAtNight(new THREE.MeshBasicMaterial({ color: 0xff8a2a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }), 0.16);
+  if (pools.length) scene.add(new THREE.Mesh(poolGeo, poolMat));
   const wireGeo = new THREE.BufferGeometry();
   wireGeo.setAttribute('position', new THREE.Float32BufferAttribute(wire, 3));
   scene.add(new THREE.LineSegments(wireGeo, new THREE.LineBasicMaterial({ color: 0x1c1c1c })));

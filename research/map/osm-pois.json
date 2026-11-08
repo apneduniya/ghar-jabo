@@ -1,0 +1,1748 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-11-08T21:54:36Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 1474870092,
+  "lat": 22.5709953,
+  "lon": 88.4218988,
+  "tags": {
+    "name": "Nicco Park",
+    "tourism": "theme_park"
+  }
+},
+{
+  "type": "node",
+  "id": 1742495415,
+  "lat": 22.5796113,
+  "lon": 88.4257949,
+  "tags": {
+    "addr:housename": "EE Block, Salt Lake City Kolkata, West Bengal 700091‎",
+    "amenity": "fuel",
+    "brand": "Bharat Petroleum",
+    "brand:wikidata": "Q854826",
+    "name": "Bharat Petroleum",
+    "operator": "HP"
+  }
+},
+{
+  "type": "node",
+  "id": 2041813454,
+  "lat": 22.5758168,
+  "lon": 88.4295722,
+  "tags": {
+    "name": "Boudir Bhater",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 2140006104,
+  "lat": 22.5698787,
+  "lon": 88.4303253,
+  "tags": {
+    "addr:street": "GN 34/3, Sector - 5, Saltlake",
+    "name": "Cognizant",
+    "office": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2323668685,
+  "lat": 22.5797308,
+  "lon": 88.4256283,
+  "tags": {
+    "addr:housename": "EE Block, Salt Lake City Kolkata, West Bengal‎",
+    "amenity": "bank",
+    "atm": "yes",
+    "brand": "Axis Bank",
+    "brand:wikidata": "Q2003549",
+    "name": "Axis Bank"
+  }
+},
+{
+  "type": "node",
+  "id": 2323672796,
+  "lat": 22.5798125,
+  "lon": 88.4256015,
+  "tags": {
+    "addr:housename": "EE Block, Salt Lake City Kolkata, West Bengal‎",
+    "name": "In & Out",
+    "note": "Departmental Store",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 2454098351,
+  "lat": 22.5721537,
+  "lon": 88.4325447,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Alibaba"
+  }
+},
+{
+  "type": "node",
+  "id": 2454098354,
+  "lat": 22.5771253,
+  "lon": 88.4256814,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "BB's"
+  }
+},
+{
+  "type": "node",
+  "id": 2454098356,
+  "lat": 22.5765090,
+  "lon": 88.4311447,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:ks": "ڈومینوز",
+    "brand:pa": "ਡੋਮੀਨੋਜ਼",
+    "brand:ur": "ڈومینوز",
+    "brand:wikidata": "Q839466",
+    "brand:wikipedia": "en:Domino's Pizza",
+    "check_date": "2026-07-23",
+    "check_date:opening_hours": "2026-07-23",
+    "cuisine": "pizza",
+    "name": "Domino's",
+    "name:ks": "ڈومینوز",
+    "name:pa": "ਡੋਮੀਨੋਜ਼",
+    "name:ur": "ڈومینوز",
+    "opening_hours": "Mo-Su 11:00-23:00",
+    "phone": "+91 33 2367 0080",
+    "takeaway": "yes",
+    "website": "https://www.dominos.co.in/store-location/kolkata/millennium-city-it-park-sec-5-kolkata",
+    "website:menu": "https://www.dominos.co.in/menu"
+  }
+},
+{
+  "type": "node",
+  "id": 2461173843,
+  "lat": 22.5703880,
+  "lon": 88.4278577,
+  "tags": {
+    "name": "ICAR-CAU Guest House",
+    "tourism": "guest_house"
+  }
+},
+{
+  "type": "node",
+  "id": 2461173851,
+  "lat": 22.5701279,
+  "lon": 88.4283432,
+  "tags": {
+    "name": "National Council of Science Museums",
+    "tourism": "museum"
+  }
+},
+{
+  "type": "node",
+  "id": 2461180946,
+  "lat": 22.5715694,
+  "lon": 88.4341448,
+  "tags": {
+    "name": "Indismart Hotel",
+    "tourism": "motel"
+  }
+},
+{
+  "type": "node",
+  "id": 2461180971,
+  "lat": 22.5715496,
+  "lon": 88.4335976,
+  "tags": {
+    "amenity": "school",
+    "name": "Globsyn Business School"
+  }
+},
+{
+  "type": "node",
+  "id": 2461308597,
+  "lat": 22.5810658,
+  "lon": 88.4247742,
+  "tags": {
+    "name": "Balurghat Bhawan",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 2461308616,
+  "lat": 22.5767793,
+  "lon": 88.4298724,
+  "tags": {
+    "amenity": "police",
+    "check_date": "2025-01-19",
+    "name": "Sector - V Police Station"
+  }
+},
+{
+  "type": "node",
+  "id": 2461308629,
+  "lat": 22.5765416,
+  "lon": 88.4303820,
+  "tags": {
+    "amenity": "fuel",
+    "brand": "Hindustan Petroleum",
+    "brand:wikidata": "Q1619375",
+    "name": "HP Petrol Pump",
+    "official_name": "Hindustan Petroleum",
+    "short_name": "HP"
+  }
+},
+{
+  "type": "node",
+  "id": 2461308637,
+  "lat": 22.5768784,
+  "lon": 88.4302855,
+  "tags": {
+    "amenity": "university",
+    "name": "NITTTR Residential Campus"
+  }
+},
+{
+  "type": "node",
+  "id": 2461308639,
+  "lat": 22.5781464,
+  "lon": 88.4278235,
+  "tags": {
+    "name": "Hotel Monotel",
+    "tourism": "motel"
+  }
+},
+{
+  "type": "node",
+  "id": 2461327576,
+  "lat": 22.5741317,
+  "lon": 88.4337831,
+  "tags": {
+    "amenity": "atm",
+    "operator": "Indian Overseas Bank ATM"
+  }
+},
+{
+  "type": "node",
+  "id": 2461327580,
+  "lat": 22.5741590,
+  "lon": 88.4342390,
+  "tags": {
+    "amenity": "office",
+    "building": "yes",
+    "name": "BNP Paribas"
+  }
+},
+{
+  "type": "node",
+  "id": 2461327581,
+  "lat": 22.5735671,
+  "lon": 88.4337242,
+  "tags": {
+    "amenity": "bank",
+    "brand": "Punjab National Bank",
+    "brand:wikidata": "Q2743499",
+    "brand:wikipedia": "en:United Bank of India",
+    "name": "Punjab National Bank",
+    "name:en": "United Bank of India",
+    "short_name": "UBI",
+    "website": "http://www.unitedbankofindia.com"
+  }
+},
+{
+  "type": "node",
+  "id": 2461327584,
+  "lat": 22.5762267,
+  "lon": 88.4316590,
+  "tags": {
+    "addr:district": "Kolkata",
+    "addr:postcode": "700091",
+    "check_date": "2025-02-05",
+    "email": "ertleast@stqc.gov.in",
+    "fax": "+91 33 23679472",
+    "government": "yes",
+    "name": "Electronics Regional Test Laboratory (East)",
+    "office": "government",
+    "phone": "+91 33 23673421",
+    "short_name": "ERTL (E)",
+    "website": "https://stqc.gov.in/en/ertle-kolkata"
+  }
+},
+{
+  "type": "node",
+  "id": 2461327591,
+  "lat": 22.5738370,
+  "lon": 88.4339440,
+  "tags": {
+    "amenity": "atm",
+    "operator": "United Bank Of India ATM"
+  }
+},
+{
+  "type": "node",
+  "id": 2461327596,
+  "lat": 22.5742209,
+  "lon": 88.4342659,
+  "tags": {
+    "amenity": "office",
+    "building": "yes",
+    "name": "SREI"
+  }
+},
+{
+  "type": "node",
+  "id": 2461327601,
+  "lat": 22.5765440,
+  "lon": 88.4327370,
+  "tags": {
+    "amenity": "university",
+    "name": "Aliah University"
+  }
+},
+{
+  "type": "node",
+  "id": 2461341629,
+  "lat": 22.5712711,
+  "lon": 88.4367523,
+  "tags": {
+    "amenity": "atm",
+    "operator": "HDFC Bank ATM"
+  }
+},
+{
+  "type": "node",
+  "id": 2461341635,
+  "lat": 22.5706173,
+  "lon": 88.4368247,
+  "tags": {
+    "amenity": "office",
+    "building": "yes",
+    "name": "TCS Delta Park Eden"
+  }
+},
+{
+  "type": "node",
+  "id": 2461341644,
+  "lat": 22.5731633,
+  "lon": 88.4355640,
+  "tags": {
+    "amenity": "office",
+    "building": "yes",
+    "name": "Aegis"
+  }
+},
+{
+  "type": "node",
+  "id": 2461341660,
+  "lat": 22.5732178,
+  "lon": 88.4362105,
+  "tags": {
+    "amenity": "office",
+    "building": "yes",
+    "name": "PWC Old Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2461341665,
+  "lat": 22.5725219,
+  "lon": 88.4370849,
+  "tags": {
+    "amenity": "bank",
+    "brand": "IDBI Bank",
+    "brand:wikidata": "Q3633485",
+    "brand:wikipedia": "en:IDBI Bank",
+    "name": "IDBI Bank",
+    "name:en": "IDBI Bank",
+    "old_name": "Industrial Development Bank of India",
+    "short_name": "IDBI",
+    "website": "https://www.idbi.com"
+  }
+},
+{
+  "type": "node",
+  "id": 2461349478,
+  "lat": 22.5711968,
+  "lon": 88.4342873,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "China One"
+  }
+},
+{
+  "type": "node",
+  "id": 2461349485,
+  "lat": 22.5713652,
+  "lon": 88.4344348,
+  "tags": {
+    "amenity": "college",
+    "name": "International Institute of Hotel Management"
+  }
+},
+{
+  "type": "node",
+  "id": 2461363351,
+  "lat": 22.5717713,
+  "lon": 88.4330134,
+  "tags": {
+    "amenity": "bank",
+    "brand": "Axis Bank",
+    "brand:wikidata": "Q2003549",
+    "brand:wikipedia": "en:Axis Bank",
+    "name": "Axis Bank",
+    "name:en": "Axis Bank",
+    "website": "https://www.axisbank.com"
+  }
+},
+{
+  "type": "node",
+  "id": 2461363354,
+  "lat": 22.5701665,
+  "lon": 88.4322622,
+  "tags": {
+    "amenity": "office",
+    "building": "yes",
+    "name": "ABB office kolkata"
+  }
+},
+{
+  "type": "node",
+  "id": 2461363357,
+  "lat": 22.5706247,
+  "lon": 88.4318170,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Red Hot Chilli Peppers",
+    "phone": "+913323570326"
+  }
+},
+{
+  "type": "node",
+  "id": 2468842548,
+  "lat": 22.5745663,
+  "lon": 88.4312336,
+  "tags": {
+    "addr:housenumber": "EN-79",
+    "addr:postcode": "700091",
+    "check_date": "2026-02-15",
+    "name": "Anthropological Survey of india",
+    "office": "research",
+    "phone": "3323570090",
+    "website": "https://ansi.gov.in/"
+  }
+},
+{
+  "type": "node",
+  "id": 2468842549,
+  "lat": 22.5737004,
+  "lon": 88.4315782,
+  "tags": {
+    "amenity": "college",
+    "check_date": "2025-01-13",
+    "name": "B.P.Poddar Institute Of Management & Technology"
+  }
+},
+{
+  "type": "node",
+  "id": 2468842550,
+  "lat": 22.5728742,
+  "lon": 88.4338720,
+  "tags": {
+    "check_date": "2025-02-05",
+    "name": "Godrej Genesis & Simoco Telecommunications (South Asia) Limited",
+    "office": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3448540946,
+  "lat": 22.5715207,
+  "lon": 88.4326193,
+  "tags": {
+    "addr:city": "Bidhannagar",
+    "addr:housename": "Vishnu Chambers",
+    "addr:housenumber": "2nd Floor",
+    "addr:place": "GP Block",
+    "name": "iMerit",
+    "office": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4129499712,
+  "lat": 22.5812129,
+  "lon": 88.4254218,
+  "tags": {
+    "amenity": "doctors",
+    "healthcare": "doctor"
+  }
+},
+{
+  "type": "node",
+  "id": 4937968921,
+  "lat": 22.5772375,
+  "lon": 88.4215854,
+  "tags": {
+    "amenity": "place_of_worship",
+    "name": "Vipat Tarani Mandir",
+    "name:en": "Vipat Tarani Mandir"
+  }
+},
+{
+  "type": "node",
+  "id": 5041523433,
+  "lat": 22.5707195,
+  "lon": 88.4353941,
+  "tags": {
+    "amenity": "bar",
+    "name": "Bistro"
+  }
+},
+{
+  "type": "node",
+  "id": 6269026085,
+  "lat": 22.5711576,
+  "lon": 88.4349610,
+  "tags": {
+    "brand": "Decathlon",
+    "brand:wikidata": "Q509349",
+    "name": "Decathlon",
+    "name:ru": "Декатлон",
+    "shop": "sports"
+  }
+},
+{
+  "type": "node",
+  "id": 6847500326,
+  "lat": 22.5706444,
+  "lon": 88.4355904,
+  "tags": {
+    "addr:city": "Sector V, Salt Lake City",
+    "addr:country": "IN",
+    "addr:district": "Kolkata",
+    "addr:housenumber": "704",
+    "addr:postcode": "700091",
+    "addr:street": "Shaila Towers J - 1/16, EP Block",
+    "email": "info@bluwebmedia.co.in",
+    "level": "7",
+    "name": "BluWebMedia IT Services Pvt. Ltd.",
+    "office": "it",
+    "phone": "+916289187548",
+    "source": "website",
+    "website": "https://www.bluwebmedia.co.in"
+  }
+},
+{
+  "type": "node",
+  "id": 6907851623,
+  "lat": 22.5760302,
+  "lon": 88.4284409,
+  "tags": {
+    "amenity": "university",
+    "check_date": "2025-02-05",
+    "name": "Techno India University"
+  }
+},
+{
+  "type": "node",
+  "id": 6907851624,
+  "lat": 22.5756464,
+  "lon": 88.4282398,
+  "tags": {
+    "amenity": "college",
+    "check_date": "2025-02-05",
+    "name": "Techno India College"
+  }
+},
+{
+  "type": "node",
+  "id": 7074329128,
+  "lat": 22.5776362,
+  "lon": 88.4335618,
+  "tags": {
+    "addr:district": "Kolkata",
+    "addr:full": "Cn-5 Sector 5 Salt Lake City",
+    "addr:postcode": "700091",
+    "addr:state": "West Bengal",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Rotary Narayana Nethralaya",
+    "source": "OpenGovernmentData"
+  }
+},
+{
+  "type": "node",
+  "id": 7613194688,
+  "lat": 22.5761897,
+  "lon": 88.4271249,
+  "tags": {
+    "amenity": "college",
+    "internet_access": "yes",
+    "internet_access:fee": "no",
+    "name": "Techno Main Salt Lake"
+  }
+},
+{
+  "type": "node",
+  "id": 7668176282,
+  "lat": 22.5756826,
+  "lon": 88.4246568,
+  "tags": {
+    "addr:district": "Kolkata",
+    "addr:full": "EM Block, Sector V, Bidhannagar",
+    "addr:postcode": "700091",
+    "addr:state": "West Bengal",
+    "amenity": "clinic",
+    "healthcare": "clinic",
+    "name": "ECHS Polyclinic",
+    "source": "Local Knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 7668176345,
+  "lat": 22.5820094,
+  "lon": 88.4351474,
+  "tags": {
+    "addr:district": "North 24 Parganas",
+    "addr:full": "AN Block, Bidhannagar",
+    "addr:postcode": "700091",
+    "addr:state": "West Bengal",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Composite Hospital",
+    "source": "Local Knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 9994552619,
+  "lat": 22.5766771,
+  "lon": 88.4346646,
+  "tags": {
+    "amenity": "atm",
+    "brand": "State Bank of India",
+    "brand:wikidata": "Q1340361",
+    "operator": "State Bank of India",
+    "operator:wikidata": "Q1340361",
+    "short_name": "SBI"
+  }
+},
+{
+  "type": "node",
+  "id": 10091522317,
+  "lat": 22.5824191,
+  "lon": 88.4240343,
+  "tags": {
+    "addr:postcode": "700064",
+    "amenity": "fast_food",
+    "brand": "Wow! Momo",
+    "brand:wikidata": "Q8037446",
+    "check_date": "2023-10-27",
+    "cuisine": "momo",
+    "name": "Wow! Momo",
+    "opening_hours": "10:00-21:30",
+    "takeaway": "yes",
+    "website": "https://www.wowmomo.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 10092532717,
+  "lat": 22.5837959,
+  "lon": 88.4351768,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Kolkata@99"
+  }
+},
+{
+  "type": "node",
+  "id": 10092532718,
+  "lat": 22.5836175,
+  "lon": 88.4347856,
+  "tags": {
+    "addr:postcode": "700102",
+    "addr:street": "AN Block",
+    "amenity": "restaurant",
+    "name": "The Punjab Mirchi",
+    "opening_hours": "Mo-Su 11:00-00:00"
+  }
+},
+{
+  "type": "node",
+  "id": 10093193617,
+  "lat": 22.5835442,
+  "lon": 88.4346230,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Yummy Puds"
+  }
+},
+{
+  "type": "node",
+  "id": 10693303905,
+  "lat": 22.5750899,
+  "lon": 88.4337664,
+  "tags": {
+    "addr:housenumber": "street-18 1st",
+    "addr:postcode": "700091",
+    "addr:street": "DN Block",
+    "craft": "electronics_repair",
+    "name": "Mi Service Center, Sech Bhawan, Kolkata, West Bengal (Infotel)",
+    "opening_hours": "Mo-Sa 11:00-18:00",
+    "phone": "086974 74734"
+  }
+},
+{
+  "type": "node",
+  "id": 11992615869,
+  "lat": 22.5710621,
+  "lon": 88.4325951,
+  "tags": {
+    "addr:housenumber": "ergo 19 1602A",
+    "addr:postcode": "700091",
+    "addr:street": "Plot-A1-4 Block EP &GP, 804, Street Number 23, GP Block, Sector V,",
+    "amenity": "university",
+    "email": "info@cumail.in",
+    "internet_access": "wlan",
+    "name": "Chandigarh University",
+    "opening_hours": "Mo-Sa 09:00-17:30",
+    "phone": "098306 67988;+919915999223;+918146651550;+919915999224;+917626862200;+918146651606",
+    "website": "https://www.cuchd.in/"
+  }
+},
+{
+  "type": "node",
+  "id": 11992630169,
+  "lat": 22.5727319,
+  "lon": 88.4339162,
+  "tags": {
+    "addr:housenumber": "601",
+    "addr:postcode": "700091",
+    "addr:street": "Unit - 601, & GP, Godrej Genesis Building, EP Block, Sector V,",
+    "amenity": "school",
+    "internet_access": "wlan",
+    "name": "IEMLabs - Cyber Security & Ethical Hacking Course in Kolkata",
+    "opening_hours": "Mo-Sa 09:00-19:30",
+    "phone": "098319 78317",
+    "website": "https://iemlabs.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 11992634769,
+  "lat": 22.5712197,
+  "lon": 88.4322231,
+  "tags": {
+    "addr:postcode": "700091",
+    "addr:street": "Plot No. A1-5, Block GP, Sector –V, Salt Lake Electronics Complex, opp. Oxford University Press, GP",
+    "alt_name": "অক্সফোর্ড ইউনিভার্সিটি প্রেস",
+    "amenity": "university",
+    "internet_access": "wlan",
+    "name": "Oxford University Press",
+    "phone": "0033 2357 3740",
+    "website": "http://oup.co.in"
+  }
+},
+{
+  "type": "node",
+  "id": 11992643769,
+  "lat": 22.5720827,
+  "lon": 88.4309202,
+  "tags": {
+    "addr:housenumber": "37/1",
+    "addr:postcode": "700091",
+    "addr:street": "Asyst Park 37/1 G N Block, Street No 17 Saltlake, Sector V,",
+    "alt_name": "আধার সেবা কেন্দ্র - কলকাতা",
+    "name": "Aadhaar Seva Kendra(ASK)- Kolkata",
+    "office": "government",
+    "opening_hours": "Mo-Su 09:00-19:00"
+  }
+},
+{
+  "type": "node",
+  "id": 12196681537,
+  "lat": 22.5777742,
+  "lon": 88.4320244,
+  "tags": {
+    "air_conditioning": "yes",
+    "amenity": "fast_food",
+    "brand": "Mio Amore",
+    "brand:wikidata": "Q130534919",
+    "diet:vegetarian": "yes",
+    "indoor_seating": "no",
+    "name": "Mio Amore",
+    "name:bn": "মিও আমোরে",
+    "name:en": "Mio Amore",
+    "shop": "pastry",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12206764159,
+  "lat": 22.5809684,
+  "lon": 88.4248515,
+  "tags": {
+    "addr:block": "EE",
+    "addr:housename": "Dakshin Dinajpur Zilla Parishad Bhawan",
+    "addr:housenumber": "6/1",
+    "addr:place": "Sector 2, Saltlake",
+    "addr:postcode": "700091",
+    "amenity": "restaurant",
+    "contact:mobile": "+91 98302 02560;+91 94330 71361",
+    "cuisine": "chicken;chinese;indian;noodle;regional",
+    "level": "0",
+    "name": "Swastineer Canteen",
+    "opening_hours": "Mo-Su 08:00-22:00",
+    "takeaway": "yes",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 12206764160,
+  "lat": 22.5812978,
+  "lon": 88.4246132,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "chicken;chinese;indian;noodle;regional;coffee_shop;ice_cream",
+    "name": "Blue Plum",
+    "takeaway": "yes",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 12206764165,
+  "lat": 22.5805542,
+  "lon": 88.4250454,
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "branch": "Salt Lake Karunamoyee",
+    "brand": "HDFC Bank",
+    "brand:wikidata": "Q631047",
+    "level": "0",
+    "name": "HDFC Bank",
+    "opening_hours": "Mo-Sa 09:30-15:30; PH off;",
+    "operator": "HDFC Bank",
+    "operator:wikidata": "Q631047",
+    "short_name": "HDFC",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12206764169,
+  "lat": 22.5813868,
+  "lon": 88.4245954,
+  "tags": {
+    "air_conditioning": "yes",
+    "amenity": "cafe",
+    "brand": "Cafe Coffee Day",
+    "brand:wikidata": "Q5017235",
+    "cuisine": "coffee_shop",
+    "indoor_seating": "yes",
+    "level": "0",
+    "name": "Cafe Coffee Day",
+    "smoking": "no",
+    "takeaway": "yes",
+    "toilets:access": "customers",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12206764170,
+  "lat": 22.5806950,
+  "lon": 88.4250447,
+  "tags": {
+    "amenity": "atm",
+    "brand": "HDFC Bank",
+    "brand:wikidata": "Q631047",
+    "cash_in": "no",
+    "level": "0",
+    "opening_hours": "24/7",
+    "operator": "HDFC Bank",
+    "operator:wikidata": "Q631047",
+    "short_name": "HDFC",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12208616776,
+  "lat": 22.5747114,
+  "lon": 88.4341017,
+  "tags": {
+    "amenity": "toilets",
+    "check_date": "2024-09-29",
+    "internet_access": "wlan",
+    "internet_access:fee": "no",
+    "payment:cards": "no",
+    "payment:cash": "yes",
+    "payment:credit_cards": "no",
+    "payment:debit_cards": "no",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 12209860058,
+  "lat": 22.5763944,
+  "lon": 88.4307436,
+  "tags": {
+    "air_conditioning": "yes",
+    "amenity": "fast_food",
+    "brand": "Burger King",
+    "brand:wikidata": "Q177054",
+    "brand:wikipedia": "en:Burger King",
+    "check_date": "2026-07-23",
+    "check_date:opening_hours": "2026-07-23",
+    "cuisine": "burger",
+    "indoor_seating": "yes",
+    "level": "0",
+    "name": "Burger King",
+    "opening_hours": "Mo-Su 10:00-23:00",
+    "phone": "+91 86556 26323",
+    "takeaway": "yes",
+    "toilets": "yes",
+    "toilets:access": "customers",
+    "website": "https://stores.burgerking.in/burger-king-fast-food-restaurant-sector-5-bidhannagar-kolkata-249572/Home",
+    "website:menu": "https://www.burgerking.in/product-listing"
+  }
+},
+{
+  "type": "node",
+  "id": 12209860059,
+  "lat": 22.5763607,
+  "lon": 88.4308164,
+  "tags": {
+    "air_conditioning": "yes",
+    "amenity": "fast_food",
+    "cuisine": "indian;regional",
+    "indoor_seating": "yes",
+    "name": "Nizams Express",
+    "takeaway": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12209860060,
+  "lat": 22.5786171,
+  "lon": 88.4267177,
+  "tags": {
+    "amenity": "shelter",
+    "shelter_type": "public_transport"
+  }
+},
+{
+  "type": "node",
+  "id": 12209860061,
+  "lat": 22.5764233,
+  "lon": 88.4306687,
+  "tags": {
+    "brand": "Pepperfry",
+    "level": "0",
+    "name": "Pepperfry",
+    "shop": "furniture",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12289848051,
+  "lat": 22.5723916,
+  "lon": 88.4325857,
+  "tags": {
+    "addr:city": "Salt Lake Sector 5",
+    "addr:district": "Kolkata",
+    "addr:postcode": "700091",
+    "addr:street": "Imagine Techpark, Grounds, Salt Lake Bypass, DP Block, Sector V, Bidhannagar, Kolkata, West Bengal 700091",
+    "amenity": "restaurant",
+    "name": "Sizzle Club n Dine Restaurant",
+    "opening_hours": "Mo-Su 10:00-22:00",
+    "phone": "+91 79804 28232",
+    "website": "https://www.sizzleclubndine.co.in/"
+  }
+},
+{
+  "type": "node",
+  "id": 12468773212,
+  "lat": 22.5798581,
+  "lon": 88.4357561,
+  "tags": {
+    "addr:city": "Kolkata",
+    "addr:district": "North 24 Parganas",
+    "addr:housenumber": "Unit 508",
+    "addr:postcode": "700091",
+    "addr:street": "Adventz Infinity, Street Number 18, BN Block, Sector V",
+    "name": "Innoraft",
+    "office": "company",
+    "website": "https://www.innoraft.com"
+  }
+},
+{
+  "type": "node",
+  "id": 12633830603,
+  "lat": 22.5749585,
+  "lon": 88.4322876,
+  "tags": {
+    "artwork_type": "statue",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 12995430301,
+  "lat": 22.5817007,
+  "lon": 88.4283333,
+  "tags": {
+    "addr:housenumber": "133",
+    "addr:postcode": "700091",
+    "addr:street": "Canal Side Road",
+    "level": "0",
+    "name": "Passionate Solver Technologies",
+    "office": "company",
+    "opening_hours": "Mo-Fr 09:00-18:00",
+    "website": "https://www.passionatesolver.tech/"
+  }
+},
+{
+  "type": "node",
+  "id": 13578481030,
+  "lat": 22.5800317,
+  "lon": 88.4287734,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "no",
+    "material": "concrete",
+    "seats": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 13578481031,
+  "lat": 22.5800015,
+  "lon": 88.4287991,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "no",
+    "material": "concrete",
+    "seats": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 13578490638,
+  "lat": 22.5799701,
+  "lon": 88.4288226,
+  "tags": {
+    "access": "yes",
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "no",
+    "material": "concrete",
+    "seats": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 13751860777,
+  "lat": 22.5736293,
+  "lon": 88.4313856,
+  "tags": {
+    "name": "Indian Institute Of Hotel Manahement",
+    "office": "educational_institution"
+  }
+},
+{
+  "type": "node",
+  "id": 13751860778,
+  "lat": 22.5734490,
+  "lon": 88.4313770,
+  "tags": {
+    "addr:city": "Salt Lake Sector 5",
+    "addr:district": "Kolkata",
+    "addr:housenumber": "EN 34",
+    "addr:postcode": "700091",
+    "addr:street": "Street Number 13",
+    "name": "BEAS Consultancy & Services",
+    "office": "it",
+    "website": "https://www.beasconsultancy.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 134101198,
+  "center": {
+    "lat": 22.5748714,
+    "lon": 88.4323067
+  },
+  "tags": {
+    "addr:city": "Kolkata",
+    "addr:housenumber": "EN-80",
+    "addr:street": "College More",
+    "amenity": "research_institute",
+    "check_date": "2025-03-03",
+    "internet_access": "yes",
+    "name": "Bose Institute Unified Academic Campus",
+    "opening_hours": "Mo-Fr 10:30-03:30",
+    "phone": "03323676007",
+    "website": "https://jcbose.ac.in",
+    "wikidata": "Q4947204",
+    "wikipedia": "en:Bose Institute"
+  }
+},
+{
+  "type": "way",
+  "id": 134101300,
+  "center": {
+    "lat": 22.5742147,
+    "lon": 88.4336852
+  },
+  "tags": {
+    "addr:city": "Kolkata",
+    "addr:housenumber": "Y2",
+    "addr:place": "EP Block",
+    "addr:postcode": "700091",
+    "addr:street": "Street Number 15",
+    "alt_name": "IEM Gurukul Campus",
+    "amenity": "college",
+    "building": "college",
+    "internet_access": "yes",
+    "name": "Institute of Engineering and Management",
+    "short_name": "IEM",
+    "website": "https://iem.edu.in/"
+  }
+},
+{
+  "type": "way",
+  "id": 134101335,
+  "center": {
+    "lat": 22.5740006,
+    "lon": 88.4348386
+  },
+  "tags": {
+    "amenity": "college",
+    "name": "Brainware business School"
+  }
+},
+{
+  "type": "way",
+  "id": 156164648,
+  "center": {
+    "lat": 22.5842463,
+    "lon": 88.4261038
+  },
+  "tags": {
+    "amenity": "marketplace",
+    "name": "CK Market"
+  }
+},
+{
+  "type": "way",
+  "id": 157926086,
+  "center": {
+    "lat": 22.5800791,
+    "lon": 88.4295849
+  },
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Salt Lake Bus Depot",
+    "operator": "West Bengal State Transport Corporation",
+    "public_transport": "station",
+    "wikidata": "Q7984450",
+    "wikipedia": "en:West Bengal Transport Corporation"
+  }
+},
+{
+  "type": "way",
+  "id": 191911481,
+  "center": {
+    "lat": 22.5762457,
+    "lon": 88.4200956
+  },
+  "tags": {
+    "addr:housename": "GE Block, Salt Lake City Kolkata, West Bengal‎",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "National Institute of Homeopathy",
+    "operator": "Ministry of AYUSH, Government of India",
+    "operator:type": "government",
+    "phone": "+913323370970",
+    "website": "https://nih.nic.in/"
+  }
+},
+{
+  "type": "way",
+  "id": 191912827,
+  "center": {
+    "lat": 22.5814256,
+    "lon": 88.4225953
+  },
+  "tags": {
+    "addr:district": "North 24 Parganas",
+    "addr:full": "Matrisadan, EE/55/A, Sector-II, Bidhannagar, Salt Lake City,Kolkata",
+    "addr:postcode": "700091",
+    "addr:state": "West Bengal",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Bidhannagar Municipal Hospital (Matrisadan)",
+    "source": "OpenGovernmentData"
+  }
+},
+{
+  "type": "way",
+  "id": 193308962,
+  "center": {
+    "lat": 22.5790972,
+    "lon": 88.4307673
+  },
+  "tags": {
+    "addr:city": "kolkata",
+    "addr:housenumber": "CN-1,, CN-1, Camac St, DN Block, Sector V,",
+    "addr:postcode": "700091",
+    "addr:street": "camac street road",
+    "building": "yes",
+    "check_date": "2025-01-19",
+    "government": "yes",
+    "name": "Wipro Tower 5",
+    "office": "company",
+    "opening_hours": "Mo-Fr 08:00-18:00"
+  }
+},
+{
+  "type": "way",
+  "id": 193308964,
+  "center": {
+    "lat": 22.5786886,
+    "lon": 88.4312122
+  },
+  "tags": {
+    "addr:city": "kolkata",
+    "addr:housenumber": "HCHJ+CFW,DN Block, Sector V,",
+    "addr:postcode": "700091",
+    "building": "yes",
+    "name": "Meridian Capital",
+    "office": "company"
+  }
+},
+{
+  "type": "way",
+  "id": 193308965,
+  "center": {
+    "lat": 22.5799294,
+    "lon": 88.4308389
+  },
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "ST-6 W-3 Bus Terminus‎",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "way",
+  "id": 193475634,
+  "center": {
+    "lat": 22.5772909,
+    "lon": 88.4322772
+  },
+  "tags": {
+    "building": "yes",
+    "name": "Srijan Tech Park",
+    "office": "company"
+  }
+},
+{
+  "type": "way",
+  "id": 193657670,
+  "center": {
+    "lat": 22.5750730,
+    "lon": 88.4242598
+  },
+  "tags": {
+    "amenity": "college"
+  }
+},
+{
+  "type": "way",
+  "id": 193657755,
+  "center": {
+    "lat": 22.5715761,
+    "lon": 88.4253940
+  },
+  "tags": {
+    "amenity": "school"
+  }
+},
+{
+  "type": "way",
+  "id": 193658097,
+  "center": {
+    "lat": 22.5723009,
+    "lon": 88.4257689
+  },
+  "tags": {
+    "amenity": "college",
+    "name": "Roopkala Kendro"
+  }
+},
+{
+  "type": "way",
+  "id": 193660281,
+  "center": {
+    "lat": 22.5750087,
+    "lon": 88.4300360
+  },
+  "tags": {
+    "amenity": "college",
+    "check_date": "2025-01-19",
+    "name": "Central Staff Training and Research Institute Hostel"
+  }
+},
+{
+  "type": "way",
+  "id": 194273231,
+  "center": {
+    "lat": 22.5698845,
+    "lon": 88.4295786
+  },
+  "tags": {
+    "amenity": "school",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 234738545,
+  "center": {
+    "lat": 22.5803797,
+    "lon": 88.4251928
+  },
+  "tags": {
+    "addr:postcode": "700091",
+    "amenity": "university",
+    "building": "university",
+    "building:levels": "6",
+    "building:use": "education",
+    "check_date": "2023-10-27",
+    "name": "Rabindra Bharati University",
+    "opening_hours": "10:30-17:00",
+    "phone": "+91 33 2358 4014",
+    "website": "https://www.rbudde.in/"
+  }
+},
+{
+  "type": "way",
+  "id": 234739615,
+  "center": {
+    "lat": 22.5808365,
+    "lon": 88.4248527
+  },
+  "tags": {
+    "addr:city": "Kolkata",
+    "addr:country": "IN",
+    "addr:housenumber": "7",
+    "addr:place": "EE Block",
+    "addr:postcode": "700091",
+    "addr:street": "3rd Avenue",
+    "building": "yes",
+    "building:levels": "4",
+    "name": "Jalpaiguri Bhawan",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 234739616,
+  "center": {
+    "lat": 22.5807484,
+    "lon": 88.4249341
+  },
+  "tags": {
+    "addr:block": "EE",
+    "addr:housenumber": "7/1",
+    "addr:place": "Sector 2, Salt Lake",
+    "building": "office",
+    "building:colour": "grey",
+    "building:levels": "3",
+    "building:levels:underground": "0",
+    "building:material": "concrete",
+    "building:use": "office",
+    "name": "The University Of Burdwan",
+    "office": "educational_institution",
+    "roof:material": "concrete",
+    "roof:orientation": "across",
+    "roof:shape": "flat"
+  }
+},
+{
+  "type": "way",
+  "id": 234739617,
+  "center": {
+    "lat": 22.5806149,
+    "lon": 88.4250315
+  },
+  "tags": {
+    "addr:block": "EE",
+    "addr:housenumber": "8",
+    "addr:place": "Sector 2, Saltlake",
+    "addr:postcode": "700091",
+    "building": "yes",
+    "name": "Natya Bhavan",
+    "operator": "Natya Shodh Sansthan",
+    "tourism": "museum"
+  }
+},
+{
+  "type": "way",
+  "id": 238271357,
+  "center": {
+    "lat": 22.5702236,
+    "lon": 88.4284296
+  },
+  "tags": {
+    "tourism": "museum"
+  }
+},
+{
+  "type": "way",
+  "id": 238271669,
+  "center": {
+    "lat": 22.5704683,
+    "lon": 88.4307484
+  },
+  "tags": {
+    "tourism": "museum"
+  }
+},
+{
+  "type": "way",
+  "id": 238271671,
+  "center": {
+    "lat": 22.5714847,
+    "lon": 88.4343444
+  },
+  "tags": {
+    "tourism": "motel"
+  }
+},
+{
+  "type": "way",
+  "id": 238285654,
+  "center": {
+    "lat": 22.5769145,
+    "lon": 88.4304043
+  },
+  "tags": {
+    "amenity": "university",
+    "name": "NITTTR Residential Campus"
+  }
+},
+{
+  "type": "way",
+  "id": 358886818,
+  "center": {
+    "lat": 22.5762047,
+    "lon": 88.4216452
+  },
+  "tags": {
+    "amenity": "parking"
+  }
+},
+{
+  "type": "way",
+  "id": 358886998,
+  "center": {
+    "lat": 22.5712015,
+    "lon": 88.4357021
+  },
+  "tags": {
+    "building": "yes",
+    "name": "Kredent Tower, PCI Software Pvt. Ltd.",
+    "office": "company"
+  }
+},
+{
+  "type": "way",
+  "id": 358887081,
+  "center": {
+    "lat": 22.5766906,
+    "lon": 88.4344983
+  },
+  "tags": {
+    "building": "yes",
+    "building:levels": "10",
+    "name": "R S Softwares",
+    "office": "company"
+  }
+},
+{
+  "type": "way",
+  "id": 362948054,
+  "center": {
+    "lat": 22.5779738,
+    "lon": 88.4348454
+  },
+  "tags": {
+    "addr:city": "Kolkata",
+    "addr:housenumber": "CN-06, CN Block, Sector V, Bidhannagar,",
+    "addr:postcode": "700091",
+    "amenity": "research_institute",
+    "check_date": "2025-02-05",
+    "internet_access": "yes",
+    "name": "IICB TRUE Salt Lake",
+    "operator": "GOVERNMENT",
+    "operator:type": "government",
+    "website": "https://www.iicb.res.in/iicb-true"
+  }
+},
+{
+  "type": "way",
+  "id": 362948055,
+  "center": {
+    "lat": 22.5817520,
+    "lon": 88.4242522
+  },
+  "tags": {
+    "building": "office",
+    "government": "administrative",
+    "office": "government"
+  }
+},
+{
+  "type": "way",
+  "id": 362948114,
+  "center": {
+    "lat": 22.5720063,
+    "lon": 88.4308762
+  },
+  "tags": {
+    "addr:city": "Salt Lake Sector 5",
+    "addr:district": "Kolkata",
+    "addr:housenumber": "GN 37/1",
+    "addr:postcode": "700091",
+    "building": "yes",
+    "name": "Asyst Park",
+    "office": "it"
+  }
+},
+{
+  "type": "way",
+  "id": 362948235,
+  "center": {
+    "lat": 22.5775215,
+    "lon": 88.4340543
+  },
+  "tags": {
+    "building": "yes",
+    "check_date": "2025-01-19",
+    "name": "CSIR IICB GUEST HOUSE",
+    "tourism": "guest_house"
+  }
+},
+{
+  "type": "way",
+  "id": 986865092,
+  "center": {
+    "lat": 22.5772413,
+    "lon": 88.4345512
+  },
+  "tags": {
+    "building": "yes",
+    "building:levels": "12",
+    "name": "sidco global tower",
+    "office": "company"
+  }
+},
+{
+  "type": "way",
+  "id": 986865523,
+  "center": {
+    "lat": 22.5775493,
+    "lon": 88.4348230
+  },
+  "tags": {
+    "addr:city": "kolkata",
+    "addr:housenumber": "Office of Public Health Engineering Department (PHED), Govt. of West Bengal, CN8, Street Number 18 CN Block Sector V,",
+    "addr:postcode": "700091",
+    "addr:street": "street no 18",
+    "building": "yes",
+    "check_date": "2025-02-05",
+    "name": "JANASWASTHYA KARIGARI BHAWAN (NIJALAYA)",
+    "office": "government"
+  }
+},
+{
+  "type": "way",
+  "id": 986867354,
+  "center": {
+    "lat": 22.5790139,
+    "lon": 88.4352060
+  },
+  "tags": {
+    "addr:city": "Kolkata",
+    "addr:housenumber": "Tcg Lifesciences Chembiotek, Salt Lake Electronics Complex, Plot No-7, Street Number 18, BN Block, Sector V,",
+    "addr:postcode": "700091",
+    "air_conditioning": "yes",
+    "building": "yes",
+    "check_date": "2025-02-05",
+    "name": "TCG Lifesciences Private Limited Chembiotek",
+    "office": "research",
+    "website": "https://www.tcgls.com"
+  }
+},
+{
+  "type": "way",
+  "id": 986997165,
+  "center": {
+    "lat": 22.5705132,
+    "lon": 88.4308740
+  },
+  "tags": {
+    "addr:city": "KOLKATA",
+    "addr:housenumber": "35 Rashtriya Atlas Bhavan",
+    "addr:postcode": "700091",
+    "addr:street": "GN BLOCK",
+    "building": "yes",
+    "government": "government",
+    "name": "National Atlas and Thematic Mapping Organisation",
+    "office": "government",
+    "website": "https://www.geoportal.natmo.gov.in/"
+  }
+},
+{
+  "type": "way",
+  "id": 986997170,
+  "center": {
+    "lat": 22.5712727,
+    "lon": 88.4268392
+  },
+  "tags": {
+    "building": "yes",
+    "office": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 986997179,
+  "center": {
+    "lat": 22.5719481,
+    "lon": 88.4286067
+  },
+  "tags": {
+    "building": "yes",
+    "office": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 986997180,
+  "center": {
+    "lat": 22.5723309,
+    "lon": 88.4272884
+  },
+  "tags": {
+    "addr:city": "KOLKATA",
+    "addr:housenumber": "GN-29",
+    "addr:postcode": "700091",
+    "addr:street": "Swasthya Bhawan sector V",
+    "building": "yes",
+    "check_date": "2025-02-05",
+    "government": "administrative",
+    "name": "State Institute of Health and Family Welfare Department",
+    "office": "government",
+    "opening_hours": "Mo-Fr 10:00-17:00"
+  }
+},
+{
+  "type": "way",
+  "id": 986997182,
+  "center": {
+    "lat": 22.5717683,
+    "lon": 88.4269559
+  },
+  "tags": {
+    "addr:city": "KOLKATA",
+    "addr:housenumber": "GODREJ BHAVAN",
+    "addr:postcode": "700091",
+    "addr:street": "GN BLOCK",
+    "building": "yes",
+    "name": "Godrej & Boyce Mfg. Co. Ltd",
+    "office": "company",
+    "opening_hours": "Mo-Su 08:00-22:00",
+    "website": "https://www.godrejsecure.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 986997184,
+  "center": {
+    "lat": 22.5708980,
+    "lon": 88.4265052
+  },
+  "tags": {
+    "addr:city": "KOLKATA",
+    "addr:postcode": "700091",
+    "building": "yes",
+    "name": "Maschya bhavan",
+    "office": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 992001222,
+  "center": {
+    "lat": 22.5772360,
+    "lon": 88.4297726
+  },
+  "tags": {
+    "building": "yes",
+    "office": "private"
+  }
+},
+{
+  "type": "way",
+  "id": 992001224,
+  "center": {
+    "lat": 22.5784779,
+    "lon": 88.4324266
+  },
+  "tags": {
+    "building": "yes",
+    "office": "yes"
+  }
+},
+{
+  "type": "relation",
+  "id": 18783929,
+  "center": {
+    "lat": 22.5747668,
+    "lon": 88.4325373
+  },
+  "tags": {
+    "amenity": "research_institute",
+    "building": "yes",
+    "name": "Bose Institute",
+    "type": "multipolygon"
+  }
+}
+
+  ]
+}

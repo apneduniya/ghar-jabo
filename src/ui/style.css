@@ -167,6 +167,10 @@ blockquote cite::before { content: '— '; }
 .howto b { font-size: 12px; }
 .howto span { font-size: 10px; color: #555; }
 .play-btn { background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 30px; padding: 16px 0; width: min(420px, 100%); border-radius: 18px; box-shadow: 0 6px 0 #b38c00, 0 12px 30px rgba(0,0,0,.4); animation: pulse 1.4s infinite; }
+.modes { display: flex; flex-direction: column; gap: 10px; width: min(420px, 100%); }
+.play-btn { display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
+.play-btn small { font-family: var(--body, system-ui); font-size: 12px; font-weight: 600; opacity: .75; margin-top: 4px; }
+.play-btn.free { background: #2f2a4a; color: #fff; box-shadow: 0 6px 0 #17142a, 0 12px 30px rgba(0,0,0,.4); animation: none; font-size: 24px; }
 .play-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b38c00; }
 .title-foot { margin-top: 10px; font-size: 11px; opacity: .75; }
 
@@ -181,7 +185,9 @@ blockquote cite::before { content: '— '; }
   .logo p { margin-left: 0; font-size: 13px; }
   .challenge { order: 3; width: 44%; font-size: 12px; }
   .howto { width: 50%; margin: 0 0 8px; order: 1; }
-  .play-btn { width: 50%; font-size: 24px; padding: 12px 0; order: 2; margin-left: 50%; }
+  .modes { width: 50%; order: 2; margin-left: 50%; gap: 8px; }
+  .play-btn { width: 100%; font-size: 22px; padding: 10px 0; }
+  .play-btn.free { font-size: 18px; }
   .title-foot { width: 100%; text-align: right; order: 4; margin-top: 4px; }
   .minimap { width: 104px !important; height: 104px !important; top: calc(10px + env(safe-area-inset-top)); left: auto; right: calc(150px + env(safe-area-inset-right)); }
   .stream { top: calc(10px + env(safe-area-inset-top)); left: 34%; right: 34%; }

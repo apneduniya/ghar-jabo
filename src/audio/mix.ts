@@ -35,7 +35,7 @@ export function hawkerGap(r: number): number {
 }
 
 /** Endings where you actually got home: the dhaak plays. */
-const homeEndings = new Set(['home-early', 'home', 'home-late', 'rapinah-miracle', 'walked-home']);
+const homeEndings = new Set(['home-early', 'home', 'home-late', 'home-next-day', 'rapinah-miracle', 'walked-home']);
 export function isHomeEnding(ending: string | null): boolean {
   return !!ending && homeEndings.has(ending);
 }

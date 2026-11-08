@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
 import { bake, batchSigns, resize, Shake, sign } from '../render/gfx';
+import { clearGlow, Sky } from '../render/sky';
 import { playerPerson } from '../render/models';
 import { Actors } from '../render/actors';
 import { buildCityMap, map } from '../render/world/citymap';
@@ -64,32 +65,13 @@ function buildGate(scene: THREE.Object3D, x: number, z: number, along: { dx: num
 }
 
 /** A vertical sky gradient as the scene background (cheaper than a sky dome). */
-function skyGradient() {
-  const cv = document.createElement('canvas');
-  cv.width = 2; cv.height = 256;
-  const g = cv.getContext('2d')!;
-  const grad = g.createLinearGradient(0, 0, 0, 256);
-  grad.addColorStop(0, '#5f86c2');
-  grad.addColorStop(0.55, '#b9a7c4');
-  grad.addColorStop(0.8, '#f2b27c');
-  grad.addColorStop(1, '#f6c79a');
-  g.fillStyle = grad;
-  g.fillRect(0, 0, 2, 256);
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
-
 export function sectorv(): Scene {
   const run = game.run;
   const scene = new THREE.Scene();
-  // A monsoon evening at 6:30 PM: low warm sun in the west, a blue sky going orange at the horizon, haze.
-  scene.background = skyGradient();
-  scene.fog = new THREE.Fog(0xe8b48a, 120, 340);
-  scene.add(new THREE.HemisphereLight(0xbfd3ff, 0x5c4a3c, 1.5));
-  const sun = new THREE.DirectionalLight(0xffc28a, 2.6);
-  sun.position.set(-120, 70, 30);
-  scene.add(sun);
+  // Golden dusk at 6:30 PM, night by 7:45, and on through the night in free roam (render/sky.ts).
+  clearGlow();
+  const sky = new Sky(scene);
+  sky.update(run.minute);
   const camera = new THREE.PerspectiveCamera(55, 1, 0.5, 600);
   const shake = new Shake();
   const built = buildCityMap();
@@ -217,8 +199,9 @@ export function sectorv(): Scene {
         const seed = new URLSearchParams(location.search).get('seed');
         showTitle({
           seed: seed ? Number(seed) : null,
-          onPlay: () => {
+          onPlay: (mode) => {
             unlockAudio();
+            if (mode !== run.mode) { game.newRun(mode); return; } // fresh run in the chosen mode, straight into play
             sfx.shankh();
             attracting = false;
             camReady = false;
@@ -230,6 +213,7 @@ export function sectorv(): Scene {
       startPlay();
     },
     update(dt) {
+      sky.update(run.minute);
       if (attracting) {
         // Slow sweep around the PWH junction while traffic carries on below.
         acc += dt;

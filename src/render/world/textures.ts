@@ -146,3 +146,26 @@ export function posters() {
     g.globalAlpha = 1;
   });
 }
+
+/**
+ * A night-glow map for a facade: only the warm "lit window" pixels survive, everything else goes black.
+ * Used as the emissiveMap so windows light up after dark while walls stay dark.
+ */
+export function litMask(tex: THREE.Texture) {
+  const src = tex.image as HTMLCanvasElement;
+  const cv = document.createElement('canvas');
+  cv.width = src.width; cv.height = src.height;
+  const g = cv.getContext('2d')!;
+  g.drawImage(src, 0, 0);
+  const img = g.getImageData(0, 0, cv.width, cv.height);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const warm = d[i] > 185 && d[i + 1] > 150 && d[i + 2] < 200 && d[i] - d[i + 2] > 40;
+    if (!warm) { d[i] = d[i + 1] = d[i + 2] = 0; }
+  }
+  g.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}

@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Bay } from './buildings';
+import { glowAtNight } from '../sky';
 
 const FLOOR = 3.2, SHOP_H = 3.4;
 const SIGNS = [
@@ -33,7 +34,15 @@ function signAtlas() {
   });
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
-  return t;
+  // Same atlas for the night glow, minus the white strip, so lit signs glow and balconies don't.
+  const gcv = document.createElement('canvas');
+  gcv.width = cv.width; gcv.height = cv.height;
+  const gg = gcv.getContext('2d')!;
+  gg.drawImage(cv, 0, 0);
+  gg.fillStyle = '#000'; gg.fillRect(0, 512, 1024, 512);
+  const glow = new THREE.CanvasTexture(gcv);
+  glow.colorSpace = THREE.SRGBColorSpace;
+  return { map: t, glow };
 }
 
 const CELL = 110; // world units per culling cell: big enough that a view touches only a few
@@ -74,7 +83,8 @@ const balconyGeo = mergeGeometries([
   new THREE.BoxGeometry(0.06, 0.9, 0.9).translate(1.07, 0.5, 0.45),
 ].map((g) => g.toNonIndexed()));
 const awningGeo = new THREE.BoxGeometry(2.8, 0.08, 1.3).translate(0, 0, 0.65).rotateX(0.32).toNonIndexed();
-const cellMat = (atlas: THREE.Texture) => new THREE.MeshLambertMaterial({ map: atlas, vertexColors: true });
+const cellMat = (atlas: { map: THREE.Texture; glow: THREE.Texture }) =>
+  glowAtNight(new THREE.MeshLambertMaterial({ map: atlas.map, vertexColors: true, emissive: 0xffffff, emissiveMap: atlas.glow, emissiveIntensity: 0 }), 0.75);
 
 /** A copy of `geo` placed at pos/rot, painted one colour, every UV on the atlas's white strip. */
 function painted(geo: THREE.BufferGeometry, pos: THREE.Vector3, rot: number, c: THREE.Color) {

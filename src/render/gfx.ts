@@ -50,7 +50,18 @@ export function box(w: number, h: number, d: number, color: number, x = 0, y = 0
   return m;
 }
 
+/** 0 by day, 1 at night. Baked vertices with a `glow` value (headlights, lamps) light up as it rises. */
+export const nightUniform = { value: 0 };
 const bakedMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+bakedMat.onBeforeCompile = (sh) => {
+  sh.uniforms.uNight = nightUniform;
+  sh.vertexShader = sh.vertexShader
+    .replace('#include <common>', '#include <common>\nattribute float glow;\nvarying float vGlow;')
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvGlow = glow;');
+  sh.fragmentShader = sh.fragmentShader
+    .replace('#include <common>', '#include <common>\nuniform float uNight;\nvarying float vGlow;')
+    .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += diffuseColor.rgb * vGlow * uNight * 1.6;');
+};
 
 /**
  * Merge every plain-coloured mesh under `root` into one vertex-coloured mesh, so it costs one draw call
@@ -75,7 +86,11 @@ export function bake(root: THREE.Object3D): THREE.Mesh | null {
       for (let i = 0; i < n; i++) { col[i * 3] = material.color.r; col[i * 3 + 1] = material.color.g; col[i * 3 + 2] = material.color.b; }
       g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     }
-    for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal' && k !== 'color') g.deleteAttribute(k);
+    if (!g.attributes.glow) {
+      const glow = Number(m.userData.glow ?? 0);
+      g.setAttribute('glow', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(glow), 1));
+    }
+    for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'color', 'glow'].includes(k)) g.deleteAttribute(k);
     geos.push(g);
     doomed.push(m);
   });
@@ -122,18 +137,6 @@ export function sign(text: string, w: number, h: number, bg = '#1f5f3a', fg = '#
   tex.colorSpace = THREE.SRGBColorSpace;
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex }));
   return m;
-}
-
-/** Dusk lighting and sky shared by outdoor scenes. */
-export function duskScene(): THREE.Scene {
-  const s = new THREE.Scene();
-  s.background = new THREE.Color(C.sky);
-  s.fog = new THREE.Fog(C.sky, 40, 110);
-  s.add(new THREE.HemisphereLight(0xffe2c4, 0x40304a, 1.6));
-  const sun = new THREE.DirectionalLight(0xffc48a, 1.4);
-  sun.position.set(-20, 30, 10);
-  s.add(sun);
-  return s;
 }
 
 /** Fit the renderer to the window. Side views pass a wider portrait FOV so the scene fits a phone. */

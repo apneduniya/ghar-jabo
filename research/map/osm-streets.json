@@ -1,0 +1,4181 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-11-08T21:59:47Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 1742495415,
+  "lat": 22.5796113,
+  "lon": 88.4257949,
+  "tags": {
+    "addr:housename": "EE Block, Salt Lake City Kolkata, West Bengal 700091‎",
+    "amenity": "fuel",
+    "brand": "Bharat Petroleum",
+    "brand:wikidata": "Q854826",
+    "name": "Bharat Petroleum",
+    "operator": "HP"
+  }
+},
+{
+  "type": "node",
+  "id": 2148899078,
+  "lat": 22.5720532,
+  "lon": 88.4324131,
+  "tags": {
+    "bench": "no",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Webel More",
+    "public_transport": "platform",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2460710965,
+  "lat": 22.5739686,
+  "lon": 88.4334130,
+  "tags": {
+    "bench": "no",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "First Gate",
+    "public_transport": "platform",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2460737275,
+  "lat": 22.5822352,
+  "lon": 88.4242073,
+  "tags": {
+    "alt_name": "10 No Tank Bus Stop",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Saltlake EE Block Bus Stop",
+    "public_transport": "platform"
+  }
+},
+{
+  "type": "node",
+  "id": 2460737276,
+  "lat": 22.5790355,
+  "lon": 88.4261200,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Japani Gate Salt Lake Mini Bus Terminus",
+    "public_transport": "platform",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2460737277,
+  "lat": 22.5789982,
+  "lon": 88.4266991,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Wipro",
+    "public_transport": "platform",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2460737278,
+  "lat": 22.5789289,
+  "lon": 88.4263316,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "201 Nimta PO - Nicco Park Bus Terminus",
+    "public_transport": "platform",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2461180954,
+  "lat": 22.5700203,
+  "lon": 88.4313691,
+  "tags": {
+    "bench": "no",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Infinity Crossing",
+    "public_transport": "platform",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2461308629,
+  "lat": 22.5765416,
+  "lon": 88.4303820,
+  "tags": {
+    "amenity": "fuel",
+    "brand": "Hindustan Petroleum",
+    "brand:wikidata": "Q1619375",
+    "name": "HP Petrol Pump",
+    "official_name": "Hindustan Petroleum",
+    "short_name": "HP"
+  }
+},
+{
+  "type": "node",
+  "id": 5044212198,
+  "lat": 22.5768631,
+  "lon": 88.4349264,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "RS Software",
+    "public_transport": "platform",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5044212199,
+  "lat": 22.5749254,
+  "lon": 88.4339039,
+  "tags": {
+    "bench": "no",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "lit": "yes",
+    "name": "College More",
+    "public_transport": "platform",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5777572424,
+  "lat": 22.5809412,
+  "lon": 88.4290204,
+  "tags": {
+    "name": "Salt Lake Sector V",
+    "name:bn": "সল্টলেক সেক্টর V",
+    "name:hi": "सॉल्ट लेक सेक्टर ५",
+    "network": "Kolkata Metro",
+    "public_transport": "stop_position",
+    "railway": "stop",
+    "ref": "1",
+    "subway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7628479190,
+  "lat": 22.5808950,
+  "lon": 88.4290467,
+  "tags": {
+    "name": "Salt Lake Sector V",
+    "name:bn": "সল্টলেক সেক্টর V",
+    "name:hi": "सॉल्ट लेक सेक्टर ५",
+    "network": "Kolkata Metro",
+    "public_transport": "stop_position",
+    "railway": "stop",
+    "ref": "1",
+    "subway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7976140073,
+  "lat": 22.5809434,
+  "lon": 88.4290872,
+  "tags": {
+    "name": "Salt Lake Sector V",
+    "name:bn": "সল্টলেক সেক্টর V",
+    "name:hi": "सॉल्ट लेक सेक्टर ५",
+    "network": "Kolkata Metro",
+    "network:wikidata": "Q1048849",
+    "operator": "Kolkata Metro Rail Corporation Limited (KMRCL)",
+    "public_transport": "station",
+    "railway": "station",
+    "ref": "SVSA",
+    "station": "subway",
+    "subway": "yes",
+    "wheelchair": "limited",
+    "wikidata": "Q55632405",
+    "wikipedia": "en:Salt Lake Sector-V metro station"
+  }
+},
+{
+  "type": "node",
+  "id": 10860783265,
+  "lat": 22.5706379,
+  "lon": 88.4264080,
+  "tags": {
+    "alt_name": "Maschya Bhawan",
+    "bench": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Swasthya Bhawan",
+    "public_transport": "platform",
+    "shelter": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12076417080,
+  "lat": 22.5789078,
+  "lon": 88.4265338,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Wipro",
+    "public_transport": "platform"
+  }
+},
+{
+  "type": "node",
+  "id": 12076417081,
+  "lat": 22.5747609,
+  "lon": 88.4337519,
+  "tags": {
+    "bench": "yes",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "junction": "yes",
+    "lit": "yes",
+    "name": "College More",
+    "public_transport": "platform",
+    "shelter": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12076417082,
+  "lat": 22.5718888,
+  "lon": 88.4321424,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Webel More",
+    "public_transport": "platform"
+  }
+},
+{
+  "type": "node",
+  "id": 12076417084,
+  "lat": 22.5708420,
+  "lon": 88.4263856,
+  "tags": {
+    "alt_name": "Maschya Bhawan",
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Swasthya Bhawan",
+    "public_transport": "platform"
+  }
+},
+{
+  "type": "node",
+  "id": 12076417085,
+  "lat": 22.5768271,
+  "lon": 88.4293465,
+  "tags": {
+    "name": "Techno India",
+    "public_transport": "platform"
+  }
+},
+{
+  "type": "node",
+  "id": 12206764162,
+  "lat": 22.5819947,
+  "lon": 88.4243526,
+  "tags": {
+    "bench": "yes",
+    "bin": "no",
+    "bus": "yes",
+    "covered": "yes",
+    "departures_board": "no",
+    "highway": "bus_stop",
+    "lit": "yes",
+    "name": "Matri Sadan Bus Stop",
+    "public_transport": "platform",
+    "shelter": "yes",
+    "sign": "yes",
+    "tactile_paving": "no",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677012,
+  "lat": 22.5736106,
+  "lon": 88.4362787,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677013,
+  "lat": 22.5742339,
+  "lon": 88.4349564,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677016,
+  "lat": 22.5739718,
+  "lon": 88.4355012,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677017,
+  "lat": 22.5743340,
+  "lon": 88.4347091,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677018,
+  "lat": 22.5737505,
+  "lon": 88.4359830,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677019,
+  "lat": 22.5734121,
+  "lon": 88.4367106,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677021,
+  "lat": 22.5740780,
+  "lon": 88.4352565,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677022,
+  "lat": 22.5735139,
+  "lon": 88.4364842,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677023,
+  "lat": 22.5733262,
+  "lon": 88.4369484,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208677024,
+  "lat": 22.5738630,
+  "lon": 88.4357637,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "electric"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691802,
+  "lat": 22.5740818,
+  "lon": 88.4352744,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691804,
+  "lat": 22.5737495,
+  "lon": 88.4359838,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691805,
+  "lat": 22.5738695,
+  "lon": 88.4357318,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691806,
+  "lat": 22.5735846,
+  "lon": 88.4363373,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691808,
+  "lat": 22.5742024,
+  "lon": 88.4348379,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "fluorescent"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691809,
+  "lat": 22.5732402,
+  "lon": 88.4370887,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691811,
+  "lat": 22.5740027,
+  "lon": 88.4354535,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691812,
+  "lat": 22.5743378,
+  "lon": 88.4347144,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "bent_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691813,
+  "lat": 22.5742386,
+  "lon": 88.4349193,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "bent_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691815,
+  "lat": 22.5735247,
+  "lon": 88.4364590,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691816,
+  "lat": 22.5734073,
+  "lon": 88.4367409,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691817,
+  "lat": 22.5744831,
+  "lon": 88.4343800,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "bent_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208691820,
+  "lat": 22.5733418,
+  "lon": 88.4368732,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208701176,
+  "lat": 22.5732241,
+  "lon": 88.4369330,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208701180,
+  "lat": 22.5733302,
+  "lon": 88.4367012,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208701181,
+  "lat": 22.5733089,
+  "lon": 88.4367565,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208701182,
+  "lat": 22.5736229,
+  "lon": 88.4360292,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208701184,
+  "lat": 22.5734459,
+  "lon": 88.4364506,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208701197,
+  "lat": 22.5740372,
+  "lon": 88.4351761,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705402,
+  "lat": 22.5739958,
+  "lon": 88.4352639,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705403,
+  "lat": 22.5745431,
+  "lon": 88.4340985,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705405,
+  "lat": 22.5740857,
+  "lon": 88.4350714,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705406,
+  "lat": 22.5737614,
+  "lon": 88.4357388,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705407,
+  "lat": 22.5735489,
+  "lon": 88.4362118,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705409,
+  "lat": 22.5739447,
+  "lon": 88.4353856,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705411,
+  "lat": 22.5742040,
+  "lon": 88.4348213,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705417,
+  "lat": 22.5732745,
+  "lon": 88.4368380,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705418,
+  "lat": 22.5737946,
+  "lon": 88.4356552,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705421,
+  "lat": 22.5735780,
+  "lon": 88.4361404,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705426,
+  "lat": 22.5734918,
+  "lon": 88.4363607,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705428,
+  "lat": 22.5731852,
+  "lon": 88.4370172,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 12208705429,
+  "lat": 22.5736952,
+  "lon": 88.4358786,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "pole",
+    "lamp_type": "led"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904176,
+  "lat": 22.5773255,
+  "lon": 88.4332689,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904177,
+  "lat": 22.5772962,
+  "lon": 88.4333228,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904178,
+  "lat": 22.5774329,
+  "lon": 88.4330258,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904179,
+  "lat": 22.5774039,
+  "lon": 88.4330845,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904180,
+  "lat": 22.5775530,
+  "lon": 88.4327533,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904181,
+  "lat": 22.5776069,
+  "lon": 88.4326324,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904182,
+  "lat": 22.5776732,
+  "lon": 88.4324678,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904183,
+  "lat": 22.5777322,
+  "lon": 88.4323409,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904184,
+  "lat": 22.5777970,
+  "lon": 88.4321981,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904185,
+  "lat": 22.5778923,
+  "lon": 88.4319871,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904186,
+  "lat": 22.5779421,
+  "lon": 88.4318872,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904187,
+  "lat": 22.5779865,
+  "lon": 88.4317865,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904188,
+  "lat": 22.5780297,
+  "lon": 88.4316909,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904189,
+  "lat": 22.5781220,
+  "lon": 88.4314882,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904190,
+  "lat": 22.5781630,
+  "lon": 88.4314109,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904191,
+  "lat": 22.5782224,
+  "lon": 88.4312729,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904192,
+  "lat": 22.5782524,
+  "lon": 88.4311972,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904193,
+  "lat": 22.5782891,
+  "lon": 88.4311059,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904194,
+  "lat": 22.5783235,
+  "lon": 88.4310215,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904195,
+  "lat": 22.5783818,
+  "lon": 88.4309057,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904196,
+  "lat": 22.5784239,
+  "lon": 88.4308026,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904197,
+  "lat": 22.5785129,
+  "lon": 88.4306344,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904198,
+  "lat": 22.5785444,
+  "lon": 88.4305456,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904199,
+  "lat": 22.5786016,
+  "lon": 88.4304123,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574904200,
+  "lat": 22.5786591,
+  "lon": 88.4302981,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934172,
+  "lat": 22.5792039,
+  "lon": 88.4295026,
+  "tags": {
+    "direction": "215",
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934173,
+  "lat": 22.5792039,
+  "lon": 88.4295026,
+  "tags": {
+    "direction": "38",
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934174,
+  "lat": 22.5790936,
+  "lon": 88.4296703,
+  "tags": {
+    "direction": "212",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934175,
+  "lat": 22.5790936,
+  "lon": 88.4296703,
+  "tags": {
+    "direction": "35",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934176,
+  "lat": 22.5789779,
+  "lon": 88.4298658,
+  "tags": {
+    "direction": "211",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934177,
+  "lat": 22.5789779,
+  "lon": 88.4298658,
+  "tags": {
+    "direction": "34",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934178,
+  "lat": 22.5788679,
+  "lon": 88.4300736,
+  "tags": {
+    "direction": "204",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934179,
+  "lat": 22.5788679,
+  "lon": 88.4300736,
+  "tags": {
+    "direction": "27",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934180,
+  "lat": 22.5787793,
+  "lon": 88.4302580,
+  "tags": {
+    "direction": "206",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934181,
+  "lat": 22.5787793,
+  "lon": 88.4302580,
+  "tags": {
+    "direction": "23",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934182,
+  "lat": 22.5786470,
+  "lon": 88.4305357,
+  "tags": {
+    "direction": "205",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934183,
+  "lat": 22.5786470,
+  "lon": 88.4305357,
+  "tags": {
+    "direction": "27",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934184,
+  "lat": 22.5785650,
+  "lon": 88.4307220,
+  "tags": {
+    "direction": "206",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934185,
+  "lat": 22.5785650,
+  "lon": 88.4307220,
+  "tags": {
+    "direction": "29",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934186,
+  "lat": 22.5784635,
+  "lon": 88.4309497,
+  "tags": {
+    "direction": "205",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934187,
+  "lat": 22.5784635,
+  "lon": 88.4309497,
+  "tags": {
+    "direction": "27",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934188,
+  "lat": 22.5783642,
+  "lon": 88.4311666,
+  "tags": {
+    "direction": "206",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934189,
+  "lat": 22.5783642,
+  "lon": 88.4311666,
+  "tags": {
+    "direction": "24",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934190,
+  "lat": 22.5782513,
+  "lon": 88.4314113,
+  "tags": {
+    "direction": "206",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934191,
+  "lat": 22.5782513,
+  "lon": 88.4314113,
+  "tags": {
+    "direction": "26",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934192,
+  "lat": 22.5781660,
+  "lon": 88.4316076,
+  "tags": {
+    "direction": "204",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934193,
+  "lat": 22.5781660,
+  "lon": 88.4316076,
+  "tags": {
+    "direction": "28",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934194,
+  "lat": 22.5780656,
+  "lon": 88.4318404,
+  "tags": {
+    "direction": "203",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934195,
+  "lat": 22.5780656,
+  "lon": 88.4318404,
+  "tags": {
+    "direction": "26",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934196,
+  "lat": 22.5779656,
+  "lon": 88.4320609,
+  "tags": {
+    "direction": "203",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934197,
+  "lat": 22.5779656,
+  "lon": 88.4320609,
+  "tags": {
+    "direction": "27",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934198,
+  "lat": 22.5778630,
+  "lon": 88.4322691,
+  "tags": {
+    "direction": "206",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934199,
+  "lat": 22.5778630,
+  "lon": 88.4322691,
+  "tags": {
+    "direction": "29",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574934200,
+  "lat": 22.5777710,
+  "lon": 88.4324916,
+  "tags": {
+    "direction": "205",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574937701,
+  "lat": 22.5777710,
+  "lon": 88.4324916,
+  "tags": {
+    "direction": "26",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574937702,
+  "lat": 22.5776681,
+  "lon": 88.4327101,
+  "tags": {
+    "direction": "205",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574937703,
+  "lat": 22.5776681,
+  "lon": 88.4327101,
+  "tags": {
+    "direction": "26",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574940055,
+  "lat": 22.5775688,
+  "lon": 88.4329215,
+  "tags": {
+    "direction": "205",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574940056,
+  "lat": 22.5775688,
+  "lon": 88.4329215,
+  "tags": {
+    "direction": "26",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574940057,
+  "lat": 22.5775017,
+  "lon": 88.4330900,
+  "tags": {
+    "direction": "207",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574940058,
+  "lat": 22.5775017,
+  "lon": 88.4330900,
+  "tags": {
+    "direction": "27",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574940059,
+  "lat": 22.5774200,
+  "lon": 88.4332764,
+  "tags": {
+    "direction": "205",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574940060,
+  "lat": 22.5774200,
+  "lon": 88.4332764,
+  "tags": {
+    "direction": "26",
+    "highway": "street_lamp",
+    "lamp_mount": "angled_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574947501,
+  "lat": 22.5787254,
+  "lon": 88.4301613,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574947502,
+  "lat": 22.5787906,
+  "lon": 88.4300245,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13574947503,
+  "lat": 22.5788650,
+  "lon": 88.4298908,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578481026,
+  "lat": 22.5799389,
+  "lon": 88.4286221,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578481027,
+  "lat": 22.5798330,
+  "lon": 88.4286989,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578481029,
+  "lat": 22.5800138,
+  "lon": 88.4285579,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489966,
+  "lat": 22.5789169,
+  "lon": 88.4297907,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489967,
+  "lat": 22.5789960,
+  "lon": 88.4296516,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489968,
+  "lat": 22.5790771,
+  "lon": 88.4295413,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489969,
+  "lat": 22.5791435,
+  "lon": 88.4294413,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489970,
+  "lat": 22.5792442,
+  "lon": 88.4293097,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489971,
+  "lat": 22.5793467,
+  "lon": 88.4291802,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489972,
+  "lat": 22.5794366,
+  "lon": 88.4290685,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489973,
+  "lat": 22.5795392,
+  "lon": 88.4289561,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489974,
+  "lat": 22.5796588,
+  "lon": 88.4288403,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13578489975,
+  "lat": 22.5797538,
+  "lon": 88.4287643,
+  "tags": {
+    "highway": "street_lamp",
+    "lamp_mount": "straight_mast",
+    "lamp_type": "LED",
+    "support": "pole"
+  }
+},
+{
+  "type": "node",
+  "id": 13875696026,
+  "lat": 22.5805792,
+  "lon": 88.4286596,
+  "tags": {
+    "name": "Salt Lake Sector V Gate A",
+    "railway": "subway_entrance",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 13875696027,
+  "lat": 22.5812260,
+  "lon": 88.4290159,
+  "tags": {
+    "name": "Salt Lake Sector V Gate B",
+    "railway": "subway_entrance",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 14315142697,
+  "lat": 22.5745755,
+  "lon": 88.4217105,
+  "tags": {
+    "bus": "yes",
+    "name": "Nicco Park",
+    "public_transport": "platform"
+  }
+},
+{
+  "type": "way",
+  "id": 153759675,
+  "bounds": {
+    "minlat": 22.5772165,
+    "minlon": 88.4233922,
+    "maxlat": 22.5774083,
+    "maxlon": 88.4236242
+  },
+  "geometry": [
+    { "lat": 22.5774083, "lon": 88.4236242 },
+    { "lat": 22.5773827, "lon": 88.4235962 },
+    { "lat": 22.5772165, "lon": 88.4233922 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "2",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 153759679,
+  "bounds": {
+    "minlat": 22.5774083,
+    "minlon": 88.4236242,
+    "maxlat": 22.5806677,
+    "maxlon": 88.4290734
+  },
+  "geometry": [
+    { "lat": 22.5806677, "lon": 88.4290734 },
+    { "lat": 22.5800199, "lon": 88.4280738 },
+    { "lat": 22.5793389, "lon": 88.4269092 },
+    { "lat": 22.5786017, "lon": 88.4256618 },
+    { "lat": 22.5774083, "lon": 88.4236242 }
+  ],
+  "tags": {
+    "bridge": "viaduct",
+    "highway": "primary",
+    "lanes": "2",
+    "layer": "1",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 153759683,
+  "bounds": {
+    "minlat": 22.5774763,
+    "minlon": 88.4235798,
+    "maxlat": 22.5807311,
+    "maxlon": 88.4290454
+  },
+  "geometry": [
+    { "lat": 22.5774763, "lon": 88.4235798 },
+    { "lat": 22.5786760, "lon": 88.4256353 },
+    { "lat": 22.5794131, "lon": 88.4268826 },
+    { "lat": 22.5800943, "lon": 88.4280474 },
+    { "lat": 22.5807311, "lon": 88.4290454 }
+  ],
+  "tags": {
+    "bridge": "viaduct",
+    "highway": "primary",
+    "lanes": "2",
+    "layer": "1",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 153802895,
+  "bounds": {
+    "minlat": 22.5745497,
+    "minlon": 88.4217314,
+    "maxlat": 22.5773858,
+    "maxlon": 88.4233811
+  },
+  "geometry": [
+    { "lat": 22.5745497, "lon": 88.4217314 },
+    { "lat": 22.5746977, "lon": 88.4218078 },
+    { "lat": 22.5750226, "lon": 88.4219813 },
+    { "lat": 22.5752131, "lon": 88.4220769 },
+    { "lat": 22.5756870, "lon": 88.4223283 },
+    { "lat": 22.5761217, "lon": 88.4225564 },
+    { "lat": 22.5762529, "lon": 88.4226271 },
+    { "lat": 22.5767804, "lon": 88.4228925 },
+    { "lat": 22.5768824, "lon": 88.4229459 },
+    { "lat": 22.5769395, "lon": 88.4229774 },
+    { "lat": 22.5769922, "lon": 88.4230114 },
+    { "lat": 22.5770483, "lon": 88.4230489 },
+    { "lat": 22.5771099, "lon": 88.4230960 },
+    { "lat": 22.5771705, "lon": 88.4231470 },
+    { "lat": 22.5772388, "lon": 88.4232135 },
+    { "lat": 22.5773095, "lon": 88.4232827 },
+    { "lat": 22.5773858, "lon": 88.4233811 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "3",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 153802905,
+  "bounds": {
+    "minlat": 22.5709305,
+    "minlon": 88.4227555,
+    "maxlat": 22.5724431,
+    "maxlon": 88.4260768
+  },
+  "geometry": [
+    { "lat": 22.5724431, "lon": 88.4227555 },
+    { "lat": 22.5723579, "lon": 88.4229445 },
+    { "lat": 22.5719030, "lon": 88.4239435 },
+    { "lat": 22.5715431, "lon": 88.4247266 },
+    { "lat": 22.5713865, "lon": 88.4250673 },
+    { "lat": 22.5710364, "lon": 88.4258411 },
+    { "lat": 22.5710257, "lon": 88.4258648 },
+    { "lat": 22.5709305, "lon": 88.4260768 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 153802908,
+  "bounds": {
+    "minlat": 22.5708661,
+    "minlon": 88.4259350,
+    "maxlat": 22.5708865,
+    "maxlon": 88.4259802
+  },
+  "geometry": [
+    { "lat": 22.5708661, "lon": 88.4259802 },
+    { "lat": 22.5708865, "lon": 88.4259350 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 153805231,
+  "bounds": {
+    "minlat": 22.5793486,
+    "minlon": 88.4261480,
+    "maxlat": 22.5796994,
+    "maxlon": 88.4263901
+  },
+  "geometry": [
+    { "lat": 22.5796994, "lon": 88.4261480 },
+    { "lat": 22.5793486, "lon": 88.4263901 }
+  ],
+  "tags": {
+    "bridge": "yes",
+    "highway": "secondary",
+    "lanes": "2",
+    "layer": "1",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 153805232,
+  "bounds": {
+    "minlat": 22.5792913,
+    "minlon": 88.4260805,
+    "maxlat": 22.5796308,
+    "maxlon": 88.4262973
+  },
+  "geometry": [
+    { "lat": 22.5792913, "lon": 88.4262973 },
+    { "lat": 22.5796308, "lon": 88.4260805 }
+  ],
+  "tags": {
+    "bridge": "yes",
+    "highway": "secondary",
+    "lanes": "2",
+    "layer": "1",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 153805233,
+  "bounds": {
+    "minlat": 22.5767937,
+    "minlon": 88.4272315,
+    "maxlat": 22.5779842,
+    "maxlon": 88.4291348
+  },
+  "geometry": [
+    { "lat": 22.5767937, "lon": 88.4291348 },
+    { "lat": 22.5768150, "lon": 88.4290870 },
+    { "lat": 22.5770261, "lon": 88.4286188 },
+    { "lat": 22.5770951, "lon": 88.4284658 },
+    { "lat": 22.5771906, "lon": 88.4282712 },
+    { "lat": 22.5772317, "lon": 88.4281830 },
+    { "lat": 22.5774188, "lon": 88.4278749 },
+    { "lat": 22.5775975, "lon": 88.4276240 },
+    { "lat": 22.5776440, "lon": 88.4275897 },
+    { "lat": 22.5776786, "lon": 88.4275503 },
+    { "lat": 22.5777327, "lon": 88.4274886 },
+    { "lat": 22.5779611, "lon": 88.4272536 },
+    { "lat": 22.5779842, "lon": 88.4272315 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 153805234,
+  "bounds": {
+    "minlat": 22.5792648,
+    "minlon": 88.4263901,
+    "maxlat": 22.5793486,
+    "maxlon": 88.4264520
+  },
+  "geometry": [
+    { "lat": 22.5793486, "lon": 88.4263901 },
+    { "lat": 22.5792648, "lon": 88.4264520 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 156160399,
+  "bounds": {
+    "minlat": 22.5824883,
+    "minlon": 88.4243838,
+    "maxlat": 22.5832564,
+    "maxlon": 88.4256557
+  },
+  "geometry": [
+    { "lat": 22.5832564, "lon": 88.4256557 },
+    { "lat": 22.5832265, "lon": 88.4256080 },
+    { "lat": 22.5830110, "lon": 88.4252342 },
+    { "lat": 22.5827879, "lon": 88.4248565 },
+    { "lat": 22.5827663, "lon": 88.4248200 },
+    { "lat": 22.5824883, "lon": 88.4243838 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 156168877,
+  "bounds": {
+    "minlat": 22.5828902,
+    "minlon": 88.4333495,
+    "maxlat": 22.5835188,
+    "maxlon": 88.4334584
+  },
+  "geometry": [
+    { "lat": 22.5835188, "lon": 88.4334099 },
+    { "lat": 22.5834377, "lon": 88.4334478 },
+    { "lat": 22.5833894, "lon": 88.4334584 },
+    { "lat": 22.5832965, "lon": 88.4334302 },
+    { "lat": 22.5831789, "lon": 88.4333672 },
+    { "lat": 22.5830675, "lon": 88.4333511 },
+    { "lat": 22.5830371, "lon": 88.4333495 },
+    { "lat": 22.5829634, "lon": 88.4333618 },
+    { "lat": 22.5828902, "lon": 88.4333706 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 156168882,
+  "bounds": {
+    "minlat": 22.5831183,
+    "minlon": 88.4329468,
+    "maxlat": 22.5834664,
+    "maxlon": 88.4333404
+  },
+  "geometry": [
+    { "lat": 22.5831183, "lon": 88.4329468 },
+    { "lat": 22.5832017, "lon": 88.4331037 },
+    { "lat": 22.5832483, "lon": 88.4331894 },
+    { "lat": 22.5832848, "lon": 88.4332664 },
+    { "lat": 22.5833372, "lon": 88.4333314 },
+    { "lat": 22.5834191, "lon": 88.4333404 },
+    { "lat": 22.5834664, "lon": 88.4333281 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 156340790,
+  "bounds": {
+    "minlat": 22.5776990,
+    "minlon": 88.4209168,
+    "maxlat": 22.5804646,
+    "maxlon": 88.4228346
+  },
+  "geometry": [
+    { "lat": 22.5804646, "lon": 88.4209168 },
+    { "lat": 22.5804440, "lon": 88.4209376 },
+    { "lat": 22.5791372, "lon": 88.4218402 },
+    { "lat": 22.5787924, "lon": 88.4220759 },
+    { "lat": 22.5777711, "lon": 88.4227839 },
+    { "lat": 22.5776990, "lon": 88.4228346 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "lanes": "2",
+    "name": "4th Avenue",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 156340792,
+  "bounds": {
+    "minlat": 22.5776019,
+    "minlon": 88.4216963,
+    "maxlat": 22.5791202,
+    "maxlon": 88.4227407
+  },
+  "geometry": [
+    { "lat": 22.5776019, "lon": 88.4227407 },
+    { "lat": 22.5777059, "lon": 88.4226732 },
+    { "lat": 22.5782819, "lon": 88.4222754 },
+    { "lat": 22.5787371, "lon": 88.4219800 },
+    { "lat": 22.5791202, "lon": 88.4216963 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "lanes": "2",
+    "name": "4th Avenue",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 156341862,
+  "bounds": {
+    "minlat": 22.5791202,
+    "minlon": 88.4207994,
+    "maxlat": 22.5804101,
+    "maxlon": 88.4216963
+  },
+  "geometry": [
+    { "lat": 22.5791202, "lon": 88.4216963 },
+    { "lat": 22.5803788, "lon": 88.4208269 },
+    { "lat": 22.5804101, "lon": 88.4207994 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "lanes": "2",
+    "name": "4th Avenue",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 157926086,
+  "bounds": {
+    "minlat": 22.5791114,
+    "minlon": 88.4286123,
+    "maxlat": 22.5810467,
+    "maxlon": 88.4305575
+  },
+  "geometry": [
+    { "lat": 22.5804432, "lon": 88.4289872 },
+    { "lat": 22.5810467, "lon": 88.4299973 },
+    { "lat": 22.5805920, "lon": 88.4303812 },
+    { "lat": 22.5804467, "lon": 88.4305575 },
+    { "lat": 22.5798355, "lon": 88.4301987 },
+    { "lat": 22.5791114, "lon": 88.4297737 },
+    { "lat": 22.5793264, "lon": 88.4294670 },
+    { "lat": 22.5796636, "lon": 88.4290761 },
+    { "lat": 22.5802295, "lon": 88.4286123 },
+    { "lat": 22.5804432, "lon": 88.4289872 }
+  ],
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Salt Lake Bus Depot",
+    "operator": "West Bengal State Transport Corporation",
+    "public_transport": "station",
+    "wikidata": "Q7984450",
+    "wikipedia": "en:West Bengal Transport Corporation"
+  }
+},
+{
+  "type": "way",
+  "id": 158014387,
+  "bounds": {
+    "minlat": 22.5782137,
+    "minlon": 88.4355164,
+    "maxlat": 22.5809337,
+    "maxlon": 88.4369371
+  },
+  "geometry": [
+    { "lat": 22.5782137, "lon": 88.4355164 },
+    { "lat": 22.5785035, "lon": 88.4356689 },
+    { "lat": 22.5785809, "lon": 88.4357096 },
+    { "lat": 22.5788638, "lon": 88.4358577 },
+    { "lat": 22.5789994, "lon": 88.4359251 },
+    { "lat": 22.5790304, "lon": 88.4359414 },
+    { "lat": 22.5790994, "lon": 88.4359770 },
+    { "lat": 22.5792643, "lon": 88.4360622 },
+    { "lat": 22.5797773, "lon": 88.4363273 },
+    { "lat": 22.5799583, "lon": 88.4364191 },
+    { "lat": 22.5807062, "lon": 88.4368181 },
+    { "lat": 22.5809337, "lon": 88.4369371 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 158014389,
+  "bounds": {
+    "minlat": 22.5766642,
+    "minlon": 88.4348223,
+    "maxlat": 22.5808914,
+    "maxlon": 88.4370337
+  },
+  "geometry": [
+    { "lat": 22.5766642, "lon": 88.4348223 },
+    { "lat": 22.5767535, "lon": 88.4348690 },
+    { "lat": 22.5775168, "lon": 88.4352686 },
+    { "lat": 22.5780822, "lon": 88.4355617 },
+    { "lat": 22.5781736, "lon": 88.4356082 },
+    { "lat": 22.5785381, "lon": 88.4358060 },
+    { "lat": 22.5790569, "lon": 88.4360736 },
+    { "lat": 22.5790726, "lon": 88.4360817 },
+    { "lat": 22.5799168, "lon": 88.4365443 },
+    { "lat": 22.5801384, "lon": 88.4366508 },
+    { "lat": 22.5804248, "lon": 88.4367885 },
+    { "lat": 22.5804371, "lon": 88.4367950 },
+    { "lat": 22.5806486, "lon": 88.4369061 },
+    { "lat": 22.5808914, "lon": 88.4370337 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 158014390,
+  "bounds": {
+    "minlat": 22.5688368,
+    "minlon": 88.4306946,
+    "maxlat": 22.5746997,
+    "maxlon": 88.4337789
+  },
+  "geometry": [
+    { "lat": 22.5688368, "lon": 88.4306946 },
+    { "lat": 22.5688893, "lon": 88.4307199 },
+    { "lat": 22.5693260, "lon": 88.4309480 },
+    { "lat": 22.5695332, "lon": 88.4310562 },
+    { "lat": 22.5699501, "lon": 88.4312757 },
+    { "lat": 22.5700044, "lon": 88.4313023 },
+    { "lat": 22.5704432, "lon": 88.4315315 },
+    { "lat": 22.5705313, "lon": 88.4315775 },
+    { "lat": 22.5709524, "lon": 88.4318032 },
+    { "lat": 22.5711513, "lon": 88.4319085 },
+    { "lat": 22.5719085, "lon": 88.4323106 },
+    { "lat": 22.5719939, "lon": 88.4323614 },
+    { "lat": 22.5722968, "lon": 88.4325191 },
+    { "lat": 22.5725175, "lon": 88.4326340 },
+    { "lat": 22.5728922, "lon": 88.4328360 },
+    { "lat": 22.5733005, "lon": 88.4330553 },
+    { "lat": 22.5735538, "lon": 88.4331892 },
+    { "lat": 22.5739511, "lon": 88.4333829 },
+    { "lat": 22.5746167, "lon": 88.4337345 },
+    { "lat": 22.5746997, "lon": 88.4337789 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 158014391,
+  "bounds": {
+    "minlat": 22.5688790,
+    "minlon": 88.4282158,
+    "maxlat": 22.5699701,
+    "maxlon": 88.4305997
+  },
+  "geometry": [
+    { "lat": 22.5699701, "lon": 88.4282158 },
+    { "lat": 22.5698271, "lon": 88.4285312 },
+    { "lat": 22.5698149, "lon": 88.4285582 },
+    { "lat": 22.5696964, "lon": 88.4288051 },
+    { "lat": 22.5695968, "lon": 88.4290125 },
+    { "lat": 22.5695167, "lon": 88.4291851 },
+    { "lat": 22.5693769, "lon": 88.4294863 },
+    { "lat": 22.5693700, "lon": 88.4295013 },
+    { "lat": 22.5693046, "lon": 88.4296474 },
+    { "lat": 22.5691580, "lon": 88.4299721 },
+    { "lat": 22.5689830, "lon": 88.4303657 },
+    { "lat": 22.5688790, "lon": 88.4305997 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 158014392,
+  "bounds": {
+    "minlat": 22.5688790,
+    "minlon": 88.4305997,
+    "maxlat": 22.5747373,
+    "maxlon": 88.4336906
+  },
+  "geometry": [
+    { "lat": 22.5688790, "lon": 88.4305997 },
+    { "lat": 22.5689322, "lon": 88.4306235 },
+    { "lat": 22.5697364, "lon": 88.4310458 },
+    { "lat": 22.5700447, "lon": 88.4312077 },
+    { "lat": 22.5701064, "lon": 88.4312394 },
+    { "lat": 22.5703871, "lon": 88.4313834 },
+    { "lat": 22.5705746, "lon": 88.4314813 },
+    { "lat": 22.5710113, "lon": 88.4317144 },
+    { "lat": 22.5711948, "lon": 88.4318124 },
+    { "lat": 22.5719581, "lon": 88.4322173 },
+    { "lat": 22.5720184, "lon": 88.4322498 },
+    { "lat": 22.5720423, "lon": 88.4322625 },
+    { "lat": 22.5725468, "lon": 88.4325431 },
+    { "lat": 22.5727392, "lon": 88.4326402 },
+    { "lat": 22.5733371, "lon": 88.4329752 },
+    { "lat": 22.5737648, "lon": 88.4332094 },
+    { "lat": 22.5739723, "lon": 88.4333191 },
+    { "lat": 22.5740632, "lon": 88.4333615 },
+    { "lat": 22.5746550, "lon": 88.4336478 },
+    { "lat": 22.5747373, "lon": 88.4336906 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 158016217,
+  "bounds": {
+    "minlat": 22.5810171,
+    "minlon": 88.4347596,
+    "maxlat": 22.5819246,
+    "maxlon": 88.4367464
+  },
+  "geometry": [
+    { "lat": 22.5810171, "lon": 88.4367464 },
+    { "lat": 22.5811614, "lon": 88.4364306 },
+    { "lat": 22.5812157, "lon": 88.4363116 },
+    { "lat": 22.5814328, "lon": 88.4358364 },
+    { "lat": 22.5819246, "lon": 88.4347596 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "1",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 162339443,
+  "bounds": {
+    "minlat": 22.5583700,
+    "minlon": 88.4113116,
+    "maxlat": 22.5796608,
+    "maxlon": 88.4260620
+  },
+  "geometry": [
+    { "lat": 22.5584022, "lon": 88.4113116 },
+    { "lat": 22.5583815, "lon": 88.4113921 },
+    { "lat": 22.5583741, "lon": 88.4114403 },
+    { "lat": 22.5583700, "lon": 88.4115386 },
+    { "lat": 22.5583765, "lon": 88.4117123 },
+    { "lat": 22.5584043, "lon": 88.4119854 },
+    { "lat": 22.5584199, "lon": 88.4120992 },
+    { "lat": 22.5584308, "lon": 88.4121792 },
+    { "lat": 22.5584520, "lon": 88.4122928 },
+    { "lat": 22.5584783, "lon": 88.4124287 },
+    { "lat": 22.5585115, "lon": 88.4125400 },
+    { "lat": 22.5585405, "lon": 88.4126138 },
+    { "lat": 22.5585779, "lon": 88.4126782 },
+    { "lat": 22.5586081, "lon": 88.4127090 },
+    { "lat": 22.5586198, "lon": 88.4127209 },
+    { "lat": 22.5587034, "lon": 88.4127852 },
+    { "lat": 22.5587969, "lon": 88.4128433 },
+    { "lat": 22.5588730, "lon": 88.4128820 },
+    { "lat": 22.5603319, "lon": 88.4136516 },
+    { "lat": 22.5608477, "lon": 88.4139237 },
+    { "lat": 22.5610788, "lon": 88.4140456 },
+    { "lat": 22.5628049, "lon": 88.4149562 },
+    { "lat": 22.5635764, "lon": 88.4153632 },
+    { "lat": 22.5636059, "lon": 88.4153812 },
+    { "lat": 22.5636623, "lon": 88.4154157 },
+    { "lat": 22.5638088, "lon": 88.4154932 },
+    { "lat": 22.5642473, "lon": 88.4157280 },
+    { "lat": 22.5644951, "lon": 88.4158569 },
+    { "lat": 22.5649026, "lon": 88.4160670 },
+    { "lat": 22.5655889, "lon": 88.4164394 },
+    { "lat": 22.5658924, "lon": 88.4165937 },
+    { "lat": 22.5661236, "lon": 88.4167113 },
+    { "lat": 22.5662500, "lon": 88.4167770 },
+    { "lat": 22.5663529, "lon": 88.4168304 },
+    { "lat": 22.5668099, "lon": 88.4170679 },
+    { "lat": 22.5677054, "lon": 88.4175375 },
+    { "lat": 22.5680374, "lon": 88.4177160 },
+    { "lat": 22.5687290, "lon": 88.4180867 },
+    { "lat": 22.5691232, "lon": 88.4182914 },
+    { "lat": 22.5692231, "lon": 88.4183432 },
+    { "lat": 22.5695946, "lon": 88.4185361 },
+    { "lat": 22.5704591, "lon": 88.4189878 },
+    { "lat": 22.5710413, "lon": 88.4192921 },
+    { "lat": 22.5717037, "lon": 88.4196382 },
+    { "lat": 22.5718228, "lon": 88.4196998 },
+    { "lat": 22.5719147, "lon": 88.4197474 },
+    { "lat": 22.5724510, "lon": 88.4200250 },
+    { "lat": 22.5731558, "lon": 88.4203897 },
+    { "lat": 22.5732395, "lon": 88.4204343 },
+    { "lat": 22.5745285, "lon": 88.4211184 },
+    { "lat": 22.5746277, "lon": 88.4211744 },
+    { "lat": 22.5751899, "lon": 88.4214731 },
+    { "lat": 22.5758526, "lon": 88.4218209 },
+    { "lat": 22.5761247, "lon": 88.4219637 },
+    { "lat": 22.5765735, "lon": 88.4221901 },
+    { "lat": 22.5770946, "lon": 88.4224639 },
+    { "lat": 22.5772250, "lon": 88.4225327 },
+    { "lat": 22.5774011, "lon": 88.4226245 },
+    { "lat": 22.5775165, "lon": 88.4226847 },
+    { "lat": 22.5775364, "lon": 88.4226951 },
+    { "lat": 22.5775887, "lon": 88.4227298 },
+    { "lat": 22.5776019, "lon": 88.4227407 },
+    { "lat": 22.5776342, "lon": 88.4227675 },
+    { "lat": 22.5776990, "lon": 88.4228346 },
+    { "lat": 22.5777075, "lon": 88.4228434 },
+    { "lat": 22.5777718, "lon": 88.4229274 },
+    { "lat": 22.5779647, "lon": 88.4232528 },
+    { "lat": 22.5781835, "lon": 88.4236219 },
+    { "lat": 22.5786287, "lon": 88.4243963 },
+    { "lat": 22.5788827, "lon": 88.4248382 },
+    { "lat": 22.5794706, "lon": 88.4258082 },
+    { "lat": 22.5795054, "lon": 88.4258656 },
+    { "lat": 22.5795898, "lon": 88.4259722 },
+    { "lat": 22.5796608, "lon": 88.4260620 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "lanes": "2"
+  }
+},
+{
+  "type": "way",
+  "id": 162339448,
+  "bounds": {
+    "minlat": 22.5810889,
+    "minlon": 88.4124637,
+    "maxlat": 22.6026267,
+    "maxlon": 88.4349016
+  },
+  "geometry": [
+    { "lat": 22.6021930, "lon": 88.4124637 },
+    { "lat": 22.6023822, "lon": 88.4128050 },
+    { "lat": 22.6024344, "lon": 88.4129374 },
+    { "lat": 22.6024996, "lon": 88.4131034 },
+    { "lat": 22.6025436, "lon": 88.4132658 },
+    { "lat": 22.6025778, "lon": 88.4134123 },
+    { "lat": 22.6025925, "lon": 88.4135306 },
+    { "lat": 22.6026169, "lon": 88.4137053 },
+    { "lat": 22.6026251, "lon": 88.4138730 },
+    { "lat": 22.6026267, "lon": 88.4140372 },
+    { "lat": 22.6026234, "lon": 88.4142049 },
+    { "lat": 22.6025990, "lon": 88.4144104 },
+    { "lat": 22.6025811, "lon": 88.4145262 },
+    { "lat": 22.6025403, "lon": 88.4147857 },
+    { "lat": 22.6024882, "lon": 88.4151282 },
+    { "lat": 22.6023985, "lon": 88.4157354 },
+    { "lat": 22.6023236, "lon": 88.4162605 },
+    { "lat": 22.6023079, "lon": 88.4163399 },
+    { "lat": 22.6022898, "lon": 88.4164605 },
+    { "lat": 22.6022421, "lon": 88.4167787 },
+    { "lat": 22.6021786, "lon": 88.4172094 },
+    { "lat": 22.6021231, "lon": 88.4175855 },
+    { "lat": 22.6020318, "lon": 88.4181539 },
+    { "lat": 22.6019552, "lon": 88.4186517 },
+    { "lat": 22.6018607, "lon": 88.4192607 },
+    { "lat": 22.6017438, "lon": 88.4200087 },
+    { "lat": 22.6017071, "lon": 88.4202430 },
+    { "lat": 22.6016230, "lon": 88.4207812 },
+    { "lat": 22.6015397, "lon": 88.4213137 },
+    { "lat": 22.6015102, "lon": 88.4215972 },
+    { "lat": 22.6015022, "lon": 88.4216739 },
+    { "lat": 22.6014981, "lon": 88.4216991 },
+    { "lat": 22.6014654, "lon": 88.4219014 },
+    { "lat": 22.6014210, "lon": 88.4221876 },
+    { "lat": 22.6013917, "lon": 88.4223994 },
+    { "lat": 22.6013871, "lon": 88.4224284 },
+    { "lat": 22.6013575, "lon": 88.4226130 },
+    { "lat": 22.6013184, "lon": 88.4227878 },
+    { "lat": 22.6012698, "lon": 88.4229486 },
+    { "lat": 22.6012581, "lon": 88.4229908 },
+    { "lat": 22.6012392, "lon": 88.4230402 },
+    { "lat": 22.6012043, "lon": 88.4231479 },
+    { "lat": 22.6011212, "lon": 88.4232732 },
+    { "lat": 22.6009549, "lon": 88.4235080 },
+    { "lat": 22.6005242, "lon": 88.4241379 },
+    { "lat": 22.6004722, "lon": 88.4242097 },
+    { "lat": 22.6002341, "lon": 88.4245386 },
+    { "lat": 22.6001981, "lon": 88.4245815 },
+    { "lat": 22.6001184, "lon": 88.4246763 },
+    { "lat": 22.6000060, "lon": 88.4247893 },
+    { "lat": 22.5998886, "lon": 88.4248793 },
+    { "lat": 22.5997338, "lon": 88.4249781 },
+    { "lat": 22.5989499, "lon": 88.4255166 },
+    { "lat": 22.5983567, "lon": 88.4259138 },
+    { "lat": 22.5976738, "lon": 88.4263957 },
+    { "lat": 22.5970628, "lon": 88.4268140 },
+    { "lat": 22.5968658, "lon": 88.4269489 },
+    { "lat": 22.5963334, "lon": 88.4273071 },
+    { "lat": 22.5959488, "lon": 88.4275636 },
+    { "lat": 22.5955958, "lon": 88.4277989 },
+    { "lat": 22.5946323, "lon": 88.4284631 },
+    { "lat": 22.5946036, "lon": 88.4284829 },
+    { "lat": 22.5945047, "lon": 88.4285415 },
+    { "lat": 22.5933428, "lon": 88.4292294 },
+    { "lat": 22.5926785, "lon": 88.4296747 },
+    { "lat": 22.5926022, "lon": 88.4297258 },
+    { "lat": 22.5923978, "lon": 88.4298628 },
+    { "lat": 22.5912357, "lon": 88.4306518 },
+    { "lat": 22.5908869, "lon": 88.4308955 },
+    { "lat": 22.5908173, "lon": 88.4309371 },
+    { "lat": 22.5907187, "lon": 88.4309865 },
+    { "lat": 22.5906873, "lon": 88.4309939 },
+    { "lat": 22.5906621, "lon": 88.4310051 },
+    { "lat": 22.5906391, "lon": 88.4310127 },
+    { "lat": 22.5905995, "lon": 88.4310187 },
+    { "lat": 22.5904875, "lon": 88.4310649 },
+    { "lat": 22.5904374, "lon": 88.4310851 },
+    { "lat": 22.5897713, "lon": 88.4315382 },
+    { "lat": 22.5888009, "lon": 88.4322098 },
+    { "lat": 22.5877147, "lon": 88.4329360 },
+    { "lat": 22.5876917, "lon": 88.4329514 },
+    { "lat": 22.5874940, "lon": 88.4330836 },
+    { "lat": 22.5866884, "lon": 88.4336365 },
+    { "lat": 22.5858517, "lon": 88.4342120 },
+    { "lat": 22.5857553, "lon": 88.4342852 },
+    { "lat": 22.5853227, "lon": 88.4345827 },
+    { "lat": 22.5850880, "lon": 88.4347313 },
+    { "lat": 22.5850286, "lon": 88.4347651 },
+    { "lat": 22.5847956, "lon": 88.4349016 },
+    { "lat": 22.5845993, "lon": 88.4345454 },
+    { "lat": 22.5840333, "lon": 88.4335760 },
+    { "lat": 22.5838160, "lon": 88.4332029 },
+    { "lat": 22.5837651, "lon": 88.4331239 },
+    { "lat": 22.5836523, "lon": 88.4329338 },
+    { "lat": 22.5835605, "lon": 88.4327780 },
+    { "lat": 22.5827686, "lon": 88.4314338 },
+    { "lat": 22.5825401, "lon": 88.4310588 },
+    { "lat": 22.5823001, "lon": 88.4306607 },
+    { "lat": 22.5820518, "lon": 88.4302168 },
+    { "lat": 22.5810889, "lon": 88.4285951 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "lanes": "2",
+    "name": "Canal Side Road",
+    "oneway": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 162340411,
+  "bounds": {
+    "minlat": 22.5796308,
+    "minlon": 88.4240723,
+    "maxlat": 22.5825087,
+    "maxlon": 88.4260805
+  },
+  "geometry": [
+    { "lat": 22.5796308, "lon": 88.4260805 },
+    { "lat": 22.5796608, "lon": 88.4260620 },
+    { "lat": 22.5797578, "lon": 88.4259793 },
+    { "lat": 22.5797978, "lon": 88.4259452 },
+    { "lat": 22.5798724, "lon": 88.4258815 },
+    { "lat": 22.5800105, "lon": 88.4257858 },
+    { "lat": 22.5807897, "lon": 88.4252455 },
+    { "lat": 22.5809642, "lon": 88.4251200 },
+    { "lat": 22.5811480, "lon": 88.4249877 },
+    { "lat": 22.5812199, "lon": 88.4249401 },
+    { "lat": 22.5820721, "lon": 88.4243734 },
+    { "lat": 22.5825087, "lon": 88.4240723 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 193308965,
+  "bounds": {
+    "minlat": 22.5794121,
+    "minlon": 88.4301987,
+    "maxlat": 22.5804467,
+    "maxlon": 88.4314791
+  },
+  "geometry": [
+    { "lat": 22.5794121, "lon": 88.4312241 },
+    { "lat": 22.5799169, "lon": 88.4314791 },
+    { "lat": 22.5801299, "lon": 88.4310258 },
+    { "lat": 22.5802416, "lon": 88.4308273 },
+    { "lat": 22.5804467, "lon": 88.4305575 },
+    { "lat": 22.5798355, "lon": 88.4301987 },
+    { "lat": 22.5796042, "lon": 88.4307587 },
+    { "lat": 22.5794121, "lon": 88.4312241 }
+  ],
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "ST-6 W-3 Bus Terminus‎",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "way",
+  "id": 193653864,
+  "bounds": {
+    "minlat": 22.5731939,
+    "minlon": 88.4219392,
+    "maxlat": 22.5732978,
+    "maxlon": 88.4221695
+  },
+  "geometry": [
+    { "lat": 22.5731939, "lon": 88.4221695 },
+    { "lat": 22.5732978, "lon": 88.4219392 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 193653866,
+  "bounds": {
+    "minlat": 22.5730247,
+    "minlon": 88.4220809,
+    "maxlat": 22.5742013,
+    "maxlon": 88.4228479
+  },
+  "geometry": [
+    { "lat": 22.5730247, "lon": 88.4220809 },
+    { "lat": 22.5731213, "lon": 88.4221341 },
+    { "lat": 22.5731939, "lon": 88.4221695 },
+    { "lat": 22.5741665, "lon": 88.4226438 },
+    { "lat": 22.5741095, "lon": 88.4227564 },
+    { "lat": 22.5741913, "lon": 88.4228154 },
+    { "lat": 22.5742013, "lon": 88.4228479 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 193654930,
+  "bounds": {
+    "minlat": 22.5727805,
+    "minlon": 88.4238792,
+    "maxlat": 22.5729875,
+    "maxlon": 88.4239953
+  },
+  "geometry": [
+    { "lat": 22.5727805, "lon": 88.4238792 },
+    { "lat": 22.5728485, "lon": 88.4239242 },
+    { "lat": 22.5729875, "lon": 88.4239953 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 193665936,
+  "bounds": {
+    "minlat": 22.5747373,
+    "minlon": 88.4328364,
+    "maxlat": 22.5751189,
+    "maxlon": 88.4336906
+  },
+  "geometry": [
+    { "lat": 22.5747373, "lon": 88.4336906 },
+    { "lat": 22.5747983, "lon": 88.4335572 },
+    { "lat": 22.5749646, "lon": 88.4331797 },
+    { "lat": 22.5751189, "lon": 88.4328364 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 194449288,
+  "bounds": {
+    "minlat": 22.5687898,
+    "minlon": 88.4281662,
+    "maxlat": 22.5698823,
+    "maxlon": 88.4305536
+  },
+  "geometry": [
+    { "lat": 22.5687898, "lon": 88.4305536 },
+    { "lat": 22.5688934, "lon": 88.4303206 },
+    { "lat": 22.5690690, "lon": 88.4299255 },
+    { "lat": 22.5692814, "lon": 88.4294538 },
+    { "lat": 22.5695086, "lon": 88.4289642 },
+    { "lat": 22.5696067, "lon": 88.4287586 },
+    { "lat": 22.5698284, "lon": 88.4282820 },
+    { "lat": 22.5698823, "lon": 88.4281662 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 194619186,
+  "bounds": {
+    "minlat": 22.5695872,
+    "minlon": 88.4215687,
+    "maxlat": 22.5709296,
+    "maxlon": 88.4229393
+  },
+  "geometry": [
+    { "lat": 22.5695872, "lon": 88.4215687 },
+    { "lat": 22.5696070, "lon": 88.4216545 },
+    { "lat": 22.5696491, "lon": 88.4217430 },
+    { "lat": 22.5697779, "lon": 88.4219173 },
+    { "lat": 22.5698571, "lon": 88.4220515 },
+    { "lat": 22.5699339, "lon": 88.4221534 },
+    { "lat": 22.5700900, "lon": 88.4222633 },
+    { "lat": 22.5701989, "lon": 88.4223411 },
+    { "lat": 22.5702708, "lon": 88.4224082 },
+    { "lat": 22.5703847, "lon": 88.4225369 },
+    { "lat": 22.5705407, "lon": 88.4226952 },
+    { "lat": 22.5707067, "lon": 88.4228615 },
+    { "lat": 22.5707711, "lon": 88.4228320 },
+    { "lat": 22.5708652, "lon": 88.4229393 },
+    { "lat": 22.5708766, "lon": 88.4229135 },
+    { "lat": 22.5709197, "lon": 88.4228159 },
+    { "lat": 22.5709237, "lon": 88.4227532 },
+    { "lat": 22.5709271, "lon": 88.4227005 },
+    { "lat": 22.5709296, "lon": 88.4225959 },
+    { "lat": 22.5708652, "lon": 88.4224860 },
+    { "lat": 22.5708652, "lon": 88.4223948 },
+    { "lat": 22.5708379, "lon": 88.4222499 },
+    { "lat": 22.5708454, "lon": 88.4221802 },
+    { "lat": 22.5708726, "lon": 88.4221078 },
+    { "lat": 22.5708988, "lon": 88.4220733 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 194619187,
+  "bounds": {
+    "minlat": 22.5714348,
+    "minlon": 88.4232365,
+    "maxlat": 22.5715983,
+    "maxlon": 88.4236340
+  },
+  "geometry": [
+    { "lat": 22.5714348, "lon": 88.4236340 },
+    { "lat": 22.5714646, "lon": 88.4234408 },
+    { "lat": 22.5714992, "lon": 88.4233470 },
+    { "lat": 22.5715512, "lon": 88.4232692 },
+    { "lat": 22.5715983, "lon": 88.4232365 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 194619190,
+  "bounds": {
+    "minlat": 22.5709296,
+    "minlon": 88.4225959,
+    "maxlat": 22.5716657,
+    "maxlon": 88.4232302
+  },
+  "geometry": [
+    { "lat": 22.5716657, "lon": 88.4232302 },
+    { "lat": 22.5716082, "lon": 88.4231163 },
+    { "lat": 22.5714522, "lon": 88.4230600 },
+    { "lat": 22.5712986, "lon": 88.4230170 },
+    { "lat": 22.5711847, "lon": 88.4229312 },
+    { "lat": 22.5711426, "lon": 88.4228749 },
+    { "lat": 22.5711277, "lon": 88.4227622 },
+    { "lat": 22.5710782, "lon": 88.4226791 },
+    { "lat": 22.5710237, "lon": 88.4226228 },
+    { "lat": 22.5709296, "lon": 88.4225959 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 194619192,
+  "bounds": {
+    "minlat": 22.5707711,
+    "minlon": 88.4214748,
+    "maxlat": 22.5711946,
+    "maxlon": 88.4219817
+  },
+  "geometry": [
+    { "lat": 22.5707711, "lon": 88.4219817 },
+    { "lat": 22.5711946, "lon": 88.4216143 },
+    { "lat": 22.5711773, "lon": 88.4215472 },
+    { "lat": 22.5711583, "lon": 88.4214748 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 194619193,
+  "bounds": {
+    "minlat": 22.5701915,
+    "minlon": 88.4216223,
+    "maxlat": 22.5715884,
+    "maxlon": 88.4221212
+  },
+  "geometry": [
+    { "lat": 22.5701915, "lon": 88.4216223 },
+    { "lat": 22.5703054, "lon": 88.4216464 },
+    { "lat": 22.5704293, "lon": 88.4217001 },
+    { "lat": 22.5704367, "lon": 88.4217430 },
+    { "lat": 22.5705036, "lon": 88.4217886 },
+    { "lat": 22.5705927, "lon": 88.4218449 },
+    { "lat": 22.5706844, "lon": 88.4219710 },
+    { "lat": 22.5707091, "lon": 88.4219764 },
+    { "lat": 22.5707711, "lon": 88.4219817 },
+    { "lat": 22.5708988, "lon": 88.4220733 },
+    { "lat": 22.5709618, "lon": 88.4221185 },
+    { "lat": 22.5710708, "lon": 88.4221105 },
+    { "lat": 22.5712070, "lon": 88.4221212 },
+    { "lat": 22.5713655, "lon": 88.4220568 },
+    { "lat": 22.5714547, "lon": 88.4218771 },
+    { "lat": 22.5715116, "lon": 88.4217993 },
+    { "lat": 22.5715884, "lon": 88.4217242 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 194619196,
+  "bounds": {
+    "minlat": 22.5717989,
+    "minlon": 88.4212145,
+    "maxlat": 22.5718732,
+    "maxlon": 88.4216491
+  },
+  "geometry": [
+    { "lat": 22.5717989, "lon": 88.4216491 },
+    { "lat": 22.5718732, "lon": 88.4212145 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 194619316,
+  "bounds": {
+    "minlat": 22.5709197,
+    "minlon": 88.4210295,
+    "maxlat": 22.5715884,
+    "maxlon": 88.4217993
+  },
+  "geometry": [
+    { "lat": 22.5715116, "lon": 88.4217993 },
+    { "lat": 22.5714893, "lon": 88.4216867 },
+    { "lat": 22.5714646, "lon": 88.4216250 },
+    { "lat": 22.5713952, "lon": 88.4215660 },
+    { "lat": 22.5712763, "lon": 88.4215096 },
+    { "lat": 22.5711583, "lon": 88.4214748 },
+    { "lat": 22.5709197, "lon": 88.4213675 },
+    { "lat": 22.5709519, "lon": 88.4212066 },
+    { "lat": 22.5710435, "lon": 88.4210832 },
+    { "lat": 22.5710980, "lon": 88.4210295 },
+    { "lat": 22.5714819, "lon": 88.4211931 },
+    { "lat": 22.5714918, "lon": 88.4213997 },
+    { "lat": 22.5714968, "lon": 88.4215499 },
+    { "lat": 22.5715413, "lon": 88.4216438 },
+    { "lat": 22.5715884, "lon": 88.4217242 }
+  ],
+  "tags": {
+    "highway": "footway"
+  }
+},
+{
+  "type": "way",
+  "id": 207360356,
+  "bounds": {
+    "minlat": 22.5836637,
+    "minlon": 88.4292472,
+    "maxlat": 22.5894367,
+    "maxlon": 88.4331932
+  },
+  "geometry": [
+    { "lat": 22.5836637, "lon": 88.4331932 },
+    { "lat": 22.5837651, "lon": 88.4331239 },
+    { "lat": 22.5852157, "lon": 88.4321337 },
+    { "lat": 22.5866362, "lon": 88.4311696 },
+    { "lat": 22.5880933, "lon": 88.4301656 },
+    { "lat": 22.5894367, "lon": 88.4292472 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 207360357,
+  "bounds": {
+    "minlat": 22.5834664,
+    "minlon": 88.4331932,
+    "maxlat": 22.5836637,
+    "maxlon": 88.4333281
+  },
+  "geometry": [
+    { "lat": 22.5834664, "lon": 88.4333281 },
+    { "lat": 22.5836637, "lon": 88.4331932 }
+  ],
+  "tags": {
+    "bridge": "yes",
+    "highway": "secondary",
+    "lanes": "2",
+    "layer": "1",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 207360358,
+  "bounds": {
+    "minlat": 22.5837126,
+    "minlon": 88.4293277,
+    "maxlat": 22.5894862,
+    "maxlon": 88.4332735
+  },
+  "geometry": [
+    { "lat": 22.5894862, "lon": 88.4293277 },
+    { "lat": 22.5866978, "lon": 88.4312329 },
+    { "lat": 22.5852675, "lon": 88.4322167 },
+    { "lat": 22.5838160, "lon": 88.4332029 },
+    { "lat": 22.5837126, "lon": 88.4332735 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 207360359,
+  "bounds": {
+    "minlat": 22.5835188,
+    "minlon": 88.4332735,
+    "maxlat": 22.5837126,
+    "maxlon": 88.4334099
+  },
+  "geometry": [
+    { "lat": 22.5837126, "lon": 88.4332735 },
+    { "lat": 22.5835188, "lon": 88.4334099 }
+  ],
+  "tags": {
+    "bridge": "yes",
+    "highway": "secondary",
+    "lanes": "2",
+    "layer": "1",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 207405241,
+  "bounds": {
+    "minlat": 22.5773858,
+    "minlon": 88.4233811,
+    "maxlat": 22.5792101,
+    "maxlon": 88.4263520
+  },
+  "geometry": [
+    { "lat": 22.5773858, "lon": 88.4233811 },
+    { "lat": 22.5775301, "lon": 88.4235389 },
+    { "lat": 22.5777825, "lon": 88.4239394 },
+    { "lat": 22.5781416, "lon": 88.4245616 },
+    { "lat": 22.5792101, "lon": 88.4263520 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "2",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 209297292,
+  "bounds": {
+    "minlat": 22.5732677,
+    "minlon": 88.4212037,
+    "maxlat": 22.5761906,
+    "maxlon": 88.4227414
+  },
+  "geometry": [
+    { "lat": 22.5761906, "lon": 88.4227414 },
+    { "lat": 22.5760764, "lon": 88.4226815 },
+    { "lat": 22.5756417, "lon": 88.4224483 },
+    { "lat": 22.5753092, "lon": 88.4222742 },
+    { "lat": 22.5751705, "lon": 88.4222016 },
+    { "lat": 22.5749610, "lon": 88.4220932 },
+    { "lat": 22.5748038, "lon": 88.4220101 },
+    { "lat": 22.5746463, "lon": 88.4219264 },
+    { "lat": 22.5739755, "lon": 88.4215750 },
+    { "lat": 22.5735339, "lon": 88.4213437 },
+    { "lat": 22.5732677, "lon": 88.4212037 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "3",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 209297293,
+  "bounds": {
+    "minlat": 22.5773858,
+    "minlon": 88.4233811,
+    "maxlat": 22.5774763,
+    "maxlon": 88.4235798
+  },
+  "geometry": [
+    { "lat": 22.5773858, "lon": 88.4233811 },
+    { "lat": 22.5774524, "lon": 88.4235307 },
+    { "lat": 22.5774763, "lon": 88.4235798 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 241577662,
+  "bounds": {
+    "minlat": 22.5792101,
+    "minlon": 88.4263520,
+    "maxlat": 22.5792648,
+    "maxlon": 88.4264520
+  },
+  "geometry": [
+    { "lat": 22.5792101, "lon": 88.4263520 },
+    { "lat": 22.5792648, "lon": 88.4264520 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "2",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 241577664,
+  "bounds": {
+    "minlat": 22.5792101,
+    "minlon": 88.4262973,
+    "maxlat": 22.5792913,
+    "maxlon": 88.4263520
+  },
+  "geometry": [
+    { "lat": 22.5792101, "lon": 88.4263520 },
+    { "lat": 22.5792913, "lon": 88.4262973 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 310458360,
+  "bounds": {
+    "minlat": 22.5799811,
+    "minlon": 88.4276657,
+    "maxlat": 22.5812089,
+    "maxlon": 88.4297212
+  },
+  "geometry": [
+    { "lat": 22.5799811, "lon": 88.4276657 },
+    { "lat": 22.5800709, "lon": 88.4278178 },
+    { "lat": 22.5805868, "lon": 88.4285982 },
+    { "lat": 22.5807809, "lon": 88.4289358 },
+    { "lat": 22.5808583, "lon": 88.4290704 },
+    { "lat": 22.5809302, "lon": 88.4292244 },
+    { "lat": 22.5809995, "lon": 88.4293707 },
+    { "lat": 22.5812089, "lon": 88.4297212 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "2",
+    "layer": "1",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 310458363,
+  "bounds": {
+    "minlat": 22.5747857,
+    "minlon": 88.4337291,
+    "maxlat": 22.5748241,
+    "maxlon": 88.4338303
+  },
+  "geometry": [
+    { "lat": 22.5748241, "lon": 88.4337291 },
+    { "lat": 22.5747857, "lon": 88.4338303 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 310458367,
+  "bounds": {
+    "minlat": 22.5790457,
+    "minlon": 88.4264520,
+    "maxlat": 22.5792648,
+    "maxlon": 88.4265986
+  },
+  "geometry": [
+    { "lat": 22.5792648, "lon": 88.4264520 },
+    { "lat": 22.5791661, "lon": 88.4265132 },
+    { "lat": 22.5790457, "lon": 88.4265986 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 310458368,
+  "bounds": {
+    "minlat": 22.5768431,
+    "minlon": 88.4265986,
+    "maxlat": 22.5790457,
+    "maxlon": 88.4292881
+  },
+  "geometry": [
+    { "lat": 22.5790457, "lon": 88.4265986 },
+    { "lat": 22.5790089, "lon": 88.4266221 },
+    { "lat": 22.5789176, "lon": 88.4266837 },
+    { "lat": 22.5785716, "lon": 88.4269181 },
+    { "lat": 22.5785069, "lon": 88.4269588 },
+    { "lat": 22.5783008, "lon": 88.4270996 },
+    { "lat": 22.5781529, "lon": 88.4272192 },
+    { "lat": 22.5780309, "lon": 88.4273361 },
+    { "lat": 22.5779555, "lon": 88.4274118 },
+    { "lat": 22.5778100, "lon": 88.4275577 },
+    { "lat": 22.5777906, "lon": 88.4275775 },
+    { "lat": 22.5777193, "lon": 88.4276664 },
+    { "lat": 22.5776116, "lon": 88.4277960 },
+    { "lat": 22.5775580, "lon": 88.4278670 },
+    { "lat": 22.5775022, "lon": 88.4279411 },
+    { "lat": 22.5773209, "lon": 88.4282399 },
+    { "lat": 22.5772787, "lon": 88.4283276 },
+    { "lat": 22.5771872, "lon": 88.4285163 },
+    { "lat": 22.5769079, "lon": 88.4291358 },
+    { "lat": 22.5768871, "lon": 88.4291824 },
+    { "lat": 22.5768775, "lon": 88.4292055 },
+    { "lat": 22.5768431, "lon": 88.4292881 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 350557444,
+  "bounds": {
+    "minlat": 22.5796994,
+    "minlon": 88.4241842,
+    "maxlat": 22.5825693,
+    "maxlon": 88.4261480
+  },
+  "geometry": [
+    { "lat": 22.5825693, "lon": 88.4241842 },
+    { "lat": 22.5816876, "lon": 88.4247848 },
+    { "lat": 22.5810347, "lon": 88.4252353 },
+    { "lat": 22.5800632, "lon": 88.4259056 },
+    { "lat": 22.5799344, "lon": 88.4259787 },
+    { "lat": 22.5798417, "lon": 88.4260391 },
+    { "lat": 22.5796994, "lon": 88.4261480 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 358886818,
+  "bounds": {
+    "minlat": 22.5759892,
+    "minlon": 88.4215053,
+    "maxlat": 22.5764201,
+    "maxlon": 88.4217851
+  },
+  "geometry": [
+    { "lat": 22.5763771, "lon": 88.4217851 },
+    { "lat": 22.5759892, "lon": 88.4216415 },
+    { "lat": 22.5760322, "lon": 88.4215053 },
+    { "lat": 22.5764201, "lon": 88.4216489 },
+    { "lat": 22.5763771, "lon": 88.4217851 }
+  ],
+  "tags": {
+    "amenity": "parking"
+  }
+},
+{
+  "type": "way",
+  "id": 533800877,
+  "bounds": {
+    "minlat": 22.5702635,
+    "minlon": 88.4323106,
+    "maxlat": 22.5719085,
+    "maxlon": 88.4359594
+  },
+  "geometry": [
+    { "lat": 22.5702635, "lon": 88.4359594 },
+    { "lat": 22.5707736, "lon": 88.4348575 },
+    { "lat": 22.5711374, "lon": 88.4340716 },
+    { "lat": 22.5712711, "lon": 88.4337746 },
+    { "lat": 22.5719085, "lon": 88.4323106 }
+  ],
+  "tags": {
+    "highway": "residential",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 562931988,
+  "bounds": {
+    "minlat": 22.5771277,
+    "minlon": 88.4233677,
+    "maxlat": 22.5772165,
+    "maxlon": 88.4233922
+  },
+  "geometry": [
+    { "lat": 22.5771277, "lon": 88.4233677 },
+    { "lat": 22.5772165, "lon": 88.4233922 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "lanes": "2",
+    "name": "Salt Lake Bypass"
+  }
+},
+{
+  "type": "way",
+  "id": 562931989,
+  "bounds": {
+    "minlat": 22.5797747,
+    "minlon": 88.4278151,
+    "maxlat": 22.5807395,
+    "maxlon": 88.4292382
+  },
+  "geometry": [
+    { "lat": 22.5807395, "lon": 88.4291975 },
+    { "lat": 22.5806838, "lon": 88.4292292 },
+    { "lat": 22.5806587, "lon": 88.4292375 },
+    { "lat": 22.5806345, "lon": 88.4292382 },
+    { "lat": 22.5806204, "lon": 88.4292280 },
+    { "lat": 22.5805912, "lon": 88.4291846 },
+    { "lat": 22.5802224, "lon": 88.4285753 },
+    { "lat": 22.5801638, "lon": 88.4284893 },
+    { "lat": 22.5799840, "lon": 88.4281665 },
+    { "lat": 22.5797747, "lon": 88.4278151 }
+  ],
+  "tags": {
+    "highway": "primary_link",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 562984694,
+  "bounds": {
+    "minlat": 22.5748241,
+    "minlon": 88.4292881,
+    "maxlat": 22.5768431,
+    "maxlon": 88.4337291
+  },
+  "geometry": [
+    { "lat": 22.5768431, "lon": 88.4292881 },
+    { "lat": 22.5767093, "lon": 88.4295851 },
+    { "lat": 22.5766934, "lon": 88.4296204 },
+    { "lat": 22.5766906, "lon": 88.4296266 },
+    { "lat": 22.5765960, "lon": 88.4298364 },
+    { "lat": 22.5764709, "lon": 88.4301139 },
+    { "lat": 22.5763681, "lon": 88.4303419 },
+    { "lat": 22.5762985, "lon": 88.4305007 },
+    { "lat": 22.5761437, "lon": 88.4308397 },
+    { "lat": 22.5760497, "lon": 88.4310479 },
+    { "lat": 22.5759252, "lon": 88.4313237 },
+    { "lat": 22.5757481, "lon": 88.4317160 },
+    { "lat": 22.5756438, "lon": 88.4319438 },
+    { "lat": 22.5754730, "lon": 88.4323167 },
+    { "lat": 22.5754046, "lon": 88.4324660 },
+    { "lat": 22.5751274, "lon": 88.4330438 },
+    { "lat": 22.5751027, "lon": 88.4331010 },
+    { "lat": 22.5749013, "lon": 88.4335469 },
+    { "lat": 22.5748241, "lon": 88.4337291 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 693365345,
+  "bounds": {
+    "minlat": 22.5799529,
+    "minlon": 88.4239888,
+    "maxlat": 22.5825218,
+    "maxlon": 88.4256921
+  },
+  "geometry": [
+    { "lat": 22.5799529, "lon": 88.4256921 },
+    { "lat": 22.5802392, "lon": 88.4255111 },
+    { "lat": 22.5806198, "lon": 88.4252602 },
+    { "lat": 22.5806825, "lon": 88.4252188 },
+    { "lat": 22.5809990, "lon": 88.4249994 },
+    { "lat": 22.5811736, "lon": 88.4248784 },
+    { "lat": 22.5813190, "lon": 88.4247762 },
+    { "lat": 22.5820053, "lon": 88.4242885 },
+    { "lat": 22.5824768, "lon": 88.4240214 },
+    { "lat": 22.5825218, "lon": 88.4239888 }
+  ],
+  "tags": {
+    "highway": "residential",
+    "lit": "yes",
+    "sidewalk": "left",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1116460435,
+  "bounds": {
+    "minlat": 22.5795898,
+    "minlon": 88.4256921,
+    "maxlat": 22.5799529,
+    "maxlon": 88.4259722
+  },
+  "geometry": [
+    { "lat": 22.5795898, "lon": 88.4259722 },
+    { "lat": 22.5797452, "lon": 88.4258524 },
+    { "lat": 22.5799529, "lon": 88.4256921 }
+  ],
+  "tags": {
+    "highway": "residential",
+    "lit": "yes",
+    "sidewalk": "left",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1126855553,
+  "bounds": {
+    "minlat": 22.5748241,
+    "minlon": 88.4337291,
+    "maxlat": 22.5782137,
+    "maxlon": 88.4355164
+  },
+  "geometry": [
+    { "lat": 22.5748241, "lon": 88.4337291 },
+    { "lat": 22.5754355, "lon": 88.4340576 },
+    { "lat": 22.5757379, "lon": 88.4342176 },
+    { "lat": 22.5758117, "lon": 88.4342566 },
+    { "lat": 22.5758861, "lon": 88.4342960 },
+    { "lat": 22.5767081, "lon": 88.4347263 },
+    { "lat": 22.5767966, "lon": 88.4347764 },
+    { "lat": 22.5770803, "lon": 88.4349267 },
+    { "lat": 22.5773347, "lon": 88.4350555 },
+    { "lat": 22.5775599, "lon": 88.4351723 },
+    { "lat": 22.5776829, "lon": 88.4352370 },
+    { "lat": 22.5778678, "lon": 88.4353334 },
+    { "lat": 22.5781244, "lon": 88.4354694 },
+    { "lat": 22.5782137, "lon": 88.4355164 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1126855554,
+  "bounds": {
+    "minlat": 22.5747373,
+    "minlon": 88.4336906,
+    "maxlat": 22.5748241,
+    "maxlon": 88.4337291
+  },
+  "geometry": [
+    { "lat": 22.5747373, "lon": 88.4336906 },
+    { "lat": 22.5748241, "lon": 88.4337291 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1126855557,
+  "bounds": {
+    "minlat": 22.5699701,
+    "minlon": 88.4261264,
+    "maxlat": 22.5709050,
+    "maxlon": 88.4282158
+  },
+  "geometry": [
+    { "lat": 22.5709050, "lon": 88.4261264 },
+    { "lat": 22.5706062, "lon": 88.4267822 },
+    { "lat": 22.5704028, "lon": 88.4272254 },
+    { "lat": 22.5702553, "lon": 88.4275631 },
+    { "lat": 22.5699701, "lon": 88.4282158 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1126855559,
+  "bounds": {
+    "minlat": 22.5826156,
+    "minlon": 88.4222075,
+    "maxlat": 22.5854470,
+    "maxlon": 88.4241524
+  },
+  "geometry": [
+    { "lat": 22.5854470, "lon": 88.4222075 },
+    { "lat": 22.5844256, "lon": 88.4229091 },
+    { "lat": 22.5837205, "lon": 88.4233934 },
+    { "lat": 22.5833771, "lon": 88.4236293 },
+    { "lat": 22.5826156, "lon": 88.4241524 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 1127247752,
+  "bounds": {
+    "minlat": 22.5746997,
+    "minlon": 88.4336906,
+    "maxlat": 22.5747373,
+    "maxlon": 88.4337789
+  },
+  "geometry": [
+    { "lat": 22.5746997, "lon": 88.4337789 },
+    { "lat": 22.5747373, "lon": 88.4336906 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1128048144,
+  "bounds": {
+    "minlat": 22.5825693,
+    "minlon": 88.4241524,
+    "maxlat": 22.5826156,
+    "maxlon": 88.4241842
+  },
+  "geometry": [
+    { "lat": 22.5826156, "lon": 88.4241524 },
+    { "lat": 22.5825693, "lon": 88.4241842 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1128131501,
+  "bounds": {
+    "minlat": 22.5808914,
+    "minlon": 88.4370337,
+    "maxlat": 22.5810088,
+    "maxlon": 88.4370949
+  },
+  "geometry": [
+    { "lat": 22.5808914, "lon": 88.4370337 },
+    { "lat": 22.5810088, "lon": 88.4370949 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1128140451,
+  "bounds": {
+    "minlat": 22.5747857,
+    "minlon": 88.4338303,
+    "maxlat": 22.5766642,
+    "maxlon": 88.4348223
+  },
+  "geometry": [
+    { "lat": 22.5747857, "lon": 88.4338303 },
+    { "lat": 22.5748422, "lon": 88.4338593 },
+    { "lat": 22.5749733, "lon": 88.4339295 },
+    { "lat": 22.5753919, "lon": 88.4341537 },
+    { "lat": 22.5754212, "lon": 88.4341692 },
+    { "lat": 22.5754369, "lon": 88.4341775 },
+    { "lat": 22.5756989, "lon": 88.4343161 },
+    { "lat": 22.5757861, "lon": 88.4343622 },
+    { "lat": 22.5758429, "lon": 88.4343923 },
+    { "lat": 22.5759243, "lon": 88.4344349 },
+    { "lat": 22.5760508, "lon": 88.4345011 },
+    { "lat": 22.5761264, "lon": 88.4345407 },
+    { "lat": 22.5761332, "lon": 88.4345442 },
+    { "lat": 22.5766642, "lon": 88.4348223 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1136761584,
+  "bounds": {
+    "minlat": 22.5751189,
+    "minlon": 88.4291348,
+    "maxlat": 22.5767937,
+    "maxlon": 88.4328364
+  },
+  "geometry": [
+    { "lat": 22.5751189, "lon": 88.4328364 },
+    { "lat": 22.5752689, "lon": 88.4325008 },
+    { "lat": 22.5753126, "lon": 88.4324152 },
+    { "lat": 22.5753456, "lon": 88.4323278 },
+    { "lat": 22.5756554, "lon": 88.4316665 },
+    { "lat": 22.5759303, "lon": 88.4310575 },
+    { "lat": 22.5759736, "lon": 88.4309616 },
+    { "lat": 22.5760509, "lon": 88.4307905 },
+    { "lat": 22.5762058, "lon": 88.4304469 },
+    { "lat": 22.5763780, "lon": 88.4300649 },
+    { "lat": 22.5767494, "lon": 88.4292365 },
+    { "lat": 22.5767937, "lon": 88.4291348 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1136761586,
+  "bounds": {
+    "minlat": 22.5698823,
+    "minlon": 88.4260781,
+    "maxlat": 22.5708215,
+    "maxlon": 88.4281662
+  },
+  "geometry": [
+    { "lat": 22.5698823, "lon": 88.4281662 },
+    { "lat": 22.5703189, "lon": 88.4271726 },
+    { "lat": 22.5708215, "lon": 88.4260781 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1136761587,
+  "bounds": {
+    "minlat": 22.5746997,
+    "minlon": 88.4337789,
+    "maxlat": 22.5747857,
+    "maxlon": 88.4338303
+  },
+  "geometry": [
+    { "lat": 22.5746997, "lon": 88.4337789 },
+    { "lat": 22.5747857, "lon": 88.4338303 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "smoothness": "excellent",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1138309823,
+  "bounds": {
+    "minlat": 22.5807222,
+    "minlon": 88.4245205,
+    "maxlat": 22.5809990,
+    "maxlon": 88.4249994
+  },
+  "geometry": [
+    { "lat": 22.5807222, "lon": 88.4245205 },
+    { "lat": 22.5809990, "lon": 88.4249994 }
+  ],
+  "tags": {
+    "highway": "living_street"
+  }
+},
+{
+  "type": "way",
+  "id": 1173688167,
+  "bounds": {
+    "minlat": 22.5779842,
+    "minlon": 88.4263520,
+    "maxlat": 22.5792101,
+    "maxlon": 88.4272315
+  },
+  "geometry": [
+    { "lat": 22.5779842, "lon": 88.4272315 },
+    { "lat": 22.5780877, "lon": 88.4271323 },
+    { "lat": 22.5782423, "lon": 88.4270073 },
+    { "lat": 22.5784518, "lon": 88.4268641 },
+    { "lat": 22.5785582, "lon": 88.4267913 },
+    { "lat": 22.5788630, "lon": 88.4265887 },
+    { "lat": 22.5789537, "lon": 88.4265275 },
+    { "lat": 22.5789877, "lon": 88.4265039 },
+    { "lat": 22.5790008, "lon": 88.4264949 },
+    { "lat": 22.5791074, "lon": 88.4264211 },
+    { "lat": 22.5792101, "lon": 88.4263520 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 1195984059,
+  "bounds": {
+    "minlat": 22.5832564,
+    "minlon": 88.4256557,
+    "maxlat": 22.5835422,
+    "maxlon": 88.4261297
+  },
+  "geometry": [
+    { "lat": 22.5835422, "lon": 88.4261297 },
+    { "lat": 22.5832564, "lon": 88.4256557 }
+  ],
+  "tags": {
+    "highway": "footway",
+    "motor_vehicle": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 1200740822,
+  "bounds": {
+    "minlat": 22.5724431,
+    "minlon": 88.4212440,
+    "maxlat": 22.5731202,
+    "maxlon": 88.4227555
+  },
+  "geometry": [
+    { "lat": 22.5731202, "lon": 88.4212440 },
+    { "lat": 22.5730942, "lon": 88.4213042 },
+    { "lat": 22.5728715, "lon": 88.4218047 },
+    { "lat": 22.5724431, "lon": 88.4227555 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1216156369,
+  "bounds": {
+    "minlat": 22.5809337,
+    "minlon": 88.4369371,
+    "maxlat": 22.5810510,
+    "maxlon": 88.4369985
+  },
+  "geometry": [
+    { "lat": 22.5809337, "lon": 88.4369371 },
+    { "lat": 22.5810510, "lon": 88.4369985 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1227078432,
+  "bounds": {
+    "minlat": 22.5796994,
+    "minlon": 88.4261480,
+    "maxlat": 22.5810889,
+    "maxlon": 88.4285951
+  },
+  "geometry": [
+    { "lat": 22.5810889, "lon": 88.4285951 },
+    { "lat": 22.5808162, "lon": 88.4281148 },
+    { "lat": 22.5807665, "lon": 88.4280273 },
+    { "lat": 22.5802540, "lon": 88.4271248 },
+    { "lat": 22.5797502, "lon": 88.4262375 },
+    { "lat": 22.5796994, "lon": 88.4261480 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "lanes": "2",
+    "name": "Canal Side Road",
+    "oneway": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 1376080956,
+  "bounds": {
+    "minlat": 22.5761906,
+    "minlon": 88.4227414,
+    "maxlat": 22.5772165,
+    "maxlon": 88.4233922
+  },
+  "geometry": [
+    { "lat": 22.5772165, "lon": 88.4233922 },
+    { "lat": 22.5771536, "lon": 88.4233138 },
+    { "lat": 22.5770831, "lon": 88.4232436 },
+    { "lat": 22.5769773, "lon": 88.4231648 },
+    { "lat": 22.5767335, "lon": 88.4230204 },
+    { "lat": 22.5763524, "lon": 88.4228238 },
+    { "lat": 22.5761906, "lon": 88.4227414 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "3",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1388743055,
+  "bounds": {
+    "minlat": 22.5732760,
+    "minlon": 88.4210714,
+    "maxlat": 22.5745497,
+    "maxlon": 88.4217314
+  },
+  "geometry": [
+    { "lat": 22.5732760, "lon": 88.4210714 },
+    { "lat": 22.5741498, "lon": 88.4215249 },
+    { "lat": 22.5745497, "lon": 88.4217314 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "3",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1388745701,
+  "bounds": {
+    "minlat": 22.5825495,
+    "minlon": 88.4220619,
+    "maxlat": 22.5854118,
+    "maxlon": 88.4240345
+  },
+  "geometry": [
+    { "lat": 22.5825495, "lon": 88.4240345 },
+    { "lat": 22.5829593, "lon": 88.4237528 },
+    { "lat": 22.5836623, "lon": 88.4232687 },
+    { "lat": 22.5849095, "lon": 88.4224087 },
+    { "lat": 22.5854118, "lon": 88.4220619 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 1408492166,
+  "bounds": {
+    "minlat": 22.5825087,
+    "minlon": 88.4240345,
+    "maxlat": 22.5825495,
+    "maxlon": 88.4240723
+  },
+  "geometry": [
+    { "lat": 22.5825087, "lon": 88.4240723 },
+    { "lat": 22.5825495, "lon": 88.4240345 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "name": "Street Number 13",
+    "oneway": "yes",
+    "ref": "13"
+  }
+},
+{
+  "type": "way",
+  "id": 1523465712,
+  "bounds": {
+    "minlat": 22.5708457,
+    "minlon": 88.4259802,
+    "maxlat": 22.5708661,
+    "maxlon": 88.4260254
+  },
+  "geometry": [
+    { "lat": 22.5708457, "lon": 88.4260254 },
+    { "lat": 22.5708661, "lon": 88.4259802 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1523465714,
+  "bounds": {
+    "minlat": 22.5708215,
+    "minlon": 88.4260254,
+    "maxlat": 22.5708457,
+    "maxlon": 88.4260781
+  },
+  "geometry": [
+    { "lat": 22.5708215, "lon": 88.4260781 },
+    { "lat": 22.5708457, "lon": 88.4260254 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1523465715,
+  "bounds": {
+    "minlat": 22.5708865,
+    "minlon": 88.4211976,
+    "maxlat": 22.5730337,
+    "maxlon": 88.4259350
+  },
+  "geometry": [
+    { "lat": 22.5708865, "lon": 88.4259350 },
+    { "lat": 22.5710592, "lon": 88.4255529 },
+    { "lat": 22.5712912, "lon": 88.4250395 },
+    { "lat": 22.5713028, "lon": 88.4250139 },
+    { "lat": 22.5714574, "lon": 88.4246789 },
+    { "lat": 22.5714828, "lon": 88.4246236 },
+    { "lat": 22.5715467, "lon": 88.4244842 },
+    { "lat": 22.5715655, "lon": 88.4244432 },
+    { "lat": 22.5718194, "lon": 88.4238900 },
+    { "lat": 22.5720168, "lon": 88.4234564 },
+    { "lat": 22.5722741, "lon": 88.4228913 },
+    { "lat": 22.5723556, "lon": 88.4227114 },
+    { "lat": 22.5727875, "lon": 88.4217520 },
+    { "lat": 22.5730101, "lon": 88.4212516 },
+    { "lat": 22.5730337, "lon": 88.4211976 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1523465716,
+  "bounds": {
+    "minlat": 22.5709050,
+    "minlon": 88.4260768,
+    "maxlat": 22.5709305,
+    "maxlon": 88.4261264
+  },
+  "geometry": [
+    { "lat": 22.5709305, "lon": 88.4260768 },
+    { "lat": 22.5709207, "lon": 88.4260968 },
+    { "lat": 22.5709050, "lon": 88.4261264 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1524292949,
+  "bounds": {
+    "minlat": 22.5796712,
+    "minlon": 88.4276412,
+    "maxlat": 22.5796876,
+    "maxlon": 88.4276688
+  },
+  "geometry": [
+    { "lat": 22.5796876, "lon": 88.4276688 },
+    { "lat": 22.5796712, "lon": 88.4276412 }
+  ],
+  "tags": {
+    "highway": "primary_link",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1524292950,
+  "bounds": {
+    "minlat": 22.5796876,
+    "minlon": 88.4276688,
+    "maxlat": 22.5797747,
+    "maxlon": 88.4278151
+  },
+  "geometry": [
+    { "lat": 22.5797747, "lon": 88.4278151 },
+    { "lat": 22.5796876, "lon": 88.4276688 }
+  ],
+  "tags": {
+    "highway": "primary_link",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1524292951,
+  "bounds": {
+    "minlat": 22.5792648,
+    "minlon": 88.4264520,
+    "maxlat": 22.5798913,
+    "maxlon": 88.4275135
+  },
+  "geometry": [
+    { "lat": 22.5792648, "lon": 88.4264520 },
+    { "lat": 22.5798754, "lon": 88.4274865 },
+    { "lat": 22.5798913, "lon": 88.4275135 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "2",
+    "layer": "1",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1524292952,
+  "bounds": {
+    "minlat": 22.5798913,
+    "minlon": 88.4275135,
+    "maxlat": 22.5799811,
+    "maxlon": 88.4276657
+  },
+  "geometry": [
+    { "lat": 22.5798913, "lon": 88.4275135 },
+    { "lat": 22.5799811, "lon": 88.4276657 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "lanes": "2",
+    "name": "Salt Lake Bypass",
+    "oneway": "yes",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1524292953,
+  "bounds": {
+    "minlat": 22.5790457,
+    "minlon": 88.4265986,
+    "maxlat": 22.5796712,
+    "maxlon": 88.4276412
+  },
+  "geometry": [
+    { "lat": 22.5796712, "lon": 88.4276412 },
+    { "lat": 22.5795656, "lon": 88.4274638 },
+    { "lat": 22.5793378, "lon": 88.4270642 },
+    { "lat": 22.5790457, "lon": 88.4265986 }
+  ],
+  "tags": {
+    "highway": "primary_link",
+    "lanes": "2",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "relation",
+  "id": 11720073,
+  "bounds": {
+    "minlat": 22.5805792,
+    "minlon": 88.4286596,
+    "maxlat": 22.5812260,
+    "maxlon": 88.4290872
+  },
+  "tags": {
+    "colour": "green",
+    "name": "Salt Lake Sector V",
+    "name:hi": "सॉल्ट लेक सेक्टर ५",
+    "network": "Kolkata Metro",
+    "public_transport": "stop_area",
+    "ref": "SVSA",
+    "type": "public_transport"
+  }
+}
+
+  ]
+}

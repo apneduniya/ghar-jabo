@@ -9,5 +9,7 @@ export interface MapData {
   stops: { n: string; p: Pt }[];
   buildings: { p: Pt[]; h: number; n?: string }[];
   busPath: Pt[];
+  /** Canal and pond outlines (closed rings). */
+  water?: Pt[][];
   pois: Record<string, Pt>;
 }

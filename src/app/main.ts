@@ -49,7 +49,7 @@ function momCall() {
   b.append(yes, no);
   root.appendChild(b);
   setTimeout(() => close(false), 4500);
-  const gap = run.minute > 21 * 60 ? rand(12, 18) : rand(22, 32);
+  const gap = run.timeOfDay > 21 * 60 ? rand(12, 18) : rand(22, 32);
   run.nextCall = run.minute + gap;
 }
 
@@ -80,7 +80,9 @@ function frame(now: number) {
   run.tick(dt);
   cur?.update(dt);
 
-  if (run.clockRunning && !run.ending && !callOpen && run.minute >= run.nextCall) momCall();
+  // Ma sleeps between midnight and 6 AM (free roam only gets that late).
+  const maAwake = run.timeOfDay >= 6 * 60;
+  if (run.clockRunning && !run.ending && !callOpen && maAwake && run.minute >= run.nextCall) momCall();
   if (run.clockRunning && !run.ending && run.timeUp) game.fail('still-sector-v');
 
   if (cur?.scene && cur.camera) renderer.render(cur.scene, cur.camera);

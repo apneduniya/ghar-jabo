@@ -52,7 +52,8 @@ function stats(run: Run): [string, string][] {
   const s = run.stats;
   return [
     ['Left', clockText(START_MIN)],
-    ['Reached', run.ending === 'still-sector-v' ? 'Never' : run.ending === 'howrah-express' ? 'Howrah 😴' : clockText(run.minute)],
+    ['Reached', run.ending === 'still-sector-v' ? 'Never' : run.ending === 'howrah-express' ? 'Howrah 😴' : clockText(run.minute, run.mode === 'free')],
+    ...(run.mode === 'free' && run.homeMode ? [['Took', took(run.elapsed)] as [string, string]] : []),
     ['Rides cancelled', String(s.cancels)],
     ['Money left', `₹${run.money}`],
     ['Footboard stops', String(s.footboardStops)],
@@ -60,6 +61,12 @@ function stats(run: Run): [string, string][] {
     ['Ma\'s missed calls', String(s.momMissed)],
     ['Dignity', `${Math.round(run.dignity)}%`],
   ];
+}
+
+/** "2 h 14 min", or "1 day 3 h" for very long free-roam runs. */
+function took(min: number) {
+  const d = Math.floor(min / 1440), h = Math.floor((min % 1440) / 60), m = Math.floor(min % 60);
+  return d ? `${d} day${d > 1 ? 's' : ''} ${h} h` : h ? `${h} h ${m} min` : `${m} min`;
 }
 
 function poll(run: Run) {

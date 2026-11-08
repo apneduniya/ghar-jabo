@@ -43,10 +43,10 @@ export function showHud(show: boolean) {
 
 export function updateHud(run: Run) {
   if (!hud) return;
-  hud.querySelector<HTMLElement>('.hud-clock')!.textContent = clockText(run.minute);
+  hud.querySelector<HTMLElement>('.hud-clock')!.textContent = clockText(run.minute, run.mode === 'free');
   hud.querySelector<HTMLElement>('.hud-money')!.textContent = `₹${run.money}`;
   hud.querySelector<HTMLElement>('.hud-dig b')!.style.width = `${run.dignity}%`;
-  hud.classList.toggle('late', run.minute > 21 * 60);
+  hud.classList.toggle('late', run.mode === 'timed' && run.minute > 21 * 60);
 }
 
 export function setDateline(text: string) {

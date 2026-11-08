@@ -4,7 +4,7 @@
 import { T } from '../content/tuning';
 import { floods } from '../content/sectorv';
 import { cancelReasons, captainNames, ticker } from '../content/text';
-import { BuildingGrid } from './collide';
+import { BuildingGrid, WaterMask } from './collide';
 import { Events } from './events';
 import type { MapData } from './mapdata';
 import { NO_INTENT, Player, type Intent } from './player';
@@ -21,6 +21,7 @@ export class World {
   readonly graph: RoadGraph;
   readonly traffic: Traffic;
   readonly grid: BuildingGrid;
+  readonly water: WaterMask;
   readonly crowd: Crowd;
   readonly player = new Player();
   readonly events = new Events();
@@ -36,6 +37,7 @@ export class World {
     this.graph = new RoadGraph(map);
     this.traffic = new Traffic(map, this.graph, rng);
     this.grid = new BuildingGrid(map.buildings.map((b) => b.p));
+    this.water = new WaterMask(map.water ?? [], map.roads);
     this.player.x = start.x;
     this.player.z = start.z;
     this.traffic.populate(start.x, start.z);
@@ -112,7 +114,7 @@ export class World {
   private stepFoot(dt: number, intent: Intent) {
     const p = this.player;
     p.slow = floods.some((f) => Math.hypot(f.x - p.x, f.z - p.z) < f.r) ? T.player.floodSlow : 1;
-    p.stepFoot(dt, intent, (x, z) => this.grid.blocked(x, z, T.player.radius));
+    p.stepFoot(dt, intent, (x, z) => this.grid.blocked(x, z, T.player.radius) || this.water.blocked(x, z, T.player.radius));
     if (!p.down && p.y < 1.2) this.collideTraffic();
     const a = this.action();
     if (a && intent.action) {
@@ -120,7 +122,10 @@ export class World {
       else this.sitOnBike(a.captain);
     }
     if (Math.hypot(this.metroEntrance.x - p.x, this.metroEntrance.z - p.z) < 2.5 && !p.down) {
-      if (this.run.money < T.metro.fare) {
+      if (!this.run.metroOpen) {
+        this.events.toast('METRO BONDHO', 'Shutters down till 6:50 AM. The guard is asleep on a plastic chair.');
+        p.x += 3;
+      } else if (this.run.money < T.metro.fare) {
         this.events.toast('₹20 LAGBE', `You have ₹${this.run.money}. The token counter is unmoved.`);
         p.x += 3;
       } else {

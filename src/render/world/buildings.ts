@@ -5,7 +5,8 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Pt } from '../../sim/mapdata';
-import { facadeOffice, facadeOld, facadeResidential, facadeShop } from './textures';
+import { facadeOffice, facadeOld, facadeResidential, facadeShop, litMask } from './textures';
+import { glowAtNight } from '../sky';
 
 type Style = 'resi' | 'old' | 'office';
 const BAY = 3; // window bay width, world units
@@ -109,8 +110,10 @@ export function buildBuildings(list: { p: Pt[]; h: number }[], streetSide: (x: n
   }
 
   const group = new THREE.Group();
-  const make = (w: Wall, map: THREE.Texture) => new THREE.Mesh(w.geometry(), new THREE.MeshLambertMaterial({ vertexColors: true, map }));
-  group.add(make(walls.resi, facadeResidential()), make(walls.old, facadeOld()), make(walls.office, facadeOffice()), make(walls.shop, facadeShop()));
+  // Lit windows glow after dark (emissive = the facade's warm pixels only), at no extra draw calls.
+  const make = (w: Wall, map: THREE.Texture, glow: number) => new THREE.Mesh(w.geometry(), glowAtNight(
+    new THREE.MeshLambertMaterial({ vertexColors: true, map, emissive: 0xffd49a, emissiveMap: litMask(map), emissiveIntensity: 0 }), glow));
+  group.add(make(walls.resi, facadeResidential(), 0.8), make(walls.old, facadeOld(), 0.7), make(walls.office, facadeOffice(), 0.9), make(walls.shop, facadeShop(), 1));
   group.add(new THREE.Mesh(mergeGeometries(roofs), new THREE.MeshLambertMaterial({ vertexColors: true })));
   return { group, bays };
 }

@@ -1,7 +1,8 @@
 // Scene switching and the shared run. Scenes import `game` to move between each other.
 
 import type * as THREE from 'three';
-import { Run, type ArriveMode, type EndingId } from '../sim/run';
+import { Run, type ArriveMode, type EndingId, type PlayMode } from '../sim/run';
+import { saveRecord } from './records';
 import { rng } from '../sim/rng';
 
 export interface Scene {
@@ -16,6 +17,8 @@ type SceneName = 'lobby' | 'sectorv' | 'city' | 'station' | 'result';
 
 class Game {
   run = new Run();
+  /** The mode of the last run started, so "play again" keeps it. */
+  mode: PlayMode = 'timed';
   current: Scene | null = null;
   private factories = new Map<SceneName, () => Scene>();
   /** Slow motion: 1 is normal speed. Used for falls and fail beats. */
@@ -39,8 +42,9 @@ class Game {
     this.current.enter();
   }
 
-  newRun() {
-    this.run = new Run();
+  newRun(mode: PlayMode = this.mode) {
+    this.mode = mode;
+    this.run = new Run(mode);
     // `?seed=123` replays the same run (traffic, captains, cancellations); otherwise a fresh seed.
     const seed = Number(new URLSearchParams(location.search).get('seed')) || (Date.now() & 0x7fffffff);
     this.run.seed = seed;
@@ -54,9 +58,11 @@ class Game {
     r.homeMode = mode;
     if (mode === 'walk' && r.stats.busHops === 0 && !r.stats.modesTried.length) r.ending = 'walked-home';
     else if (mode === 'rapinah') r.ending = 'rapinah-miracle';
-    else if (r.minute < 20 * 60) r.ending = 'home-early';
-    else if (r.minute < 21 * 60 + 30) r.ending = 'home';
+    else if (r.day > 1) r.ending = 'home-next-day';
+    else if (r.elapsed < 90) r.ending = 'home-early';
+    else if (r.elapsed < 180) r.ending = 'home';
     else r.ending = 'home-late';
+    saveRecord(r);
     this.finish();
   }
 

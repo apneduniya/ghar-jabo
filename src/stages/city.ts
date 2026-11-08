@@ -4,7 +4,8 @@
 import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
-import { bake, box, building, C, duskScene, rand, resize, Shake, sign } from '../render/gfx';
+import { bake, box, building, C, rand, resize, Shake, sign } from '../render/gfx';
+import { clearGlow, Sky } from '../render/sky';
 import { person } from '../render/models';
 import { BUS_REAR_DOOR } from '../sim/vehicles';
 import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline, showHud } from '../ui/ui';
@@ -22,8 +23,12 @@ type State = 'foot' | 'hang' | 'pillion' | 'leaving';
 
 export function city(): Scene {
   const run = game.run;
-  const scene = duskScene();
-  scene.fog = new THREE.Fog(C.sky, 60, 170);
+  const scene = new THREE.Scene();
+  clearGlow();
+  const sky = new Sky(scene);
+  sky.update(run.minute);
+  (scene.fog as THREE.Fog).near = 60;
+  (scene.fog as THREE.Fog).far = 170;
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 400);
   const shake = new Shake();
   const traffic = new Traffic(scene);
@@ -317,6 +322,7 @@ export function city(): Scene {
       }
     },
     update(dt) {
+      sky.update(run.minute);
       const now = performance.now();
       // World x of the player (body.pos is local to the vehicle while riding).
       const wx = ride ? ride.obj.position.x : body.pos.x;
