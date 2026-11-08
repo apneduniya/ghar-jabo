@@ -13,6 +13,8 @@ import { Minimap } from '../ui/minimap';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';
+import { Ambience } from '../audio/ambience';
+import { floods } from '../content/sectorv';
 import { T } from '../content/tuning';
 import { pick, ticker } from '../content/text';
 import { rng } from '../sim/rng';
@@ -113,6 +115,7 @@ export function sectorv(): Scene {
   let lastPlace = '';
   let leaving = false;
   const pending = { jump: false, action: false, phone: false };
+  const ambience = new Ambience(floods);
 
   function intentFromInput(): Intent {
     const fx = Math.cos(yaw), fz = Math.sin(yaw);
@@ -170,6 +173,7 @@ export function sectorv(): Scene {
       layer.append(actionBtn, jump, phoneBtn, minimap.el);
       notify(pick(ticker.start), '', 'news');
       hint('College gate, Street No. 2. Hop a bus, book a bike, or find the metro.');
+      ambience.start();
       setTimeout(() => hint(''), 6000);
     },
     update(dt) {
@@ -186,6 +190,7 @@ export function sectorv(): Scene {
       if (leaving) return;
 
       const p = world.player;
+      ambience.update(dt, run.jam, p.x, p.z);
       const ride = world.riding;
       actors.sync(world.traffic.vehicles, world.captainId, world.captain?.captain?.name ?? '');
 
@@ -232,6 +237,7 @@ export function sectorv(): Scene {
       if (place !== lastPlace) { lastPlace = place; setDateline(place); }
     },
     exit() {
+      ambience.stop();
       enableStick(false);
       layer.remove();
       hint('');

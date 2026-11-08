@@ -33,7 +33,9 @@ Space to jump, E to hop on/off, P for the bike-taxi app, M to mute.
 **Map data** © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, available under the
 Open Database License (ODbL).
 
-**Sounds** (in `research/sounds/shippable/`, see `research/sounds/SOUNDS.md` for the full list):
+**Sounds** (the clips the game ships are in `public/sounds/`; the traffic, crow and rain beds are trimmed and
+re-cut as seamless loops. Sources are in `research/sounds/shippable/`, see `research/sounds/SOUNDS.md` for the full
+list; the tram bell and metro door sounds are synthesised):
 
 - Calcutta traffic horns and rain: TRP, freesound.org/s/576484 and /576486 (CC0)
 - Rain on a tin shed, Kolkata: Sukanta Majumdar, radio aporee / archive.org (Public Domain Mark)
