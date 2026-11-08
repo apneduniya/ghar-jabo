@@ -35,7 +35,8 @@ for (const stage of ['city', 'station'] as const) {
 test('an ending shows the newspaper', async ({ page }) => {
   const errors = await boot(page);
   await page.evaluate(() => (window as any).gj.fail('still-sector-v'));
-  await expect(page.locator('.paper h3')).not.toBeEmpty();
+  // The newspaper waits one rendered frame for its photo; SwiftShader frames are slow here.
+  await expect(page.locator('.paper h3')).not.toBeEmpty({ timeout: 20_000 });
   expect(errors).toEqual([]);
 });
 
