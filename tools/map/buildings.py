@@ -2,7 +2,7 @@
 
 Levels come from, in order: research/map/overrides.json (Street View, `hs: 'sv'`), OSM `building:levels`
 (`hs: 'osm'`), or a guess (`hs: 'guess'`) that is plausible for the type and size and deterministic per OSM id.
-Height is always lv * FLOOR_M * SCALE (geo.height).
+Height is always lv * FLOOR_U (geo.height).
 
 Styles (`t`): office = glass tower, block = concrete office/govt, college, resi, shop, low (sheds, kiosks).
 """

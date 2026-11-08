@@ -8,7 +8,11 @@ CENTRE = (22.57700, 88.42935)   # Street 13 x Street 2, by PwC
 SCALE = 0.5                     # game units per metre: compresses distances so runs stay short
 RADIUS_M = 720
 HALF = RADIUS_M * SCALE         # the play square is |x|, |z| <= HALF
-FLOOR_M = 3.3                   # one storey, metres. Height is always lv * FLOOR_M * SCALE.
+FLOOR_M = 3.3                   # one real storey, metres (for reference)
+# One storey in game units. People and vehicles are at metre scale while ground distances are halved, so a
+# floor is drawn at 2.4 u: taller than a person, but towers don't turn into needles on halved footprints.
+# Must match FLOOR_U in src/content/tuning.ts.
+FLOOR_U = 2.4
 M_LON = 111320 * math.cos(math.radians(CENTRE[0]))
 M_LAT = 110540
 
@@ -25,7 +29,7 @@ def to_ll(x, z):
 
 
 def height(lv):
-    return round(lv * FLOOR_M * SCALE, 2)
+    return round(lv * FLOOR_U, 2)
 
 
 def inside_sq(p, r=HALF):

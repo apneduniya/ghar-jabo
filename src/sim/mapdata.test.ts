@@ -1,4 +1,5 @@
 // Invariants of the built map (tools/build-map.py -> src/content/maps/sectorv.json) and the Street View overrides.
+import { FLOOR_U } from '../content/tuning';
 import { describe, expect, it } from 'vitest';
 import mapJson from '../content/maps/sectorv.json';
 import overridesJson from '../../research/map/overrides.json';
@@ -7,12 +8,12 @@ import type { Building, MapData, Pt } from './mapdata';
 const map = mapJson as unknown as MapData & { scale: number };
 const overrides = overridesJson as unknown as { buildings: Record<string, { lv?: number; t?: string; colour?: string; label?: string; drop?: boolean; n?: string | null }> };
 const HALF = 360; // the play square, |x| and |z| <= 720 m * 0.5
-const STOREY = 3.3 * map.scale;
+const STOREY = FLOOR_U;
 
 const centroid = (p: Pt[]): Pt => [p.reduce((a, q) => a + q[0], 0) / p.length, p.reduce((a, q) => a + q[1], 0) / p.length];
 
 describe('buildings', () => {
-  it('every building has at least one storey and its height is storeys x 3.3 m x scale', () => {
+  it('every building has at least one storey and its height is storeys x FLOOR_U', () => {
     for (const b of map.buildings) {
       expect(b.lv).toBeGreaterThanOrEqual(1);
       expect(b.h).toBeCloseTo(b.lv! * STOREY, 1);

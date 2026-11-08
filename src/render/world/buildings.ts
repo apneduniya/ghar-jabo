@@ -7,6 +7,7 @@
 // One geometry per facade texture plus one for roofs and trim, so ~1000 buildings draw in six calls.
 
 import * as THREE from 'three';
+import { FLOOR_U, SHOP_U } from '../../content/tuning';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Building, BuildingStyle, Pt } from '../../sim/mapdata';
 import { facadeBlock, facadeClad, facadeOffice, facadeOld, facadeResidential, facadeShop, litMask } from './textures';
@@ -14,8 +15,8 @@ import { glowAtNight } from '../sky';
 
 type Skin = 'resi' | 'old' | 'office' | 'clad' | 'block' | 'shop';
 const BAY = 3; // window bay width for the house kit, world units
-const FLOOR = 3.2; // texture floor height for the house kit (as before); the frontage uses the same
-const SHOP_H = 3.4;
+const FLOOR = FLOOR_U; // one storey: the facade texture repeats once per floor; the frontage uses the same
+const SHOP_H = SHOP_U;
 const PODIUM = 2; // storeys of banded podium under a college's glass
 
 const TINTS: Record<Skin, number[]> = {
@@ -69,7 +70,7 @@ function insidePoly(p: Pt[], x: number, z: number) {
 const hash = (p: Pt[]) => Math.abs(Math.round(p[0][0] * 73 + p[0][1] * 151 + p.length * 7));
 
 /** Storeys for older map data without `lv` (h was in world units, 3.3 m per storey at half scale). */
-const storeys = (b: Building) => b.lv ?? Math.max(1, Math.round(b.h / 1.65));
+const storeys = (b: Building) => b.lv ?? Math.max(1, Math.round(b.h / FLOOR_U));
 
 /** Legacy style when `t` is missing: big or tall footprints are offices, the rest houses. */
 function styleOf(b: Building, area: number): BuildingStyle {

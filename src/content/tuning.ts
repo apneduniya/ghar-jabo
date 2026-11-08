@@ -56,3 +56,8 @@ export const T = {
 
   metro: { fare: 20 },
 };
+
+/** One storey in world units (see tools/map/geo.py FLOOR_U). Taller than a person (1.75), on halved footprints. */
+export const FLOOR_U = 2.4;
+/** Ground-floor shop height: a little taller than an upper floor. */
+export const SHOP_U = 3.0;

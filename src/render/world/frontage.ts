@@ -3,11 +3,12 @@
 // a white strip at the bottom of the sign atlas, so they share the signs' material.
 
 import * as THREE from 'three';
+import { FLOOR_U, SHOP_U } from '../../content/tuning';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Bay } from './buildings';
 import { glowAtNight } from '../sky';
 
-const FLOOR = 3.2, SHOP_H = 3.4;
+const FLOOR = FLOOR_U, SHOP_H = SHOP_U;
 const SIGNS = [
   ['MAA DURGA SWEETS', '#d9342b', '#fff6c9'], ['SRI GANESH TELECOM', '#1f5f9a', '#ffffff'], ['XEROX · LAMINATION', '#ffffff', '#1d1d1d'],
   ['BIRYANI BHAVAN', '#2b7a3b', '#ffe680'], ['ANNAPURNA HOTEL', '#f2c230', '#7a1f1f'], ['MEDICINE POINT 24×7', '#0e8a5b', '#ffffff'],
