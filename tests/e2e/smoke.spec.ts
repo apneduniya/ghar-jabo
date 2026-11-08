@@ -55,3 +55,12 @@ test('hop onto a Kolkata bus at its left rear door', async ({ page }) => {
   expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
   expect(errors).toEqual([]);
 });
+
+test('minimap opens the full real map and stays within budget', async ({ page }) => {
+  const errors = await boot(page);
+  await expect(page.locator('.minimap')).toBeVisible();
+  await page.locator('.minimap').dispatchEvent('pointerdown');
+  await expect(page.locator('.minimap.big')).toBeVisible();
+  expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  expect(errors).toEqual([]);
+});

@@ -142,3 +142,8 @@ blockquote cite::before { content: '— '; }
 .progress b { position: absolute; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: var(--player, #ff7a1a); border: 3px solid #fff; transform: translateX(-50%); }
 .progress::after { content: '🏠'; position: absolute; right: -24px; top: 2px; font-size: 18px; }
 .stream { top: calc(124px + env(safe-area-inset-top)); }
+
+/* Minimap: round, top-left under the clock; tap for the full map. */
+.minimap { position: absolute; top: calc(84px + env(safe-area-inset-top)); left: 10px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 14px rgba(0,0,0,.35); pointer-events: auto; background: #c9c2b4; }
+.minimap.big { top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 14px; z-index: 7; }
+.layer:has(.minimap) ~ .stream, .stream { left: 150px; }

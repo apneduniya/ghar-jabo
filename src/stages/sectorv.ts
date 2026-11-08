@@ -8,6 +8,8 @@ import { C, resize, Shake, sign } from '../render/gfx';
 import { playerPerson } from '../render/models';
 import { Actors } from '../render/actors';
 import { buildCityMap, map } from '../render/world/citymap';
+import { buildProps } from '../render/world/props';
+import { Minimap } from '../ui/minimap';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';
@@ -74,6 +76,7 @@ export function sectorv(): Scene {
   const gate = gateSpot(world);
   world.player.x = gate.x;
   world.player.z = gate.z;
+  buildProps(scene, map, world.grid, world.metroEntrance);
   buildGate(scene, gate.road.x + gate.nx * (gate.road.w / 2 + 2.8), gate.road.z + gate.nz * (gate.road.w / 2 + 2.8), gate.road, gate.nx, gate.nz);
 
   const playerObj = playerPerson();
@@ -96,11 +99,13 @@ export function sectorv(): Scene {
   ms.rotation.y = built.stationDir;
   scene.add(ms);
   const ent = sign('🚇 METRO ↓', 3.6, 0.8, '#2e9e5b');
-  ent.position.set(world.metroEntrance.x, 2.6, world.metroEntrance.z);
+  ent.position.set(world.metroEntrance.x, 3.8, world.metroEntrance.z);
   scene.add(ent);
 
   let layer: HTMLElement;
   let actionBtn: HTMLButtonElement;
+  const minimap = new Minimap(map);
+  const exit = map.busPath[map.busPath.length - 1];
   let phoneBtn: HTMLButtonElement;
   let balanceUi: HTMLElement | null = null;
   let yaw = Math.atan2(-gate.z, -gate.x); // face the junction
@@ -162,7 +167,7 @@ export function sectorv(): Scene {
       pressButton(jump, 'jump');
       phoneBtn = el('button', 'phone-btn', '');
       pressButton(phoneBtn, 'phone');
-      layer.append(actionBtn, jump, phoneBtn);
+      layer.append(actionBtn, jump, phoneBtn, minimap.el);
       notify(pick(ticker.start), '', 'news');
       hint('College gate, Street No. 2. Hop a bus, book a bike, or find the metro.');
       setTimeout(() => hint(''), 6000);
@@ -221,6 +226,7 @@ export function sectorv(): Scene {
       camera.lookAt(p.x + fx * 6, 1.2, p.z + fz * 6);
       shake.apply(camera, dt);
       actors.billboard(camera);
+      minimap.draw({ x: p.x, z: p.z, yaw, vehicles: world.traffic.vehicles, captainId: world.captainId, metro: world.metroEntrance, exit: { x: exit[0], z: exit[1] } }, performance.now());
 
       const place = placeName(p.x, p.z);
       if (place !== lastPlace) { lastPlace = place; setDateline(place); }
