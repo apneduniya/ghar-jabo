@@ -59,13 +59,13 @@ export function enableStick(on: boolean) {
   } else {
     keysEl = document.createElement('div');
     keysEl.className = 'keys';
-    keysEl.innerHTML = '<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> run · <kbd>Space</kbd> jump · <kbd>E</kbd> hop on/off · <kbd>P</kbd> Rapi-Nah · <kbd>M</kbd> mute';
+    keysEl.innerHTML = '<span><kbd>WASD</kbd> run</span><span><kbd>Space</kbd> jump</span><span><kbd>E</kbd> hop</span><span><kbd>P</kbd> Rapi-Nah</span><span><kbd>M</kbd> mute</span>';
     ui.appendChild(keysEl);
   }
 }
 
 function isUiTarget(t: EventTarget | null) {
-  return t instanceof HTMLElement && !!t.closest('button, .phone, .card-wrap, .paper, .call, .minimap, .title');
+  return t instanceof HTMLElement && !!t.closest('button, .phone, .card-wrap, .paper, .call, .minimap, .title-screen');
 }
 
 addEventListener('pointerdown', (e) => {
@@ -82,7 +82,7 @@ addEventListener('pointerdown', (e) => {
 
 function move(cx: number, cy: number) {
   const dx = cx - stick.ox, dy = cy - stick.oy;
-  const r = 52;
+  const r = (stickEl?.offsetWidth || 128) * 0.4; // the stick's size comes from the layout (style.css)
   const len = Math.min(r, Math.hypot(dx, dy));
   const a = Math.atan2(dy, dx);
   const kx = Math.cos(a) * len, ky = Math.sin(a) * len;

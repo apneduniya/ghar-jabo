@@ -6,6 +6,26 @@ import { rng } from '../sim/rng';
 
 export const pick = <T>(xs: readonly T[]): T => rng.pick(xs);
 
+/** Title screen copy. */
+export const titleCopy = {
+  premise: '6:30 PM, Salt Lake Sector V. <b>Get home to Sealdah.</b> Everything will go wrong.',
+  timed: { name: 'BEFORE 10:30', line: 'Home by 10:30 PM · 4 min' },
+  free: { name: 'FREE ROAM', line: 'No deadline. Nights pass.' },
+  howto: [
+    ['🚌', 'Hop buses', 'Catch them moving'],
+    ['📱', 'Rapi-Nah', 'It will cancel'],
+    ['🚇', 'Metro', 'Wipro More'],
+  ],
+  diaryTitle: 'Free-roam diary',
+  diaryEmpty: 'No arrivals yet. Ma is still waiting.',
+  rotate: 'Turn sideways: wider street, more buses in view',
+  credit: 'Real streets from OpenStreetMap',
+  challenge: 'Challenge run: same evening, same traffic as your friend. Beat their time.',
+};
+
+/** Newspaper kicker line above the headline, per mode. */
+export const editionLine = { timed: 'Before-10:30 edition', free: 'Free roam · Night edition' };
+
 export const loadingTips = [
   'Karunamoyee is not a stop. It is a feeling.',
   'Rain at 6 PM is a feature, not a bug.',
