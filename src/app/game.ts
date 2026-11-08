@@ -1,7 +1,7 @@
 // Scene switching and the shared run. Scenes import `game` to move between each other.
 
 import type * as THREE from 'three';
-import { Run, type ArriveMode, type EndingId } from './state';
+import { Run, type ArriveMode, type EndingId } from '../sim/run';
 
 export interface Scene {
   scene?: THREE.Scene;

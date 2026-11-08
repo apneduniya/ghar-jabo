@@ -4,7 +4,7 @@
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import mapData from '../data/sectorv.json';
+import mapData from '../../content/maps/sectorv.json';
 
 export type Pt = [number, number]; // x, z
 export interface Road { n: string; k: string; w: number; b: number; o: number; p: Pt[] }

@@ -1,10 +1,10 @@
 // Title screen: the family WhatsApp group, one big button.
 
-import type { Scene } from '../game';
-import { game } from '../game';
-import { sceneLayer, el, wait } from '../ui';
-import { familyChat, loadingTips, pick } from '../text';
-import { unlockAudio, sfx } from '../audio';
+import type { Scene } from '../app/game';
+import { game } from '../app/game';
+import { sceneLayer, el, wait } from '../ui/ui';
+import { familyChat, loadingTips, pick } from '../content/text';
+import { unlockAudio, sfx } from '../audio/audio';
 
 export function lobby(): Scene {
   let layer: HTMLElement;

@@ -1,0 +1,5 @@
+#!/bin/sh
+# Local CI: GitHub Actions minutes are used up, so every push runs the full check here.
+# Skip in an emergency with: git push --no-verify
+echo "pre-push: running npm run check"
+npm run check

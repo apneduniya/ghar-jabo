@@ -6,3 +6,5 @@ research/mac/audio/
 research/archive-headless/img/
 research/sounds/reference/
 research/map/gmaps-*.png
+test-results/
+playwright-report/

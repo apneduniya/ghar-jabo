@@ -7,7 +7,7 @@ import json, math, sys, os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'research', 'map')
-OUT = os.path.join(ROOT, 'src', 'data', 'sectorv.json')
+OUT = os.path.join(ROOT, 'src', 'content', 'maps', 'sectorv.json')
 
 CENTRE = (22.57700, 88.42935)   # Street 13 x Street 2, by PwC
 SCALE = 0.5                     # game units per metre: compresses distances so runs stay short

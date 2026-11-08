@@ -2,8 +2,8 @@
 // Vehicles only exist in a window around the player. The jam slows everything and makes it stop-and-go.
 
 import * as THREE from 'three';
-import { bike, bus, BUS_LEN, BUS_REAR_DOOR, BUS_WIDTH, car, person, pickColor, rand, taxi } from './gfx';
-import { LANES_EAST, LANES_WEST, stops } from './route';
+import { bike, bus, BUS_LEN, BUS_REAR_DOOR, BUS_WIDTH, car, person, pickColor, rand, taxi } from '../render/gfx';
+import { LANES_EAST, LANES_WEST, stops } from '../content/route';
 
 export type Kind = 'car' | 'taxi' | 'bus' | 'bike';
 

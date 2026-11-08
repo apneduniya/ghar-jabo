@@ -1,12 +1,12 @@
 // The ending: a "Sector V Samachar" front page built from the run, shareable as an image.
 
-import type { Scene } from '../game';
-import { game } from '../game';
-import { sceneLayer, el, showHud } from '../ui';
-import { capturePhoto } from '../gfx';
-import { clockText, START_MIN, START_MONEY, type Run } from '../state';
-import { eiTakay, endingTitles, headline, quote, rankTitle } from '../text';
-import { sfx } from '../audio';
+import type { Scene } from '../app/game';
+import { game } from '../app/game';
+import { sceneLayer, el, showHud } from '../ui/ui';
+import { capturePhoto } from '../render/gfx';
+import { clockText, START_MIN, START_MONEY, type Run } from '../sim/run';
+import { eiTakay, endingTitles, headline, quote, rankTitle } from '../content/text';
+import { sfx } from '../audio/audio';
 
 const SITE = 'gharjabo.boogles.dev';
 

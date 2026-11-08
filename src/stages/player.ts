@@ -1,8 +1,8 @@
 // The student on foot: run, jump, get knocked down. Scenes decide what else (hanging off buses, riding pillion).
 
 import * as THREE from 'three';
-import { playerPerson } from './gfx';
-import { input } from './input';
+import { playerPerson } from '../render/gfx';
+import { input } from '../input/input';
 
 export const RUN_SPEED = 6.5;
 

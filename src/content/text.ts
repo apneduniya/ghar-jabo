@@ -1,9 +1,10 @@
 // Every joke line in one place. Bangla is romanised, mixed with Hindi and English the way
 // Sector V actually talks, and every line should read fine without knowing Bangla.
 
-import type { EndingId, Run } from './state';
+import type { EndingId, Run } from '../sim/run';
+import { rng } from '../sim/rng';
 
-export const pick = <T>(xs: readonly T[]): T => xs[Math.floor(Math.random() * xs.length)];
+export const pick = <T>(xs: readonly T[]): T => rng.pick(xs);
 
 export const loadingTips = [
   'Karunamoyee is not a stop. It is a feeling.',

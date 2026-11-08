@@ -1,15 +1,15 @@
-import { renderer, resize, capturePhoto } from './gfx';
+import { renderer, resize, capturePhoto } from '../render/gfx';
 import { game } from './game';
-import { endFrame, readInput } from './input';
-import { root, el, updateHud, notify } from './ui';
-import { sfx, toggleMute } from './audio';
-import { momLines, pick } from './text';
-import { rand } from './gfx';
-import { lobby } from './scenes/lobby';
-import { city } from './scenes/city';
-import { sectorv } from './scenes/sectorv';
-import { station } from './scenes/station';
-import { result } from './scenes/result';
+import { endFrame, readInput } from '../input/input';
+import { root, el, updateHud, notify } from '../ui/ui';
+import { sfx, toggleMute } from '../audio/audio';
+import { momLines, pick } from '../content/text';
+import { rand } from '../render/gfx';
+import { lobby } from '../stages/lobby';
+import { city } from '../stages/city';
+import { sectorv } from '../stages/sectorv';
+import { station } from '../stages/station';
+import { result } from '../stages/result';
 
 game.register('lobby', lobby);
 game.register('city', city);

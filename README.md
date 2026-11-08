@@ -14,6 +14,7 @@ Built with Vite, TypeScript and three.js. The streets are real, generated from O
 npm install
 npm run dev        # local dev server
 npm run build      # production build in dist/
+npm run check      # everything: types, lint, tests, build, size, browser smoke tests
 ```
 
 Controls: on a phone, drag the left side to run and use the buttons on the right. On a laptop: WASD to run,
@@ -21,7 +22,8 @@ Space to jump, E to hop on/off, P for the bike-taxi app, M to mute.
 
 ## Project docs
 
-- `docs/PROPOSAL.md`: stack, folder structure, principles, tests and the agent workflow.
+- `AGENTS.md`: rules and commands for anyone (human or agent) working on the code.
+- `docs/PROPOSAL.md`: stack, folder structure, principles and tests. `docs/WORKFLOW.md`: how we work. `docs/tasks/BACKLOG.md`: what is next.
 - `DESIGN.md`: the game design.
 - `research/`: playtest notes on similar games, framework research, map and sound research.
 - `tools/build-map.py`: turns OpenStreetMap extracts into `src/data/sectorv.json`.

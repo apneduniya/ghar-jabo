@@ -1,7 +1,7 @@
 // DOM overlay: HUD, notification stream, trade-off cards, action buttons and hints.
 
-import { clockText, type Run } from './state';
-import { sfx } from './audio';
+import { clockText, type Run } from '../sim/run';
+import { sfx } from '../audio/audio';
 
 export const root = document.getElementById('ui')!;
 

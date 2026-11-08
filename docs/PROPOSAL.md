@@ -1,7 +1,7 @@
 # Ghar Jabo: stack, structure and agent workflow (proposal)
 
 Based on `research/stack/STACK.md` (frameworks, iPhone performance) and `research/stack/GITHUB-GAMES.md`
-(20 open-source game repos read). Status: proposal, waiting for Adarsh's OK.
+(20 open-source game repos read). Status: accepted 8 Nov 2026. Day-to-day process: `docs/WORKFLOW.md`; backlog: `docs/tasks/BACKLOG.md`.
 
 ## Stack
 

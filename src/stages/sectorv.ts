@@ -1,15 +1,15 @@
 // The real start area around TIU, built from OpenStreetMap: walk it GTA-style with a camera that turns with you.
 
 import * as THREE from 'three';
-import type { Scene } from '../game';
-import { game } from '../game';
-import { C, resize, Shake, sign } from '../gfx';
-import { sceneLayer, el, hint, notify, setDateline, showHud } from '../ui';
-import { input, enableStick, pressButton } from '../input';
-import { Body } from '../player';
-import { buildCityMap, map, type Pt } from '../world/citymap';
-import { BuildingGrid } from '../world/collide';
-import { pick, ticker } from '../text';
+import type { Scene } from '../app/game';
+import { game } from '../app/game';
+import { C, resize, Shake, sign } from '../render/gfx';
+import { sceneLayer, el, hint, notify, setDateline, showHud } from '../ui/ui';
+import { input, enableStick, pressButton } from '../input/input';
+import { Body } from './player';
+import { buildCityMap, map, type Pt } from '../render/world/citymap';
+import { BuildingGrid } from '../render/world/collide';
+import { pick, ticker } from '../content/text';
 
 /** Nearest point on any main road to p, and that road's width. */
 function nearestMainRoad(p: Pt) {

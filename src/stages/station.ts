@@ -2,15 +2,15 @@
 // shove through the platform crowd and get in before the doors shut. Then the ride: don't miss Sealdah.
 
 import * as THREE from 'three';
-import type { Scene } from '../game';
-import { game } from '../game';
-import { bake, box, C, person, rand, resize, Shake, sign } from '../gfx';
-import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline } from '../ui';
-import { input, enableStick, pressButton } from '../input';
-import { sfx } from '../audio';
-import { Body } from '../player';
-import { greenLine, pick, ticker } from '../text';
-import { METRO_OUT_X } from '../route';
+import type { Scene } from '../app/game';
+import { game } from '../app/game';
+import { bake, box, C, person, rand, resize, Shake, sign } from '../render/gfx';
+import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline } from '../ui/ui';
+import { input, enableStick, pressButton } from '../input/input';
+import { sfx } from '../audio/audio';
+import { Body } from './player';
+import { greenLine, pick, ticker } from '../content/text';
+import { METRO_OUT_X } from '../content/route';
 
 const GATE_X = 12;
 const ESC: [number, number] = [22, 34];

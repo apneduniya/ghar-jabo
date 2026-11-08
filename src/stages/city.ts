@@ -2,16 +2,16 @@
 // hang off the footboard, wave down Rapi-Nah bikes, or duck into the metro.
 
 import * as THREE from 'three';
-import type { Scene } from '../game';
-import { game } from '../game';
-import { bake, box, building, BUS_REAR_DOOR, C, duskScene, person, rand, resize, Shake, sign } from '../gfx';
-import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline, showHud } from '../ui';
-import { input, enableStick, pressButton } from '../input';
-import { sfx, Engine } from '../audio';
-import { Body } from '../player';
-import { Traffic, type Vehicle } from '../traffic';
-import { FOOT_NEAR, HOME_X, LANES_EAST, METRO_IN_X, inFlood, floods, placeName, stops } from '../route';
-import { cancelReasons, captainNames, pick, ticker } from '../text';
+import type { Scene } from '../app/game';
+import { game } from '../app/game';
+import { bake, box, building, BUS_REAR_DOOR, C, duskScene, person, rand, resize, Shake, sign } from '../render/gfx';
+import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline, showHud } from '../ui/ui';
+import { input, enableStick, pressButton } from '../input/input';
+import { sfx, Engine } from '../audio/audio';
+import { Body } from './player';
+import { Traffic, type Vehicle } from './traffic';
+import { FOOT_NEAR, HOME_X, LANES_EAST, METRO_IN_X, inFlood, floods, placeName, stops } from '../content/route';
+import { cancelReasons, captainNames, pick, ticker } from '../content/text';
 
 const DOOR_X = BUS_REAR_DOOR; // doors are on the left of Kolkata buses
 const potholes = Array.from({ length: 40 }, () => ({ x: rand(-20, HOME_X), z: rand(-5.5, -0.5) }));
@@ -42,7 +42,6 @@ export function city(): Scene {
   let marker: THREE.Mesh | null = null;
   let lastPlace = '';
   let rideMode: 'bus' | 'rapinah' | null = null;
-  let hangT = 0;
 
   buildWorld(scene);
   bake(scene); // all static scenery in one draw call
@@ -85,7 +84,6 @@ export function city(): Scene {
     rideMode = 'bus';
     lean = 0;
     leanVel = 0.3;
-    hangT = 0;
     v.obj.add(body.obj);
     body.pos.set(DOOR_X + 0.2, 0.6, -v.width / 2 - 0.25);
     body.obj.rotation.set(0, 0, 0);
@@ -345,7 +343,6 @@ export function city(): Scene {
         }
         if (input.phone) book();
       } else if (state === 'hang' && ride) {
-        hangT += dt;
         // Footboard pendulum: the bus sways and brakes, ← → pulls you back in.
         const sway = Math.sin(now / 700) * 0.8 + Math.sin(now / 290) * 0.35 + (ride.speed < 2 ? 0.6 : 0);
         leanVel += (sway * 0.9 + lean * 1.5 - input.mz * 3.2) * dt;
