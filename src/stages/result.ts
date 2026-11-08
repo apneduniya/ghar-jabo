@@ -3,8 +3,9 @@
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
 import { sceneLayer, el, showHud } from '../ui/ui';
-import { clockText, START_MIN, START_MONEY, type Run } from '../sim/run';
-import { eiTakay, endingTitles, headline, quote, rankTitle } from '../content/text';
+import { clockText, END_MIN, START_MONEY, type Run } from '../sim/run';
+import { editionLine, eiTakay, endingTitles, headline, quote, rankTitle } from '../content/text';
+import { tookText } from '../ui/format';
 import { sfx } from '../audio/audio';
 import { isHomeEnding } from '../audio/mix';
 
@@ -27,10 +28,11 @@ export function result(): Scene {
       layer = sceneLayer();
       layer.classList.add('result');
       layer.appendChild(paper);
+      // Buttons sit in a bar pinned to the bottom (portrait) or a rail on the right (landscape): always reachable.
       const btns = el('div', 'result-btns');
       const share = el('button', 'cholo', 'Share 📤');
-      const save = el('button', 'ghost', 'Save image');
-      const again = el('button', 'ghost', 'Abar cholo ↺');
+      const save = el('button', 'ghost', 'Save 💾');
+      const again = el('button', 'ghost again', 'Abar cholo ↺');
       share.onclick = () => void shareImage(run, title, photo.dataUrl, photo.burst, q, true);
       save.onclick = () => void shareImage(run, title, photo.dataUrl, photo.burst, q, false);
       again.onclick = () => { sfx.tap(); game.newRun(); };
@@ -48,12 +50,17 @@ function today() {
   return new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+/** The big line under the headline: where and when you got, and how long it took. */
+function arrival(run: Run): [string, string] {
+  const free = run.mode === 'free';
+  if (run.ending === 'still-sector-v') return [`Still in Sector V at ${clockText(free ? run.minute : END_MIN, free)}`, 'Never reached'];
+  if (run.ending === 'howrah-express') return ['Reached Howrah 😴', `Out for ${tookText(run.elapsed)}`];
+  return [`Reached ${clockText(run.minute, free)}`, `Took ${tookText(run.elapsed)}`];
+}
+
 function stats(run: Run): [string, string][] {
   const s = run.stats;
   return [
-    ['Left', clockText(START_MIN)],
-    ['Reached', run.ending === 'still-sector-v' ? 'Never' : run.ending === 'howrah-express' ? 'Howrah 😴' : clockText(run.minute, run.mode === 'free')],
-    ...(run.mode === 'free' && run.homeMode ? [['Took', took(run.elapsed)] as [string, string]] : []),
     ['Rides cancelled', String(s.cancels)],
     ['Money left', `₹${run.money}`],
     ['Footboard stops', String(s.footboardStops)],
@@ -61,12 +68,6 @@ function stats(run: Run): [string, string][] {
     ['Ma\'s missed calls', String(s.momMissed)],
     ['Dignity', `${Math.round(run.dignity)}%`],
   ];
-}
-
-/** "2 h 14 min", or "1 day 3 h" for very long free-roam runs. */
-function took(min: number) {
-  const d = Math.floor(min / 1440), h = Math.floor((min % 1440) / 60), m = Math.floor(min % 60);
-  return d ? `${d} day${d > 1 ? 's' : ''} ${h} h` : h ? `${h} h ${m} min` : `${m} min`;
 }
 
 function poll(run: Run) {
@@ -80,13 +81,15 @@ type Quote = { text: string; who: string };
 
 function buildPaper(run: Run, title: string, photo: string, burst: string, q: Quote, pollLine: string): HTMLElement {
   const p = el('article', 'paper');
+  const arr = arrival(run);
   p.innerHTML = `
     <header>
       <div class="ear">Jol ashe-jay.<br/>Bus thame na.</div>
       <h2>SECTOR V SAMACHAR</h2>
       <div class="ear">Rapi-Nah kobe ashbe<br/>jani na.</div>
     </header>
-    <div class="dateline">${today()} · Price ₹5 · Evening edition · The voice of people stuck at College More</div>
+    <div class="dateline">${today()} · Price ₹5 · <b>${editionLine[run.mode]}</b> · The voice of people stuck at College More</div>
+    <div class="pcol">
     <h3>${headline(run)}</h3>
     <figure ${photo ? '' : 'hidden'}>
       <img src="${photo}" alt="" />
@@ -94,13 +97,17 @@ function buildPaper(run: Run, title: string, photo: string, burst: string, q: Qu
       <span class="stamp">${title}</span>
       <figcaption>Photo by a passer-by who filmed instead of helping.</figcaption>
     </figure>
+    </div>
+    <div class="pcol">
+    <div class="band"><em>${run.mode === 'free' ? '🌙 FREE ROAM' : '⏱ BEFORE 10:30'}</em><b>${arr[0]}</b><span>${arr[1]}</span></div>
     <div class="cols">
       <blockquote>“${q.text}”<cite>${q.who}</cite></blockquote>
       <div class="box"><b>EI TAKAY HOTO</b>${eiTakay(START_MONEY - run.money)}</div>
     </div>
     <div class="poll">${pollLine}</div>
     <dl class="stats">${stats(run).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
-    <footer><b>${rankTitle(run)}</b> · Tumi parbe? Same evening, same traffic: <b>${SITE}/?seed=${run.seed}</b></footer>`;
+    <footer><b>${rankTitle(run)}</b> · Tumi parbe? Same evening, same traffic: <b>${SITE}/?seed=${run.seed}</b></footer>
+    </div>`;
   return p;
 }
 
@@ -119,7 +126,7 @@ async function shareImage(run: Run, title: string, photo: string, burst: string,
   g.font = 'bold 84px Georgia, serif';
   g.fillText('SECTOR V SAMACHAR', W / 2, 110);
   g.font = '26px Georgia, serif';
-  g.fillText(`${today()} · Price ₹5 · Evening edition`, W / 2, 155);
+  g.fillText(`${today()} · Price ₹5 · ${editionLine[run.mode]}`, W / 2, 155);
   g.fillRect(60, 175, W - 120, 4);
 
   g.textAlign = 'left';
@@ -163,7 +170,11 @@ async function shareImage(run: Run, title: string, photo: string, burst: string,
   g.fillStyle = '#1b1b1b';
   g.font = 'italic 34px Georgia, serif';
   wrap(g, `“${q.text}” — ${q.who}`, W - 120).forEach((l, i) => g.fillText(l, 60, y + 40 + i * 42));
-  y += 130;
+  y += 120;
+  const [reached, tookLine] = arrival(run);
+  g.font = 'bold 34px system-ui, sans-serif';
+  g.fillText(`${run.mode === 'free' ? '🌙' : '⏱'} ${reached} · ${tookLine}`, 60, y);
+  y += 56;
   const st = stats(run);
   g.font = '28px system-ui, sans-serif';
   st.forEach(([k, v], i) => {

@@ -2,7 +2,7 @@ import { renderer, resize, capturePhoto, canvas, maxPixelRatio } from '../render
 import { Quality } from '../render/quality';
 import { game } from './game';
 import { endFrame, readInput } from '../input/input';
-import { root, el, updateHud, notify } from '../ui/ui';
+import { el, updateHud, notify, streamEl, toast } from '../ui/ui';
 import { sfx, toggleMute } from '../audio/audio';
 import { momLines, pick } from '../content/text';
 import { rand } from '../render/gfx';
@@ -20,17 +20,22 @@ addEventListener('keydown', (e) => {
   if (e.key === 'm' || e.key === 'M') toggleMute();
 });
 
-// Ma calls more often as it gets late. The banner doesn't block play.
+// Ma calls more often as it gets late. A compact card pinned on top of the notification stream:
+// it never covers the road ahead, the player, the clock or the minimap. The bar shows when it rings out.
 let callOpen = false;
+const RING_MS = 4500;
 
 function momCall() {
   const run = game.run;
   callOpen = true;
   sfx.ring();
   const b = el('div', 'call');
-  b.innerHTML = `<div class="call-who"><i>📞</i><div><b>Ma calling…</b><span>${pick(momLines)}</span></div></div>`;
-  const yes = el('button', 'call-yes', 'Answer');
-  const no = el('button', 'call-no', 'Cut');
+  b.style.setProperty('--ring', `${RING_MS}ms`);
+  b.innerHTML = `<i class="call-ava">মা</i><div class="call-who"><b>Ma calling…</b><span>${pick(momLines)}</span></div><u></u>`;
+  const yes = el('button', 'call-yes', '📞');
+  const no = el('button', 'call-no', '✕');
+  yes.setAttribute('aria-label', 'Answer');
+  no.setAttribute('aria-label', 'Cut');
   const close = (answered: boolean) => {
     if (!callOpen) return;
     callOpen = false;
@@ -46,9 +51,9 @@ function momCall() {
   };
   yes.onclick = () => close(true);
   no.onclick = () => close(false);
-  b.append(yes, no);
-  root.appendChild(b);
-  setTimeout(() => close(false), 4500);
+  b.append(no, yes);
+  streamEl().prepend(b);
+  setTimeout(() => close(false), RING_MS);
   const gap = run.timeOfDay > 21 * 60 ? rand(12, 18) : rand(22, 32);
   run.nextCall = run.minute + gap;
 }
@@ -104,6 +109,7 @@ addEventListener('resize', () => {
 // Exposed for automated playtests.
 (window as unknown as { gj: typeof game; gjr: typeof renderer }).gj = game;
 (window as unknown as { gjr: typeof renderer }).gjr = renderer;
+(window as unknown as { gjui: unknown }).gjui = { notify, toast };
 
 // Boot straight into the real map, with the title screen floating over it.
 game.attract = true;

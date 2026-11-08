@@ -22,6 +22,8 @@ export function unlockAudio() {
   for (const fn of unlockHooks.splice(0)) fn();
 }
 
+export const isMuted = () => muted;
+
 export function toggleMute(): boolean {
   muted = !muted;
   if (master) master.gain.value = muted ? 0 : MASTER;

@@ -34,10 +34,21 @@ export class Minimap {
     this.ctx = this.el.getContext('2d')!;
     this.el.addEventListener('pointerdown', (e) => { e.stopPropagation(); this.big = !this.big; this.el.classList.toggle('big', this.big); this.resize(); });
     this.resize();
+    const onResize = () => {
+      if (!this.el.isConnected && this.lastDraw) { removeEventListener('resize', onResize); return; }
+      this.resize(); this.lastDraw = 0;
+    };
+    addEventListener('resize', onResize);
+  }
+
+  /** Small map size in CSS px: scales with the short side so it fits its corner slot (see style.css). */
+  static size(w = innerWidth, h = innerHeight) {
+    const s = w > h ? h * 0.24 : w * 0.29;
+    return Math.round(Math.min(150, Math.max(84, s)));
   }
 
   private resize() {
-    const css = this.big ? Math.min(innerWidth, innerHeight) - 40 : 128;
+    const css = this.big ? Math.min(innerWidth, innerHeight) - 40 : Minimap.size();
     const dpr = Math.min(devicePixelRatio, 2);
     this.el.width = this.el.height = Math.round(css * dpr);
     this.el.style.width = this.el.style.height = `${css}px`;

@@ -4,7 +4,7 @@
 import { ctx, master } from './core';
 import { playClip } from './clips';
 
-export { unlockAudio, toggleMute } from './core';
+export { unlockAudio, toggleMute, isMuted } from './core';
 
 function tone(freq: number, dur: number, type: OscillatorType = 'sine', gain = 0.3, when = 0, slideTo?: number) {
   if (!ctx || !master) return;
