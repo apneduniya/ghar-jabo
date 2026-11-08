@@ -11,14 +11,17 @@ const candidates = [
 ].filter(Boolean) as string[];
 const executablePath = candidates.find((p) => existsSync(p));
 
+// GJ_E2E_PORT lets two worktrees run their checks at the same time.
+const port = Number(process.env.GJ_E2E_PORT) || 4317;
+
 export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 90_000,
   workers: 1,
   reporter: [['list']],
-  webServer: { command: 'npx vite preview --host 127.0.0.1 --port 4317 --strictPort', url: 'http://127.0.0.1:4317', reuseExistingServer: false },
+  webServer: { command: `npx vite preview --host 127.0.0.1 --port ${port} --strictPort`, url: `http://127.0.0.1:${port}`, reuseExistingServer: false },
   use: {
-    baseURL: 'http://127.0.0.1:4317',
+    baseURL: `http://127.0.0.1:${port}`,
     viewport: { width: 390, height: 844 },
     hasTouch: true,
     launchOptions: { executablePath, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] },
