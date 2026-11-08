@@ -22,7 +22,9 @@ export function showTitle(opts: { seed: number | null; onPlay: () => void }): ()
   const play = el('button', 'play-btn', 'PLAY ▶');
   play.onclick = () => { close(); opts.onPlay(); };
   const foot = el('div', 'title-foot', '🔊 Sound on · Real streets from OpenStreetMap');
-  t.append(play, foot);
+  // A soft tip, never a block: WhatsApp opens links in portrait, and iPhones can't be forced to rotate.
+  const rotate = el('div', 'rotate-tip', '📱↻ Best sideways: wider street, more buses in view');
+  t.append(rotate, play, foot);
   root.appendChild(t);
   const close = () => { t.classList.add('out'); setTimeout(() => t.remove(), 300); };
   return close;

@@ -169,3 +169,25 @@ blockquote cite::before { content: '— '; }
 .play-btn { background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 30px; padding: 16px 0; width: min(420px, 100%); border-radius: 18px; box-shadow: 0 6px 0 #b38c00, 0 12px 30px rgba(0,0,0,.4); animation: pulse 1.4s infinite; }
 .play-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b38c00; }
 .title-foot { margin-top: 10px; font-size: 11px; opacity: .75; }
+
+.rotate-tip { font-size: 12px; background: rgba(20,16,36,.7); padding: 5px 10px; border-radius: 20px; margin-bottom: 10px; }
+@media (orientation: landscape) { .rotate-tip { display: none; } }
+
+/* Landscape phones: logo on the left, how-to and PLAY on the right, everything inside the screen. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .title-screen { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: calc(12px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); background: linear-gradient(90deg, rgba(27,20,48,.75) 0%, rgba(27,20,48,.1) 45%, rgba(27,20,48,.75) 100%); }
+  .logo { width: 44%; text-align: left; }
+  .logo h1 { font-size: clamp(40px, 11vh, 64px); }
+  .logo p { margin-left: 0; font-size: 13px; }
+  .challenge { order: 3; width: 44%; font-size: 12px; }
+  .howto { width: 50%; margin: 0 0 8px; order: 1; }
+  .play-btn { width: 50%; font-size: 24px; padding: 12px 0; order: 2; margin-left: 50%; }
+  .title-foot { width: 100%; text-align: right; order: 4; margin-top: 4px; }
+  .minimap { width: 104px !important; height: 104px !important; top: calc(10px + env(safe-area-inset-top)); left: auto; right: calc(150px + env(safe-area-inset-right)); }
+  .stream { top: calc(10px + env(safe-area-inset-top)); left: 34%; right: 34%; }
+  .phone-btn { top: calc(84px + env(safe-area-inset-top)); }
+  .hint { bottom: calc(14px + env(safe-area-inset-bottom)); max-width: 46%; }
+  .stick { left: calc(28px + env(safe-area-inset-left)); bottom: calc(22px + env(safe-area-inset-bottom)); }
+  .act-btn { bottom: calc(118px + env(safe-area-inset-bottom)); right: calc(20px + env(safe-area-inset-right)); }
+  .jump-btn { right: calc(20px + env(safe-area-inset-right)); }
+}
