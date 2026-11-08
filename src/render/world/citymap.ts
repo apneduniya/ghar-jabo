@@ -8,6 +8,7 @@ import mapData from '../../content/maps/sectorv.json';
 import type { MapData, Pt } from '../../sim/mapdata';
 import { asphalt, kerbStripes, pavers } from './textures';
 import { buildBuildings } from './buildings';
+import { buildFrontage } from './frontage';
 import { buildStructures, flyoverY, isFlyover, polyLen } from './structures';
 
 export type { Pt };
@@ -143,7 +144,16 @@ export function buildCityMap(): BuiltMap {
   group.add(new THREE.Mesh(mergeGeometries([...marks, ...flats]), new THREE.MeshLambertMaterial({ vertexColors: true })));
   if (water.length) group.add(new THREE.Mesh(mergeGeometries(water), new THREE.MeshPhongMaterial({ vertexColors: true, shininess: 80, specular: 0x88aacc })));
 
-  group.add(buildBuildings(map.buildings));
+  // Which wall midpoints face a main road: those get balconies, awnings and signs.
+  const mainSegs: number[][] = [];
+  for (const r of map.roads) if (MAIN.has(r.k) && !r.b) for (let i = 1; i < r.p.length; i++) mainSegs.push([...r.p[i - 1], ...r.p[i], r.w]);
+  const streetSide = (x: number, z: number) => mainSegs.some(([ax, az, bx, bz, w]) => {
+    const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / L2));
+    return Math.hypot(ax + dx * t - x, az + dz * t - z) < w / 2 + 9;
+  });
+  const b = buildBuildings(map.buildings, streetSide);
+  group.add(b.group, buildFrontage(b.bays).group);
 
   const st = map.stations.find((s) => s.n === 'Salt Lake Sector V') ?? map.stations[0];
   const s = buildStructures(map.roads, map.rails, st.p);

@@ -24,6 +24,8 @@ class Game {
   hitStop = 0;
   /** Set when an ending is waiting for one more rendered frame, so the newspaper has a photo. */
   resultPending = false;
+  /** True when the next real-map scene should open as the title screen (attract mode). */
+  attract = false;
   /** Handles for automated playtests. */
   debug: Record<string, unknown> = {};
 

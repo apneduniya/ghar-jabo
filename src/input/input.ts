@@ -34,56 +34,71 @@ function keyVector() {
   return { x, z };
 }
 
-// Floating joystick: put a thumb down anywhere on the left half, drag to move.
+// Joystick: always on screen (bottom-left) on touch devices, so nobody has to guess it exists.
+// A thumb anywhere on the left half drives it; the knob moves from the fixed base. Laptops get a key legend.
 const stick = { id: -1, ox: 0, oy: 0, x: 0, z: 0 };
 let stickEl: HTMLElement | null = null;
 let knobEl: HTMLElement | null = null;
+let keysEl: HTMLElement | null = null;
 let stickEnabled = false;
+export const touchDevice = matchMedia('(pointer: coarse)').matches;
 
 export function enableStick(on: boolean) {
   stickEnabled = on;
-  if (!on) { stick.id = -1; stick.x = stick.z = 0; stickEl?.remove(); stickEl = null; }
+  stick.id = -1; stick.x = stick.z = 0;
+  stickEl?.remove(); stickEl = null; keysEl?.remove(); keysEl = null;
+  if (!on) return;
+  const ui = document.getElementById('ui')!;
+  if (touchDevice) {
+    stickEl = document.createElement('div');
+    stickEl.className = 'stick';
+    stickEl.innerHTML = '<span class="ar u">▲</span><span class="ar d">▼</span><span class="ar l">◀</span><span class="ar r">▶</span><em>MOVE</em>';
+    knobEl = document.createElement('i');
+    stickEl.appendChild(knobEl);
+    ui.appendChild(stickEl);
+  } else {
+    keysEl = document.createElement('div');
+    keysEl.className = 'keys';
+    keysEl.innerHTML = '<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> run · <kbd>Space</kbd> jump · <kbd>E</kbd> hop on/off · <kbd>P</kbd> Rapi-Nah · <kbd>M</kbd> mute';
+    ui.appendChild(keysEl);
+  }
 }
 
 function isUiTarget(t: EventTarget | null) {
-  return t instanceof HTMLElement && !!t.closest('button, .phone, .card-wrap, .paper, .call');
+  return t instanceof HTMLElement && !!t.closest('button, .phone, .card-wrap, .paper, .call, .minimap, .title');
 }
 
 addEventListener('pointerdown', (e) => {
   input.tap = true;
-  if (!stickEnabled || stick.id !== -1 || isUiTarget(e.target)) return;
+  if (!stickEnabled || !stickEl || stick.id !== -1 || isUiTarget(e.target)) return;
   if (e.clientX > innerWidth * 0.55) return;
+  const r = stickEl.getBoundingClientRect();
   stick.id = e.pointerId;
-  stick.ox = e.clientX;
-  stick.oy = e.clientY;
-  stickEl = document.createElement('div');
-  stickEl.className = 'stick';
-  stickEl.style.left = `${e.clientX}px`;
-  stickEl.style.top = `${e.clientY}px`;
-  knobEl = document.createElement('i');
-  stickEl.appendChild(knobEl);
-  document.getElementById('ui')!.appendChild(stickEl);
+  stick.ox = r.left + r.width / 2;
+  stick.oy = r.top + r.height / 2;
+  stickEl.classList.add('active');
+  move(e.clientX, e.clientY);
 });
 
-addEventListener('pointermove', (e) => {
-  if (e.pointerId !== stick.id) return;
-  const dx = e.clientX - stick.ox;
-  const dy = e.clientY - stick.oy;
-  const r = 55;
+function move(cx: number, cy: number) {
+  const dx = cx - stick.ox, dy = cy - stick.oy;
+  const r = 52;
   const len = Math.min(r, Math.hypot(dx, dy));
   const a = Math.atan2(dy, dx);
   const kx = Math.cos(a) * len, ky = Math.sin(a) * len;
   if (knobEl) knobEl.style.transform = `translate(${kx}px, ${ky}px)`;
-  stick.x = -ky / r; // screen up = forward along the road
+  stick.x = -ky / r; // screen up = forward
   stick.z = kx / r;
-});
+}
+
+addEventListener('pointermove', (e) => { if (e.pointerId === stick.id) move(e.clientX, e.clientY); });
 
 const release = (e: PointerEvent) => {
   if (e.pointerId !== stick.id) return;
   stick.id = -1;
   stick.x = stick.z = 0;
-  stickEl?.remove();
-  stickEl = null;
+  if (knobEl) knobEl.style.transform = '';
+  stickEl?.classList.remove('active');
 };
 addEventListener('pointerup', release);
 addEventListener('pointercancel', release);

@@ -11,6 +11,10 @@ import { buildCityMap, map } from '../render/world/citymap';
 import { buildProps } from '../render/world/props';
 import { Walkers } from '../render/world/walkers';
 import { Minimap } from '../ui/minimap';
+import { showTitle } from '../ui/title';
+import { unlockAudio } from '../audio/audio';
+import { NO_INTENT } from '../sim/player';
+import { flyoverY, isFlyover, polyLen } from '../render/world/structures';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';
@@ -124,6 +128,20 @@ export function sectorv(): Scene {
   ent.position.set(world.metroEntrance.x, 3.8, world.metroEntrance.z);
   scene.add(ent);
 
+  // Points along the flyover deck, so the camera can stay underneath it.
+  const deck: { x: number; z: number; y: number; r: number }[] = [];
+  for (const r of map.roads.filter(isFlyover)) {
+    const total = polyLen(r.p);
+    let dist = 0;
+    for (let i = 1; i < r.p.length; i++) {
+      const [ax, az] = r.p[i - 1], [bx, bz] = r.p[i];
+      const L = Math.hypot(bx - ax, bz - az);
+      for (let d = 0; d < L; d += 3) deck.push({ x: ax + (bx - ax) * d / L, z: az + (bz - az) * d / L, y: flyoverY(dist + d, total), r: r.w / 2 + 2 });
+      dist += L;
+    }
+  }
+  const underDeck = (x: number, z: number) => deck.find((d) => d.y > 3.5 && Math.hypot(d.x - x, d.z - z) < d.r);
+
   let layer: HTMLElement;
   let actionBtn: HTMLButtonElement;
   const minimap = new Minimap(map);
@@ -139,6 +157,10 @@ export function sectorv(): Scene {
   let leaving = false;
   const pending = { jump: false, action: false, phone: false };
   const ambience = new Ambience(floods);
+  // Attract mode: the title screen floats over this same live scene; PLAY starts the run in place.
+  let attracting = game.attract;
+  game.attract = false;
+  let orbit = 0;
 
   function intentFromInput(): Intent {
     const fx = Math.cos(yaw), fz = Math.sin(yaw);
@@ -183,6 +205,48 @@ export function sectorv(): Scene {
       resize(camera, 55, 72);
       game.debug = { world, map, yaw: () => yaw };
       layer = sceneLayer();
+      if (attracting) {
+        showHud(false);
+        run.clockRunning = false;
+        const seed = new URLSearchParams(location.search).get('seed');
+        showTitle({
+          seed: seed ? Number(seed) : null,
+          onPlay: () => {
+            unlockAudio();
+            sfx.shankh();
+            attracting = false;
+            camReady = false;
+            startPlay();
+          },
+        });
+        return;
+      }
+      startPlay();
+    },
+    update(dt) {
+      if (attracting) {
+        // Slow sweep around the PWH junction while traffic carries on below.
+        acc += dt;
+        while (acc >= T.step) { acc -= T.step; world.step(NO_INTENT); world.events.drain(); }
+        actors.sync(world.traffic.vehicles, 0, '');
+        walkers.update(dt, performance.now());
+        orbit += dt * 0.06;
+        camera.position.set(Math.cos(orbit) * 75, 36, Math.sin(orbit) * 75);
+        camera.lookAt(0, 4, 0);
+        playerObj.position.set(world.player.x, 0, world.player.z);
+        return;
+      }
+      playUpdate(dt);
+    },
+    exit() {
+      ambience.stop();
+      enableStick(false);
+      layer.remove();
+      hint('');
+    },
+  };
+
+  function startPlay() {
       showHud(true);
       run.clockRunning = true;
       enableStick(true);
@@ -198,8 +262,9 @@ export function sectorv(): Scene {
       hint('College gate, Street No. 2. Hop a bus, book a bike, or find the metro.');
       ambience.start();
       setTimeout(() => hint(''), 6000);
-    },
-    update(dt) {
+  }
+
+  function playUpdate(dt: number) {
       // Fixed 60 Hz simulation. Taps are latched until a step consumes them: a frame can run zero steps.
       acc += dt;
       const now = intentFromInput();
@@ -252,6 +317,8 @@ export function sectorv(): Scene {
       for (let k = 1.5; k <= back; k += 0.75) if (world.grid.blocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
       const high = portrait ? 8 : 6.5;
       const want = new THREE.Vector3(p.x - fx * dist, 2.6 + (high - 2.6) * (dist / back), p.z - fz * dist);
+      const roof = underDeck(want.x, want.z) ?? underDeck(p.x, p.z);
+      if (roof) want.y = Math.min(want.y, roof.y - 1.4);
       // First frame: snap behind the player instead of gliding in from the map's centre.
       if (!camReady) { camera.position.copy(want); camReady = true; }
       camera.position.lerp(want, Math.min(1, dt * 6));
@@ -262,12 +329,5 @@ export function sectorv(): Scene {
 
       const place = placeName(p.x, p.z);
       if (place !== lastPlace) { lastPlace = place; setDateline(place); }
-    },
-    exit() {
-      ambience.stop();
-      enableStick(false);
-      layer.remove();
-      hint('');
-    },
-  };
+  }
 }

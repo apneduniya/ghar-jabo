@@ -9,7 +9,7 @@ import type { BuildingGrid } from '../../sim/collide';
 
 interface Walker { ax: number; az: number; bx: number; bz: number; t: number; speed: number; mesh: number; slot: number }
 
-const LOOKS = 4;
+const LOOKS = 6;
 
 export class Walkers {
   private meshes: THREE.InstancedMesh[] = [];
@@ -18,7 +18,7 @@ export class Walkers {
   private q = new THREE.Quaternion();
   private up = new THREE.Vector3(0, 1, 0);
 
-  constructor(scene: THREE.Scene, map: MapData, grid: BuildingGrid, count = 40) {
+  constructor(scene: THREE.Scene, map: MapData, grid: BuildingGrid, count = 110) {
     const segs: [number, number, number, number][] = [];
     for (const r of map.roads) {
       if (!['primary', 'secondary', 'tertiary'].includes(r.k) || r.b) continue;
@@ -36,7 +36,7 @@ export class Walkers {
     }
     const perLook = Math.ceil(count / LOOKS);
     for (let k = 0; k < LOOKS; k++) {
-      const proto = person(C.shirt[(k * 3) % C.shirt.length], { pants: C.pants[k % C.pants.length], umbrella: k === 3 });
+      const proto = person(C.shirt[(k * 3) % C.shirt.length], { pants: C.pants[k % C.pants.length], umbrella: k === 3, bag: k === 1 || k === 4 });
       const mesh = proto.children[0] as THREE.Mesh;
       const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, perLook);
       im.frustumCulled = false;
@@ -45,8 +45,10 @@ export class Walkers {
     }
     let seed = 7;
     const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    for (let i = 0; i < count && segs.length; i++) {
-      const s = segs[Math.floor(rnd() * segs.length)];
+    const weight = (s: [number, number, number, number]) => (map.stops.some((st) => Math.hypot(st.p[0] - (s[0] + s[2]) / 2, st.p[1] - (s[1] + s[3]) / 2) < 45) ? 4 : 1);
+    const pool = segs.flatMap((s) => Array(weight(s)).fill(s) as [number, number, number, number][]);
+    for (let i = 0; i < count && pool.length; i++) {
+      const s = pool[Math.floor(rnd() * pool.length)];
       const L = Math.hypot(s[2] - s[0], s[3] - s[1]);
       // Walking pace of 1.2–1.8 units/s, expressed as a fraction of this footpath segment per second.
       this.walkers.push({ ax: s[0], az: s[1], bx: s[2], bz: s[3], t: rnd(), speed: (1.2 + rnd() * 0.6) / L, mesh: i % LOOKS, slot: Math.floor(i / LOOKS) });

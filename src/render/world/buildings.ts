@@ -50,7 +50,14 @@ function signedArea(p: Pt[]) {
 /** Small deterministic hash per building for picking styles and tints. */
 const hash = (p: Pt[]) => Math.abs(Math.round(p[0][0] * 73 + p[0][1] * 151 + p.length * 7));
 
-export function buildBuildings(list: { p: Pt[]; h: number }[]) {
+export interface Bay { x: number; z: number; nx: number; nz: number; floors: number; tint: THREE.Color; shop: boolean; k: number }
+
+/**
+ * `streetSide(x, z)` says whether a wall midpoint faces a main road; only those walls get balconies,
+ * awnings and signboards (the ones the player actually sees), which keeps the vertex count down.
+ */
+export function buildBuildings(list: { p: Pt[]; h: number }[], streetSide: (x: number, z: number) => boolean) {
+  const bays: Bay[] = [];
   const walls: Record<Style | 'shop', Wall> = { resi: new Wall(), old: new Wall(), office: new Wall(), shop: new Wall() };
   const roofs: THREE.BufferGeometry[] = [];
   const roofCol = new THREE.Color(0x8f8a82);
@@ -74,6 +81,11 @@ export function buildBuildings(list: { p: Pt[]; h: number }[]) {
       const u1 = u + L / BAY;
       const base = hasShops ? SHOP_H : 0;
       if (hasShops) walls.shop.quad(ax, az, bx, bz, 0, SHOP_H, u, u1, 0, 1, nx, nz, shopTint);
+      if (style !== 'office' && L > 3 && streetSide((ax + bx) / 2 + nx * 2, (az + bz) / 2 + nz * 2)) {
+        for (let d = BAY / 2; d < L - 0.5; d += BAY) {
+          bays.push({ x: ax + (bx - ax) * d / L, z: az + (bz - az) * d / L, nx, nz, floors: Math.max(0, Math.floor((b.h - base) / FLOOR)), tint, shop: hasShops, k: k + Math.round(d) });
+        }
+      }
       walls[style].quad(ax, az, bx, bz, base, b.h, u, u1, 0, (b.h - base) / FLOOR, nx, nz, tint);
       u = u1;
     }
@@ -100,7 +112,7 @@ export function buildBuildings(list: { p: Pt[]; h: number }[]) {
   const make = (w: Wall, map: THREE.Texture) => new THREE.Mesh(w.geometry(), new THREE.MeshLambertMaterial({ vertexColors: true, map }));
   group.add(make(walls.resi, facadeResidential()), make(walls.old, facadeOld()), make(walls.office, facadeOffice()), make(walls.shop, facadeShop()));
   group.add(new THREE.Mesh(mergeGeometries(roofs), new THREE.MeshLambertMaterial({ vertexColors: true })));
-  return group;
+  return { group, bays };
 }
 
 function paint(g: THREE.BufferGeometry, c: THREE.Color) {

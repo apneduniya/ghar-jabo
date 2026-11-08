@@ -6,13 +6,11 @@ import { root, el, updateHud, notify } from '../ui/ui';
 import { sfx, toggleMute } from '../audio/audio';
 import { momLines, pick } from '../content/text';
 import { rand } from '../render/gfx';
-import { lobby } from '../stages/lobby';
 import { city } from '../stages/city';
 import { sectorv } from '../stages/sectorv';
 import { station } from '../stages/station';
 import { result } from '../stages/result';
 
-game.register('lobby', lobby);
 game.register('city', city);
 game.register('sectorv', sectorv);
 game.register('station', station);
@@ -105,5 +103,7 @@ addEventListener('resize', () => {
 (window as unknown as { gj: typeof game; gjr: typeof renderer }).gj = game;
 (window as unknown as { gjr: typeof renderer }).gjr = renderer;
 
-game.go('lobby');
+// Boot straight into the real map, with the title screen floating over it.
+game.attract = true;
+game.newRun();
 requestAnimationFrame(frame);

@@ -7,7 +7,7 @@ async function boot(page: Page) {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
-  await page.locator('.cholo').click();
+  await page.locator('.play-btn').click();
   await page.waitForFunction(() => (window as any).gj?.current && (window as any).gjr?.info.render.calls > 0);
   return errors;
 }

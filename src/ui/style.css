@@ -68,7 +68,7 @@ kbd { background: rgba(255,255,255,.15); border-radius: 4px; padding: 0 5px; fon
 .toast.out { opacity: 0; }
 @keyframes punch { from { transform: translate(-50%, -50%) scale(1.6) rotate(-3deg); opacity: 0; } }
 
-.hint { position: absolute; bottom: calc(92px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: rgba(27,20,48,.85); padding: 6px 12px; border-radius: 10px; font-size: 14px; text-align: center; width: max-content; max-width: 92%; }
+.hint { position: absolute; bottom: calc(176px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: rgba(27,20,48,.85); padding: 6px 12px; border-radius: 10px; font-size: 14px; text-align: center; width: max-content; max-width: 92%; }
 
 .action { position: absolute; bottom: calc(22px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 22px; padding: 14px 34px; border-radius: 16px; box-shadow: 0 5px 0 #b38c00; animation: pulse 1s infinite; }
 .action:active { transform: translateX(-50%) translateY(3px); }
@@ -126,8 +126,13 @@ blockquote cite::before { content: '— '; }
 @media (max-width: 380px) { .cols { grid-template-columns: 1fr; } .stats { grid-template-columns: 1fr; } }
 
 /* Real-time controls: floating joystick (left), jump + context action (right), Rapi-Nah phone. */
-.stick { position: fixed; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.35); pointer-events: none; }
-.stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,.75); }
+.stick { position: absolute; left: calc(22px + env(safe-area-inset-left)); bottom: calc(26px + env(safe-area-inset-bottom)); width: 128px; height: 128px; border-radius: 50%; background: rgba(20,16,36,.35); border: 2px solid rgba(255,255,255,.55); pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: background .15s; }
+.stick.active { background: rgba(20,16,36,.5); }
+.stick i { position: absolute; left: 39px; top: 39px; width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(0,0,0,.35); transition: transform .06s; }
+.stick .ar { position: absolute; color: rgba(255,255,255,.7); font-size: 12px; }
+.stick .u { top: 6px; left: 58px; } .stick .d { bottom: 6px; left: 58px; } .stick .l { left: 8px; top: 56px; } .stick .r { right: 8px; top: 56px; }
+.stick em { position: absolute; bottom: -20px; left: 0; right: 0; text-align: center; font-style: normal; font-size: 11px; letter-spacing: 2px; color: #fff; text-shadow: 0 1px 3px #000; }
+.keys { position: absolute; left: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); background: rgba(20,16,36,.75); padding: 6px 10px; border-radius: 10px; font-size: 12px; }
 .jump-btn { position: absolute; right: calc(16px + env(safe-area-inset-right)); bottom: calc(24px + env(safe-area-inset-bottom)); width: 86px; height: 86px; border-radius: 50%; background: rgba(255,255,255,.9); color: var(--ink); font-family: var(--display); font-size: 16px; box-shadow: 0 4px 0 rgba(0,0,0,.3); }
 .jump-btn:active { transform: translateY(2px); }
 .act-btn { position: absolute; right: calc(16px + env(safe-area-inset-right)); bottom: calc(124px + env(safe-area-inset-bottom)); background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 18px; padding: 14px 18px; border-radius: 16px; box-shadow: 0 5px 0 #b38c00; animation: pulse 1s infinite, slideUp .15s ease-out; }
@@ -147,3 +152,20 @@ blockquote cite::before { content: '— '; }
 .minimap { position: absolute; top: calc(84px + env(safe-area-inset-top)); left: 10px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 14px rgba(0,0,0,.35); pointer-events: auto; background: #c9c2b4; }
 .minimap.big { top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 14px; z-index: 7; }
 .layer:has(.minimap) ~ .stream, .stream { left: 150px; }
+
+/* Title screen over the live street. */
+.title-screen { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: calc(28px + env(safe-area-inset-top)) 18px calc(26px + env(safe-area-inset-bottom)); pointer-events: auto; background: linear-gradient(180deg, rgba(27,20,48,.55) 0%, rgba(27,20,48,0) 34%, rgba(27,20,48,0) 52%, rgba(27,20,48,.8) 100%); transition: opacity .3s; z-index: 8; }
+.title-screen.out { opacity: 0; }
+.logo { text-align: center; }
+.logo h1 { margin: 0; font-family: var(--display); font-size: clamp(56px, 18vw, 104px); line-height: .9; color: var(--yellow); letter-spacing: 2px; text-shadow: 0 4px 0 #b38c00, 0 10px 24px rgba(0,0,0,.45); }
+.logo .bn { display: inline-block; margin-top: 8px; background: var(--red); color: #fff; font-weight: 800; padding: 3px 12px; border-radius: 6px; font-size: 18px; transform: rotate(-3deg); }
+.logo p { margin: 12px auto 0; max-width: 320px; font-size: 15px; line-height: 1.4; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.challenge { background: rgba(255,212,0,.95); color: #111; font-weight: 700; padding: 8px 12px; border-radius: 10px; font-size: 13px; max-width: 360px; text-align: center; }
+.howto { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: min(420px, 100%); margin-top: auto; margin-bottom: 14px; }
+.howto div { background: rgba(255,255,255,.92); color: #111; border-radius: 12px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+.howto i { font-style: normal; font-size: 22px; }
+.howto b { font-size: 12px; }
+.howto span { font-size: 10px; color: #555; }
+.play-btn { background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 30px; padding: 16px 0; width: min(420px, 100%); border-radius: 18px; box-shadow: 0 6px 0 #b38c00, 0 12px 30px rgba(0,0,0,.4); animation: pulse 1.4s infinite; }
+.play-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b38c00; }
+.title-foot { margin-top: 10px; font-size: 11px; opacity: .75; }
