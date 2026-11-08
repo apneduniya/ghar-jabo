@@ -16,7 +16,10 @@ const port = Number(process.env.GJ_E2E_PORT) || 4317;
 
 export default defineConfig({
   testDir: 'tests/e2e',
-  timeout: 90_000,
+  timeout: 120_000,
+  // The server renders with SwiftShader (no GPU): frames take seconds, so allow time and one retry.
+  expect: { timeout: 20_000 },
+  retries: 1,
   workers: 1,
   reporter: [['list']],
   webServer: { command: `npx vite preview --host 127.0.0.1 --port ${port} --strictPort`, url: `http://127.0.0.1:${port}`, reuseExistingServer: false },
