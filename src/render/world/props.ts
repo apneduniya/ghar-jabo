@@ -36,6 +36,14 @@ function along(p: Pt[], step: number) {
   return out;
 }
 
+const ADS = [
+  ['RAPI-NAH', 'Captain 2 min away. Always.', '#ffd400', '#111'],
+  ['TEN MINUTE', 'We deliver faster than your bus', '#6b2bd9', '#fff'],
+  ['SECTOR V HEIGHTS', '2BHK with canal view (monsoon only)', '#1f5f9a', '#fff'],
+  ['TAKA PAY', 'Pay the conductor. In coins. Exact change.', '#0e8a5b', '#fff'],
+  ['MISHTI MOBILE', 'Unlimited data, limited signal in Sector V', '#e2402c', '#fff'],
+];
+
 const SHOPS = ['BURGER RAJA', 'CHA-BUCKS', 'RONG DE BASANTI DHABA', 'MOMO MAHAL', 'PUCHKA POINT', 'XEROX · LAMINATION · RECHARGE', 'BIRYANI BHAVAN', 'MAA KALI FAST FOOD'];
 
 export function buildProps(scene: THREE.Scene, map: MapData, grid: BuildingGrid, metro: { x: number; z: number }) {
@@ -98,8 +106,69 @@ export function buildProps(scene: THREE.Scene, map: MapData, grid: BuildingGrid,
       n++;
     }
   }
+  // Electric poles with tangled, sagging wires along the main roads; the odd bundle crosses the road.
+  const wire: number[] = [];
+  const poleCol = 0x8d8d8d;
+  for (const r of map.roads) {
+    if (!MAIN.has(r.k) || r.b) continue;
+    let prev: THREE.Vector3 | null = null;
+    for (const p of along(r.p, 22)) {
+      const off = r.w / 2 + 2.2;
+      const x = p.x - p.dz * off, z = p.z + p.dx * off;
+      if (grid.blocked(x, z, 0.8)) { prev = null; continue; }
+      statics.add(box(0.28, 7.5, 0.28, poleCol, x, 0, z), box(1.6, 0.12, 0.12, 0x6b6b6b, x, 7.0, z));
+      const top = new THREE.Vector3(x, 7.0, z);
+      if (prev && prev.distanceTo(top) < 30) {
+        for (let k = 0; k < 4; k++) {
+          const o = (k - 1.5) * 0.18, sag = 0.6 + k * 0.25;
+          const a = prev.clone().add(new THREE.Vector3(0, o, 0)), c = top.clone().add(new THREE.Vector3(0, o, 0));
+          const mid = a.clone().lerp(c, 0.5).add(new THREE.Vector3(0, -sag, 0));
+          wire.push(a.x, a.y, a.z, mid.x, mid.y, mid.z, mid.x, mid.y, mid.z, c.x, c.y, c.z);
+        }
+      }
+      // Every few poles, a bundle of wires across the road to the other side.
+      if (Math.abs(Math.round(x * 3 + z * 7)) % 4 === 0) {
+        const fx = p.x + p.dz * off, fz = p.z - p.dx * off;
+        for (let k = 0; k < 3; k++) wire.push(x, 6.8 - k * 0.15, z, (x + fx) / 2, 5.6 - k * 0.2, (z + fz) / 2, (x + fx) / 2, 5.6 - k * 0.2, (z + fz) / 2, fx, 6.6, fz);
+      }
+      prev = top;
+    }
+  }
+  const wireGeo = new THREE.BufferGeometry();
+  wireGeo.setAttribute('position', new THREE.Float32BufferAttribute(wire, 3));
+  scene.add(new THREE.LineSegments(wireGeo, new THREE.LineBasicMaterial({ color: 0x1c1c1c })));
+
+  // Tea stalls (cha dokan) by the busy stops: a counter, a blue tarp, a bench, a kettle and customers.
+  for (const s of map.stops.filter((_, i) => i % 3 === 0)) {
+    const g = new THREE.Group();
+    g.add(box(2.2, 1.0, 1.0, 0x8a5a3c, 0, 0, 0), box(2.6, 0.08, 1.8, 0x2f6db5, 0, 2.3, 0.3));
+    g.add(box(0.06, 2.3, 0.06, 0x555555, -1.2, 0, 1.1), box(0.06, 2.3, 0.06, 0x555555, 1.2, 0, 1.1));
+    g.add(box(2.4, 0.45, 0.4, 0x6b4a33, 0, 0, 1.6)); // bench
+    g.add(box(0.3, 0.35, 0.3, 0x9a9a9a, -0.6, 1.0, 0)); // kettle
+    for (let i = 0; i < 2; i++) { const pp = person(); pp.position.set(-0.6 + i * 1.2, 0, 2.2); pp.rotation.y = Math.PI; g.add(pp); }
+    g.position.set(s.p[0] + 6, 0, s.p[1] + 3);
+    g.rotation.y = (s.p[0] * 13) % 6;
+    if (!grid.blocked(g.position.x, g.position.z, 2)) statics.add(g);
+  }
+
   bake(statics);
   scene.add(statics);
+
+  // Billboards with parody ads on tall frames near the junction and the flyover.
+  const spotsAd = [[-30, -40], [40, -25], [-120, -150], [150, 90], [-60, 120]];
+  spotsAd.forEach(([x, z], i) => {
+    if (grid.blocked(x, z, 1)) return;
+    const [title, line, bg, fg] = ADS[i % ADS.length];
+    const frame = new THREE.Group();
+    frame.add(box(0.3, 9, 0.3, 0x555555, -3, 0, 0), box(0.3, 9, 0.3, 0x555555, 3, 0, 0));
+    bake(frame);
+    const face = adBoard(title, line, bg, fg);
+    face.position.set(0, 10.2, 0.2);
+    frame.add(face);
+    frame.position.set(x, 0, z);
+    frame.rotation.y = Math.atan2(-x, -z); // face the PWH junction
+    scene.add(frame);
+  });
 
   // Roadside trees, instanced: one draw call for trunks, one for canopies.
   const spots: THREE.Vector3[] = [];
@@ -123,4 +192,21 @@ export function buildProps(scene: THREE.Scene, map: MapData, grid: BuildingGrid,
   });
   scene.add(trunks, canopy);
   return { trees: spots.length };
+}
+
+/** A billboard face: brand in big letters, the punchline under it. */
+function adBoard(title: string, line: string, bg: string, fg: string) {
+  const cv = document.createElement('canvas');
+  cv.width = 512; cv.height = 256;
+  const g = cv.getContext('2d')!;
+  g.fillStyle = bg; g.fillRect(0, 0, 512, 256);
+  g.fillStyle = fg; g.textAlign = 'center';
+  g.font = 'bold 84px system-ui, sans-serif';
+  g.fillText(title, 256, 120);
+  g.font = '30px system-ui, sans-serif';
+  g.fillText(line, 256, 190);
+  g.strokeStyle = 'rgba(0,0,0,0.25)'; g.lineWidth = 10; g.strokeRect(5, 5, 502, 246);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(new THREE.PlaneGeometry(8, 4), new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide }));
 }

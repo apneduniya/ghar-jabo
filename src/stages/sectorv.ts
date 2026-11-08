@@ -134,6 +134,7 @@ export function sectorv(): Scene {
   const toJunction = -gate.x * gate.road.dx - gate.z * gate.road.dz > 0 ? 1 : -1;
   let yaw = Math.atan2(gate.road.dz * toJunction, gate.road.dx * toJunction);
   let acc = 0;
+  let camReady = false;
   let lastPlace = '';
   let leaving = false;
   const pending = { jump: false, action: false, phone: false };
@@ -180,7 +181,7 @@ export function sectorv(): Scene {
     scene, camera,
     enter() {
       resize(camera, 55, 72);
-      game.debug = { world, map };
+      game.debug = { world, map, yaw: () => yaw };
       layer = sceneLayer();
       showHud(true);
       run.clockRunning = true;
@@ -249,7 +250,10 @@ export function sectorv(): Scene {
       const back = (portrait ? 11 : 9.5) * (ride?.kind === 'bus' ? 1.4 : 1);
       let dist = back;
       for (let k = 1.5; k <= back; k += 0.75) if (world.grid.blocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
-      const want = new THREE.Vector3(p.x - fx * dist, (portrait ? 8 : 6.5) * (0.6 + 0.4 * dist / back), p.z - fz * dist);
+      const high = portrait ? 8 : 6.5;
+      const want = new THREE.Vector3(p.x - fx * dist, 2.6 + (high - 2.6) * (dist / back), p.z - fz * dist);
+      // First frame: snap behind the player instead of gliding in from the map's centre.
+      if (!camReady) { camera.position.copy(want); camReady = true; }
       camera.position.lerp(want, Math.min(1, dt * 6));
       camera.lookAt(p.x + fx * 6, 1.2, p.z + fz * 6);
       shake.apply(camera, dt);

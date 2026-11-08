@@ -2,7 +2,7 @@
 // so a full street of traffic stays inside the draw-call budget. Every model faces +x; left is -z.
 
 import * as THREE from 'three';
-import { bake, box, C } from './gfx';
+import { bake, box, C, mat } from './gfx';
 import { BUS_FRONT_DOOR, BUS_LEN, BUS_REAR_DOOR, BUS_WIDTH } from '../sim/vehicles';
 
 /** Deterministic pick from a variant number, so the same vehicle always looks the same. */
@@ -23,18 +23,51 @@ export function person(shirt = C.shirt[Math.floor(Math.random() * C.shirt.length
 
 export function playerPerson() { return person(C.player, { bag: true }); }
 
-function wheels(g: THREE.Group, xs: number[], halfW: number, size = 0.4) {
-  for (const x of xs) for (const z of [-halfW, halfW]) g.add(box(size, size, 0.14, 0x111111, x, 0.02, z));
+/** A cylinder part (wheels, headlights, tanks). Axis 'z' lies across the vehicle, 'x' points forward. */
+function cyl(r: number, len: number, color: number, x: number, y: number, z: number, axis: 'x' | 'y' | 'z' = 'z', seg = 10) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, seg), mat(color));
+  if (axis === 'z') m.rotation.x = Math.PI / 2;
+  if (axis === 'x') m.rotation.z = Math.PI / 2;
+  m.position.set(x, y, z);
+  return m;
 }
 
-/** Kolkata's yellow Ambassador: rounded hump, black bumpers, "TAXI" roof sign. */
+/** Round wheels with a grey hub. */
+function wheels(g: THREE.Group, xs: number[], halfW: number, size = 0.4) {
+  for (const x of xs) for (const z of [-halfW, halfW]) {
+    g.add(cyl(size / 2, 0.16, 0x161616, x, size / 2 + 0.02, z));
+    g.add(cyl(size / 4.5, 0.17, 0x9a9a9a, x, size / 2 + 0.02, z, 'z', 6));
+  }
+}
+
+/** Headlights at the front (+x) and taillights at the back, at height y, half-spacing z. */
+function lights(g: THREE.Group, front: number, back: number, y: number, z: number, round = false) {
+  for (const s of [-z, z]) {
+    if (round) g.add(cyl(0.09, 0.05, 0xfff2c4, front + 0.01, y, s, 'x', 10));
+    else g.add(box(0.05, 0.12, 0.22, 0xfff2c4, front, y - 0.06, s));
+    g.add(box(0.05, 0.1, 0.18, 0xc0281f, back, y - 0.05, s));
+  }
+}
+
+const GLASS = 0x2f3a47;
+
+/** Kolkata's yellow Ambassador: humped bonnet, rounded boot, chrome grille, round headlamps, roof sign. */
 export function ambassador(): THREE.Group {
   const g = new THREE.Group();
-  g.add(box(2.5, 0.55, 1.15, C.taxi, 0, 0.22, 0), box(1.2, 0.5, 1.05, C.taxi, -0.15, 0.75, 0));
-  g.add(box(1.1, 0.36, 1.07, 0x2a3440, -0.15, 0.8, 0), box(0.5, 0.2, 1.1, C.taxi, 0.8, 0.6, 0));
-  g.add(box(0.08, 0.16, 1.2, 0x222222, 1.27, 0.25, 0), box(0.08, 0.16, 1.2, 0x222222, -1.27, 0.25, 0));
-  g.add(box(0.5, 0.14, 0.3, 0x222222, -0.15, 1.25, 0), box(0.06, 0.12, 0.9, 0x1e6b3a, 0, 0.42, 0)); // roof sign, green "no refusal" stripe
-  wheels(g, [-0.8, 0.8], 0.55);
+  const Y = C.taxi;
+  g.add(box(2.6, 0.5, 1.16, Y, 0, 0.28, 0)); // body
+  g.add(box(0.75, 0.16, 1.1, Y, 0.88, 0.78, 0), box(0.5, 0.1, 1.0, Y, 0.95, 0.9, 0)); // humped bonnet
+  g.add(box(0.55, 0.12, 1.08, Y, -1.0, 0.78, 0)); // rounded boot
+  g.add(box(1.25, 0.06, 1.08, Y, -0.1, 1.3, 0)); // roof
+  for (const x of [0.48, -0.68]) for (const z of [-0.5, 0.5]) g.add(box(0.07, 0.5, 0.07, Y, x, 0.78, z)); // pillars
+  g.add(box(0.05, 0.42, 0.95, GLASS, 0.5, 0.82, 0), box(0.05, 0.4, 0.95, GLASS, -0.7, 0.82, 0)); // wind/rear screen
+  for (const z of [-0.555, 0.555]) g.add(box(1.1, 0.36, 0.02, GLASS, -0.1, 0.86, z)); // side windows
+  g.add(box(0.06, 0.24, 0.6, 0xd8d8d8, 1.31, 0.42, 0)); // chrome grille
+  g.add(box(0.1, 0.14, 1.22, 0xd0d0d0, 1.32, 0.22, 0), box(0.1, 0.14, 1.22, 0xd0d0d0, -1.32, 0.22, 0)); // chrome bumpers
+  lights(g, 1.31, -1.31, 0.5, 0.42, true);
+  g.add(box(0.5, 0.18, 0.32, 0x1d1d1d, -0.1, 1.33, 0), box(0.46, 0.12, 0.33, Y, -0.1, 1.37, 0)); // TAXI roof sign
+  g.add(box(2.0, 0.08, 0.02, 0x1e6b3a, 0, 0.42, -0.585), box(2.0, 0.08, 0.02, 0x1e6b3a, 0, 0.42, 0.585)); // green "no refusal" stripe
+  wheels(g, [-0.82, 0.82], 0.56, 0.5);
   bake(g);
   return g;
 }
@@ -51,23 +84,32 @@ export function car(variant: number): THREE.Group {
   g.add(box(L, H, 1.1, col, 0, 0.2, 0));
   const cabinL = type === 'hatch' ? L * 0.62 : type === 'suv' ? L * 0.7 : L * 0.5;
   const cabinX = type === 'hatch' ? -0.2 : type === 'suv' ? -0.15 : -0.1;
-  g.add(box(cabinL, 0.45, 1.02, col, cabinX, 0.2 + H, 0), box(cabinL - 0.1, 0.32, 1.04, 0x2a3440, cabinX, 0.26 + H, 0));
+  g.add(box(cabinL, 0.45, 1.02, col, cabinX, 0.2 + H, 0));
+  g.add(box(cabinL - 0.16, 0.32, 1.04, GLASS, cabinX, 0.26 + H, 0)); // side glass
+  g.add(box(0.05, 0.34, 0.9, GLASS, cabinX + cabinL / 2 + 0.01, 0.25 + H, 0), box(0.05, 0.3, 0.9, GLASS, cabinX - cabinL / 2 - 0.01, 0.27 + H, 0));
+  lights(g, L / 2 + 0.01, -L / 2 - 0.01, 0.2 + H * 0.75, 0.38);
   if (type === 'cab') g.add(box(0.5, 0.06, 1.05, 0x111111, 0, 0.45, 0)); // app-cab stripe
-  wheels(g, [-L * 0.32, L * 0.32], 0.52, 0.38);
+  wheels(g, [-L * 0.32, L * 0.32], 0.52, 0.44);
   bake(g);
   return g;
 }
 
-/** Kolkata auto-rickshaw: green body, yellow canopy, three wheels. */
+/** Kolkata auto-rickshaw: green body, yellow canopy, tapered nose with one front wheel, a windscreen and a meter. */
 export function auto(): THREE.Group {
   const g = new THREE.Group();
   const green = 0x1f8a46, yellow = 0xf2c230;
-  g.add(box(1.8, 0.5, 1.15, green, 0, 0.22, 0), box(0.5, 0.55, 1.0, green, 0.7, 0.7, 0));
-  g.add(box(1.3, 0.08, 1.2, yellow, -0.15, 1.55, 0), box(0.08, 0.85, 1.1, yellow, -0.8, 0.72, 0));
-  for (const z of [-0.55, 0.55]) g.add(box(0.06, 0.85, 0.06, 0x222222, 0.42, 0.72, z));
-  g.add(box(0.3, 0.06, 0.6, 0x111111, 0.85, 1.15, 0)); // handlebar
-  g.add(box(0.36, 0.36, 0.12, 0x111111, 0.85, 0.02, 0));
-  for (const z of [-0.55, 0.55]) g.add(box(0.38, 0.38, 0.12, 0x111111, -0.6, 0.02, z));
+  g.add(box(1.4, 0.45, 1.18, green, -0.25, 0.25, 0)); // rear body
+  g.add(box(0.45, 0.6, 0.9, green, 0.65, 0.25, 0), box(0.3, 0.45, 0.6, green, 0.95, 0.3, 0)); // tapered nose
+  g.add(box(0.05, 0.5, 0.95, GLASS, 0.7, 0.9, 0)); // windscreen
+  g.add(box(1.5, 0.08, 1.22, yellow, -0.15, 1.62, 0)); // canopy roof
+  g.add(box(0.08, 0.95, 1.18, yellow, -0.9, 0.7, 0)); // back panel
+  for (const z of [-0.57, 0.57]) { g.add(box(0.05, 0.95, 0.05, 0x222222, 0.6, 0.7, z)); g.add(box(1.3, 0.12, 0.04, 0x111111, -0.2, 1.5, z)); } // rods, rolled canvas
+  g.add(box(0.5, 0.05, 0.7, 0x111111, 0.55, 1.18, 0)); // handlebar
+  g.add(box(0.14, 0.12, 0.14, 0xf2f2f2, 0.62, 1.25, 0.32)); // fare meter
+  g.add(box(0.7, 0.2, 1.0, 0x3a2a20, -0.45, 0.72, 0)); // passenger bench
+  g.add(cyl(0.09, 0.05, 0xfff2c4, 1.11, 0.55, 0, 'x'));
+  g.add(cyl(0.2, 0.14, 0x161616, 0.95, 0.22, 0)); // single front wheel
+  for (const z of [-0.6, 0.6]) g.add(cyl(0.22, 0.14, 0x161616, -0.6, 0.24, z));
   bake(g);
   return g;
 }
@@ -153,10 +195,23 @@ export function bus(variant: number, towardsSealdah: boolean): THREE.Group {
   const L = BUS_LEN, W = BUS_WIDTH;
   const lower = govt ? 0x2f6db5 : 0xb3262b, upper = govt ? 0xf1efe8 : 0xf2c14e, stripe = govt ? 0xf5c518 : 0x1f7a3a;
   g.add(box(L, 1.3, W, lower, 0, 0.45, 0), box(L, 1.25, W, upper, 0, 1.75, 0));
-  g.add(box(L + 0.02, 0.62, W + 0.02, 0x2a3440, 0, 2.0, 0), box(L + 0.04, 0.14, W + 0.04, stripe, 0, 1.68, 0));
-  g.add(box(L - 0.6, 0.12, W - 0.3, 0xdddddd, 0, 3.0, 0), box(0.12, 0.7, W - 0.4, 0x2a3440, L / 2, 1.9, 0));
+  g.add(box(L + 0.04, 0.14, W + 0.04, stripe, 0, 1.68, 0));
+  g.add(box(L - 0.6, 0.12, W - 0.3, 0xdddddd, 0, 3.0, 0));
+  // Window panes with pillars between them; no panes over the left-side doors.
+  for (let x = -L / 2 + 0.7; x < L / 2 - 1.2; x += 1.15) {
+    for (const z of [-W / 2 - 0.01, W / 2 + 0.01]) {
+      const overDoor = z < 0 && [BUS_FRONT_DOOR, BUS_REAR_DOOR].some((d) => Math.abs(d - x) < 0.8);
+      if (!overDoor) g.add(box(0.92, 0.62, 0.04, GLASS, x, 1.82, z));
+    }
+  }
+  g.add(box(0.06, 0.95, W - 0.3, GLASS, L / 2 + 0.01, 1.65, 0)); // windscreen
+  g.add(box(0.06, 0.5, W - 0.6, GLASS, -L / 2 - 0.01, 1.95, 0)); // rear window
+  g.add(box(0.08, 0.35, 1.2, 0x2b2b2b, L / 2 + 0.02, 0.6, 0)); // grille
+  lights(g, L / 2 + 0.03, -L / 2 - 0.03, 0.85, 0.95, true);
   for (const dx of [BUS_FRONT_DOOR, BUS_REAR_DOOR]) g.add(box(1.1, 2.3, 0.1, 0x161616, dx, 0.35, -W / 2 - 0.02));
-  for (const x of [-L / 2 + 1.6, L / 2 - 1.8]) for (const z of [-W / 2, W / 2]) g.add(box(1.0, 1.0, 0.25, 0x111111, x, 0, z));
+  for (const x of [-L / 2 + 1.6, L / 2 - 1.8]) for (const z of [-W / 2 + 0.05, W / 2 - 0.05]) {
+    g.add(cyl(0.5, 0.3, 0x161616, x, 0.5, z), cyl(0.22, 0.32, 0x8a8a8a, x, 0.5, z, 'z', 6));
+  }
   const cond = person(0x6b5d4a, { pants: 0x3b3326 });
   cond.position.set(BUS_REAR_DOOR + 0.1, 0.55, -W / 2 - 0.25);
   cond.rotation.set(0.12, Math.PI, 0);
