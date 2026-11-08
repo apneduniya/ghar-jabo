@@ -38,3 +38,20 @@ test('an ending shows the newspaper', async ({ page }) => {
   await expect(page.locator('.paper h3')).not.toBeEmpty();
   expect(errors).toEqual([]);
 });
+
+test('hop onto a Kolkata bus at its left rear door', async ({ page }) => {
+  const errors = await boot(page);
+  await page.evaluate(() => {
+    const w = (window as any).gj.debug.world;
+    const bus = w.traffic.spawnBus(1, 150);
+    bus.base = 1; bus.speed = 1; bus.depotAt = undefined;
+    const c = Math.cos(bus.heading), s = Math.sin(bus.heading);
+    w.player.x = bus.x + c * -1.9 + s * (bus.width / 2 + 0.5);
+    w.player.z = bus.z + s * -1.9 - c * (bus.width / 2 + 0.5);
+  });
+  await expect(page.locator('.act-btn')).toHaveText(/HOP ON/, { timeout: 10_000 });
+  await page.locator('.act-btn').dispatchEvent('pointerdown');
+  await expect.poll(() => page.evaluate(() => (window as any).gj.debug.world.player.state), { timeout: 10_000 }).toBe('hang');
+  expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  expect(errors).toEqual([]);
+});

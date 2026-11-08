@@ -2,6 +2,7 @@
 
 import type * as THREE from 'three';
 import { Run, type ArriveMode, type EndingId } from '../sim/run';
+import { rng } from '../sim/rng';
 
 export interface Scene {
   scene?: THREE.Scene;
@@ -36,6 +37,10 @@ class Game {
 
   newRun() {
     this.run = new Run();
+    // `?seed=123` replays the same run (traffic, captains, cancellations); otherwise a fresh seed.
+    const seed = Number(new URLSearchParams(location.search).get('seed')) || (Date.now() & 0x7fffffff);
+    this.run.seed = seed;
+    rng.reseed(seed);
     this.go('sectorv');
   }
 

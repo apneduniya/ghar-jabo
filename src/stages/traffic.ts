@@ -2,7 +2,9 @@
 // Vehicles only exist in a window around the player. The jam slows everything and makes it stop-and-go.
 
 import * as THREE from 'three';
-import { bike, bus, BUS_LEN, BUS_REAR_DOOR, BUS_WIDTH, car, person, pickColor, rand, taxi } from '../render/gfx';
+import { rand } from '../render/gfx';
+import { ambassador, auto, bike, bus, car, person } from '../render/models';
+import { BUS_LEN, BUS_REAR_DOOR, BUS_WIDTH } from '../sim/vehicles';
 import { LANES_EAST, LANES_WEST, stops } from '../content/route';
 
 export type Kind = 'car' | 'taxi' | 'bus' | 'bike';
@@ -45,17 +47,13 @@ export class Traffic {
     let obj: THREE.Group;
     let len = 2.4, width = 1.2, base = rand(9, 13);
     if (kind === 'bus') {
-      obj = bus(); len = BUS_LEN; width = BUS_WIDTH; base = rand(13, 17);
+      obj = bus(Math.floor(rand(0, 1000)), dir > 0); len = BUS_LEN; width = BUS_WIDTH; base = rand(13, 17);
     } else if (kind === 'taxi') {
-      obj = taxi(); base = rand(10, 14);
+      obj = Math.random() < 0.2 ? auto() : ambassador(); base = rand(10, 14);
     } else if (kind === 'bike') {
       obj = bike(); len = 1.6; width = 0.6; base = rand(13, 16);
-      const rider = person(pickColor([0x3f7cc4, 0xd9534f, 0x2b2b2b]));
-      rider.position.set(0.3, 0.55, 0);
-      rider.scale.setScalar(0.9);
-      obj.add(rider);
     } else {
-      obj = car(pickColor([0xeeeeee, 0x9aa5b1, 0x2b2b2b, 0xb03a2e, 0x2c5f8a]));
+      obj = car(Math.floor(rand(0, 1000)));
     }
     obj.position.set(x, 0.05, lane);
     obj.rotation.y = dir > 0 ? 0 : Math.PI;

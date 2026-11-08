@@ -55,6 +55,10 @@ export class Run {
   nextCall = 19 * 60;
   /** Where the player appears when the city scene starts (the metro drops you near Sealdah). */
   spawnX = 0;
+  /** The seed this run was played with (for "beat my run" links). */
+  seed = 0;
+  /** Set when the player leaves the real map on a vehicle: the long ride continues on it. */
+  rideMode: 'bus' | 'rapinah' | null = null;
   stats: Stats = {
     cancels: 0, rebooks: 0, tipsPaid: 0, footboardStops: 0, falls: 0, busHops: 0, ditched: 0,
     missedBuses: 0, missedTrains: 0, seatFound: false, gaveSeat: false,

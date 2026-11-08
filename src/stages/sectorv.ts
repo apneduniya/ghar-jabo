@@ -1,32 +1,57 @@
-// The real start area around TIU, built from OpenStreetMap: walk it GTA-style with a camera that turns with you.
+// The real Sector V map in play. The sim (src/sim/world.ts) owns every rule; this stage builds the 3D view,
+// turns the stick into a world-space intent using the camera, steps the sim at 60 Hz and shows its events.
 
 import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
 import { C, resize, Shake, sign } from '../render/gfx';
-import { sceneLayer, el, hint, notify, setDateline, showHud } from '../ui/ui';
+import { playerPerson } from '../render/models';
+import { Actors } from '../render/actors';
+import { buildCityMap, map } from '../render/world/citymap';
+import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
-import { Body } from './player';
-import { buildCityMap, map, type Pt } from '../render/world/citymap';
-import { BuildingGrid } from '../render/world/collide';
+import { sfx } from '../audio/audio';
+import { T } from '../content/tuning';
 import { pick, ticker } from '../content/text';
+import { rng } from '../sim/rng';
+import { World } from '../sim/world';
+import type { Intent } from '../sim/player';
+import type { GameEvent } from '../sim/events';
 
-/** Nearest point on any main road to p, and that road's width. */
-function nearestMainRoad(p: Pt) {
-  let best = { x: p[0], z: p[1], w: 7, d: Infinity, dx: 1, dz: 0 };
+/** Where to start: on the footpath of Street No. 2, outside the college gate (next to TIU). */
+function gateSpot(world: World) {
+  const tiu = map.pois.tiu;
+  let best = { x: tiu[0], z: tiu[1], d: Infinity, dx: 1, dz: 0, w: 7 };
   for (const r of map.roads) {
-    if (!['primary', 'secondary', 'tertiary'].includes(r.k) || r.b) continue;
+    if (!['secondary', 'tertiary', 'primary'].includes(r.k) || r.b) continue;
     for (let i = 1; i < r.p.length; i++) {
       const [ax, az] = r.p[i - 1], [bx, bz] = r.p[i];
-      const dx = bx - ax, dz = bz - az;
-      const t = Math.max(0, Math.min(1, ((p[0] - ax) * dx + (p[1] - az) * dz) / (dx * dx + dz * dz || 1)));
-      const x = ax + dx * t, z = az + dz * t;
-      const d = Math.hypot(x - p[0], z - p[1]);
-      const len = Math.hypot(dx, dz) || 1;
-      if (d < best.d) best = { x, z, w: r.w, d, dx: dx / len, dz: dz / len };
+      const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1;
+      const t = Math.max(0, Math.min(1, ((tiu[0] - ax) * dx + (tiu[1] - az) * dz) / L2));
+      const x = ax + dx * t, z = az + dz * t, d = Math.hypot(x - tiu[0], z - tiu[1]);
+      if (d < best.d) best = { x, z, d, dx: dx / Math.sqrt(L2), dz: dz / Math.sqrt(L2), w: r.w };
     }
   }
-  return best;
+  const nx = (tiu[0] - best.x) / (best.d || 1), nz = (tiu[1] - best.z) / (best.d || 1);
+  const spot = world.freeSpotNear(best.x + nx * (best.w / 2 + 1.2), best.z + nz * (best.w / 2 + 1.2));
+  return { ...spot, road: best, nx, nz };
+}
+
+function buildGate(scene: THREE.Scene, x: number, z: number, along: { dx: number; dz: number }, nx: number, nz: number) {
+  const mat = new THREE.MeshLambertMaterial({ color: 0xb04a3a });
+  for (const s of [-3.2, 3.2]) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.4, 0.8), mat);
+    m.position.set(x + along.dx * s, 2.2, z + along.dz * s);
+    scene.add(m);
+  }
+  const beam = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.8, 0.8), mat);
+  beam.position.set(x, 4.6, z);
+  beam.rotation.y = -Math.atan2(along.dz, along.dx);
+  scene.add(beam);
+  const board = sign('COLLEGE GATE', 6.4, 0.7, '#f3e9d2', '#7a2a1f');
+  board.position.set(x - nx * 0.45, 4.6, z - nz * 0.45);
+  board.rotation.y = Math.atan2(-nx, -nz);
+  scene.add(board);
 }
 
 export function sectorv(): Scene {
@@ -40,56 +65,80 @@ export function sectorv(): Scene {
   scene.add(sun);
   const camera = new THREE.PerspectiveCamera(55, 1, 0.5, 600);
   const shake = new Shake();
-  const body = new Body();
   const built = buildCityMap();
   scene.add(built.group);
-  const grid = new BuildingGrid(map.buildings.map((b) => b.p));
-  let layer: HTMLElement;
-  let yaw = 0;
-  let lastPlace = '';
+  const actors = new Actors(scene);
 
-  // Start at the college gate: the edge of Street No. 2 in front of TIU.
-  const tiu = map.pois.tiu;
-  const road = nearestMainRoad(tiu);
-  const toTiu = new THREE.Vector2(tiu[0] - road.x, tiu[1] - road.z).normalize();
-  // Stand on the footpath just outside the gate (the first spot that isn't inside a building).
-  const gatePos = new THREE.Vector2(road.x, road.z).add(toTiu.clone().multiplyScalar(road.w / 2 + 1.2));
-  body.pos.set(gatePos.x, 0, gatePos.y);
-  scene.add(body.obj);
-  // The gate: two pillars along the road edge with a board across, facing the road.
-  const gate = new THREE.Group();
-  const pillarMat = new THREE.MeshLambertMaterial({ color: 0xb04a3a });
-  const gx = gatePos.x + toTiu.x * 1.6, gz = gatePos.y + toTiu.y * 1.6;
-  for (const s of [-3.2, 3.2]) {
-    const m = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.4, 0.8), pillarMat);
-    m.position.set(gx + road.dx * s, 2.2, gz + road.dz * s);
-    gate.add(m);
-  }
-  const beam = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.8, 0.8), pillarMat);
-  beam.position.set(gx, 4.6, gz);
-  beam.rotation.y = -Math.atan2(road.dz, road.dx);
-  gate.add(beam);
-  const board = sign('COLLEGE GATE', 6.4, 0.7, '#f3e9d2', '#7a2a1f');
-  board.position.set(gx - toTiu.x * 0.45, 4.6, gz - toTiu.y * 0.45);
-  board.rotation.y = Math.atan2(-toTiu.x, -toTiu.y); // faces the road
-  gate.add(board);
-  scene.add(gate);
-  // Face along the road towards the junction.
-  yaw = Math.atan2(-gatePos.y, -gatePos.x);
+  // The sim, starting at the college gate.
+  const world = new World(map, run, rng, { x: map.pois.tiu[0], z: map.pois.tiu[1] });
+  const gate = gateSpot(world);
+  world.player.x = gate.x;
+  world.player.z = gate.z;
+  buildGate(scene, gate.road.x + gate.nx * (gate.road.w / 2 + 2.8), gate.road.z + gate.nz * (gate.road.w / 2 + 2.8), gate.road, gate.nx, gate.nz);
 
-  // Landmark signs (parody names) on the real buildings.
+  const playerObj = playerPerson();
+  scene.add(playerObj);
+
+  // Landmark boards.
   const pwh = sign('PWH TOWER', 10, 1.4, '#22324a');
   pwh.position.set(map.pois.pwc[0], 14, map.pois.pwc[1]);
   scene.add(pwh);
+  const seenStops = new Set<string>();
   for (const s of map.stops) {
-    const board = sign(`${s.n.toUpperCase()} · BUS`, 5, 0.7, '#f5c518', '#1b1b1b');
-    board.position.set(s.p[0], 3, s.p[1]);
-    scene.add(board);
+    if (seenStops.has(s.n)) continue;
+    seenStops.add(s.n);
+    const b = sign(`${s.n.toUpperCase()} · BUS`, 5, 0.7, '#f5c518', '#1b1b1b');
+    b.position.set(s.p[0], 3, s.p[1]);
+    scene.add(b);
   }
   const ms = sign('SALT LAKE SECTOR V · METRO', 12, 1.4, '#2e9e5b');
   ms.position.set(built.stationPos.x, 17, built.stationPos.z);
   ms.rotation.y = built.stationDir;
   scene.add(ms);
+  const ent = sign('🚇 METRO ↓', 3.6, 0.8, '#2e9e5b');
+  ent.position.set(world.metroEntrance.x, 2.6, world.metroEntrance.z);
+  scene.add(ent);
+
+  let layer: HTMLElement;
+  let actionBtn: HTMLButtonElement;
+  let phoneBtn: HTMLButtonElement;
+  let balanceUi: HTMLElement | null = null;
+  let yaw = Math.atan2(-gate.z, -gate.x); // face the junction
+  let acc = 0;
+  let lastPlace = '';
+  let leaving = false;
+  const pending = { jump: false, action: false, phone: false };
+
+  function intentFromInput(): Intent {
+    const fx = Math.cos(yaw), fz = Math.sin(yaw);
+    return {
+      moveX: fx * input.mx - fz * input.mz,
+      moveZ: fz * input.mx + fx * input.mz,
+      jump: input.jump,
+      action: input.action,
+      phone: input.phone,
+      // Hanging off the left door, the open side is screen-left: pushing right leans you back in.
+      lean: input.mz,
+    };
+  }
+
+  function handle(e: GameEvent) {
+    switch (e.type) {
+      case 'toast': toast(e.title, e.line); break;
+      case 'notify': notify(e.title, e.body, e.tone); break;
+      case 'sfx': sfx[e.name](); break;
+      case 'shake': shake.kick(e.amp, e.secs); if (e.amp > 0.5) shakeUi(); break;
+      case 'hitstop': game.hitStop = Math.max(game.hitStop, e.secs); break;
+      case 'slowmo': game.timeScale = e.scale; setTimeout(() => { game.timeScale = 1; }, e.secs * 1000); break;
+      case 'photo': run.requestPhoto(e.drama, e.burst); break;
+      case 'end': game.fail(e.ending); break;
+      case 'stage':
+        leaving = true;
+        if (e.to === 'station') game.go('station');
+        else { run.rideMode = e.mode ?? 'bus'; run.spawnX = 260; game.go('city'); }
+        break;
+    }
+  }
 
   function placeName(x: number, z: number) {
     let best = 'PWH MORE', bd = 60;
@@ -101,46 +150,79 @@ export function sectorv(): Scene {
     scene, camera,
     enter() {
       resize(camera, 55, 72);
-      game.debug = { body, map };
+      game.debug = { world, map };
       layer = sceneLayer();
       showHud(true);
       run.clockRunning = true;
       enableStick(true);
+      actionBtn = el('button', 'act-btn', '');
+      actionBtn.hidden = true;
+      pressButton(actionBtn, 'action');
       const jump = el('button', 'jump-btn', 'JUMP');
       pressButton(jump, 'jump');
-      layer.appendChild(jump);
+      phoneBtn = el('button', 'phone-btn', '');
+      pressButton(phoneBtn, 'phone');
+      layer.append(actionBtn, jump, phoneBtn);
       notify(pick(ticker.start), '', 'news');
-      hint('College gate, Street No. 2. Head for the junction →');
-      setTimeout(() => hint(''), 5000);
+      hint('College gate, Street No. 2. Hop a bus, book a bike, or find the metro.');
+      setTimeout(() => hint(''), 6000);
     },
     update(dt) {
-      // Move relative to the camera, and don't walk through buildings.
-      const px = body.pos.x, pz = body.pos.z;
-      body.update(dt, -Infinity, Infinity, yaw);
-      if (grid.blocked(body.pos.x, body.pos.z)) {
-        if (!grid.blocked(body.pos.x, pz)) body.pos.z = pz;
-        else if (!grid.blocked(px, body.pos.z)) body.pos.x = px;
-        else { body.pos.x = px; body.pos.z = pz; }
+      // Fixed 60 Hz simulation. Taps are latched until a step consumes them: a frame can run zero steps.
+      acc += dt;
+      const now = intentFromInput();
+      pending.jump ||= now.jump; pending.action ||= now.action; pending.phone ||= now.phone;
+      while (acc >= T.step && !leaving) {
+        acc -= T.step;
+        world.step({ ...now, ...pending });
+        pending.jump = pending.action = pending.phone = false;
+        for (const e of world.events.drain()) handle(e);
       }
-      // The camera swings round behind the direction you're running, like GTA on a phone.
-      const sp = Math.hypot(body.vel.x, body.vel.z);
-      if (sp > 1.5 && input.mx > -0.5) {
-        const target = Math.atan2(body.vel.z, body.vel.x);
-        let d = target - yaw;
-        d = Math.atan2(Math.sin(d), Math.cos(d));
-        yaw += d * Math.min(1, dt * 1.8);
-      }
+      if (leaving) return;
+
+      const p = world.player;
+      const ride = world.riding;
+      actors.sync(world.traffic.vehicles, world.captainId, world.captain?.captain?.name ?? '');
+
+      // Player model.
+      playerObj.position.set(p.x, p.state === 'hang' ? 0.6 : p.state === 'pillion' ? 0.55 : p.y, p.z);
+      playerObj.rotation.set(p.state === 'hang' ? -p.lean * 0.6 : 0, -p.heading + Math.PI / 2, p.down ? Math.PI / 2 : 0);
+      playerObj.scale.setScalar(p.state === 'pillion' ? 0.9 : 1);
+
+      // UI: context button, phone, balance bar.
+      const a = world.action();
+      const label = p.state === 'hang' ? 'HOP OFF' : a?.kind === 'hop' ? 'HOP ON 🚌' : a?.kind === 'bike' ? 'SIT ON BIKE 🛵' : '';
+      actionBtn.hidden = !label;
+      if (label && actionBtn.textContent !== label) actionBtn.textContent = label;
+      const busy = world.booking || world.captainId || p.state !== 'foot';
+      phoneBtn.innerHTML = busy ? '📱 <small>…</small>' : `📱 Rapi-Nah <small>₹${world.fare()}</small>`;
+      phoneBtn.classList.toggle('busy', !!busy);
+      if (p.state === 'hang' && !balanceUi) {
+        balanceUi = el('div', 'balance', '<i><b></b></i>');
+        layer.appendChild(balanceUi);
+        hint('Hanging on! ← → to balance. Jump to hop off.');
+      } else if (p.state !== 'hang' && balanceUi) { balanceUi.remove(); balanceUi = null; hint(''); }
+      const bar = balanceUi?.querySelector<HTMLElement>('b');
+      if (bar) { bar.style.left = `${50 - p.lean * 45}%`; bar.classList.toggle('danger', Math.abs(p.lean) > 0.7); }
+
+      // Camera: behind the direction of travel; while riding, behind the vehicle.
+      const sp = Math.hypot(p.vx, p.vz);
+      const targetYaw = ride ? ride.heading : sp > 1.5 && input.mx > -0.5 ? Math.atan2(p.vz, p.vx) : yaw;
+      let d = targetYaw - yaw;
+      d = Math.atan2(Math.sin(d), Math.cos(d));
+      yaw += d * Math.min(1, dt * (ride ? 3 : 1.8));
       const fx = Math.cos(yaw), fz = Math.sin(yaw);
       const portrait = innerHeight > innerWidth;
-      const back = portrait ? 11 : 9.5;
+      const back = (portrait ? 11 : 9.5) * (ride?.kind === 'bus' ? 1.4 : 1);
       let dist = back;
-      for (let d = 1.5; d <= back; d += 0.75) if (grid.blocked(body.pos.x - fx * d, body.pos.z - fz * d, 0.6)) { dist = Math.max(2.5, d - 0.75); break; }
-      const want = new THREE.Vector3(body.pos.x - fx * dist, (portrait ? 8 : 6.5) * (0.6 + 0.4 * dist / back) + body.pos.y * 0.3, body.pos.z - fz * dist);
+      for (let k = 1.5; k <= back; k += 0.75) if (world.grid.blocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
+      const want = new THREE.Vector3(p.x - fx * dist, (portrait ? 8 : 6.5) * (0.6 + 0.4 * dist / back), p.z - fz * dist);
       camera.position.lerp(want, Math.min(1, dt * 6));
-      camera.lookAt(body.pos.x + fx * 6, 1.2, body.pos.z + fz * 6);
+      camera.lookAt(p.x + fx * 6, 1.2, p.z + fz * 6);
       shake.apply(camera, dt);
+      actors.billboard(camera);
 
-      const place = placeName(body.pos.x, body.pos.z);
+      const place = placeName(p.x, p.z);
       if (place !== lastPlace) { lastPlace = place; setDateline(place); }
     },
     exit() {

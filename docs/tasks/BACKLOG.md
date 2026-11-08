@@ -4,8 +4,9 @@ Order matters: foundation first (lead, serial), then features (builders, max 2 i
 
 ## Foundation (lead)
 - [x] 000 Scaffold: folders, ESLint boundaries, Vitest, Playwright smoke + draw-call budget, size-limit, pre-push check, AGENTS.md.
-- [ ] 001 Extract sim: player movement, traffic on the road graph, bus hop/hang/fall, Rapi-Nah captain plans, metro doors
-      into `src/sim/` with unit tests; fixed 60 Hz step and seeded runs (`?seed=`).
+- [x] 001 Extract sim: player movement, traffic on the road graph, bus hop/hang/fall, Rapi-Nah captain plans, metro doors
+      into `src/sim/` with unit tests; fixed 60 Hz step and seeded runs (`?seed=`). Done for the real map; the road
+      and metro stages are still legacy code and move into sim with tasks 007 and 004.
 - [ ] 002 Render foundation: instanced/pooled actors (people, cars, buses), camera rig, adaptive pixel ratio,
       WebGL context-loss handling, pause when hidden, share capture without `preserveDrawingBuffer`.
 

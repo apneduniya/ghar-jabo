@@ -4,7 +4,9 @@
 import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
-import { bake, box, building, BUS_REAR_DOOR, C, duskScene, person, rand, resize, Shake, sign } from '../render/gfx';
+import { bake, box, building, C, duskScene, rand, resize, Shake, sign } from '../render/gfx';
+import { person } from '../render/models';
+import { BUS_REAR_DOOR } from '../sim/vehicles';
 import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline, showHud } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx, Engine } from '../audio/audio';
@@ -195,10 +197,10 @@ export function city(): Scene {
     }
   }
 
-  function sitOnBike() {
+  function sitOnBike(paid = false) {
     if (!captain) return;
     const f = fare();
-    if (!run.spend(f)) { cancelCaptain('Cash only, dada'); return; }
+    if (!paid && !run.spend(f)) { cancelCaptain('Cash only, dada'); return; }
     sfx.win();
     state = 'pillion';
     ride = captain;
@@ -285,6 +287,18 @@ export function city(): Scene {
       pressButton(phoneBtn, 'phone');
       progress = el('div', 'progress', '<i></i><b></b>');
       layer.append(actionBtn, jump, phoneBtn, progress);
+      if (run.rideMode === 'bus') {
+        // Came off the real map on a bus: keep hanging on it towards Sealdah.
+        const v = traffic.spawn('bus', run.spawnX - 2, LANES_EAST[1], 1);
+        v.speed = 6;
+        v.depotX = undefined;
+        hopOn(v);
+      } else if (run.rideMode === 'rapinah') {
+        const v = traffic.spawn('bike', run.spawnX, LANES_EAST[1], 1, { captain: { name: 'Bablu', plan: 'come', stopX: run.spawnX, state: 'waiting', waitT: 0 } });
+        captain = v;
+        sitOnBike(true);
+      }
+      run.rideMode = null;
       for (const s of stops) {
         const t = el('span', 'tick', '');
         t.style.left = `${(s.x / HOME_X) * 100}%`;

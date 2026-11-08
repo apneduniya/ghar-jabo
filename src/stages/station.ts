@@ -4,7 +4,8 @@
 import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
-import { bake, box, C, person, rand, resize, Shake, sign } from '../render/gfx';
+import { bake, box, C, rand, resize, Shake, sign } from '../render/gfx';
+import { person } from '../render/models';
 import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';

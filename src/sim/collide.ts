@@ -1,6 +1,6 @@
 // Point-in-building tests on a coarse spatial hash, so the player can't walk through walls.
 
-import type { Pt } from './citymap';
+export type Pt = [number, number];
 
 const CELL = 20;
 
