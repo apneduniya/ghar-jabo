@@ -265,6 +265,7 @@ export function city(): Scene {
     }
     state = 'leaving';
     run.tried('metro');
+    run.spawnX = METRO_IN_X;
     sfx.chime();
     game.go('station');
   }
@@ -490,23 +491,15 @@ function buildWorld(scene: THREE.Scene) {
       scene.add(p);
     }
   }
-  // College gate and PWH tower at the start.
-  const gate = new THREE.Group();
-  gate.add(box(0.8, 4.5, 0.8, 0xb04a3a, 0, 0, -3), box(0.8, 4.5, 0.8, 0xb04a3a, 0, 0, 3), box(0.8, 0.9, 7, 0xb04a3a, 0, 4.5, 0));
-  const gs = sign('COLLEGE GATE', 6.2, 0.7, '#f3e9d2', '#7a2a1f');
-  gs.position.set(-0.45, 4.95, 0);
-  gs.rotation.y = -Math.PI / 2;
-  gate.add(gs);
-  gate.position.set(-8, 0, -13);
-  scene.add(gate);
-  const pwh = sign('PWH TOWER', 8, 1.2, '#22324a');
-  pwh.position.set(18, 16, -10.9);
-  scene.add(pwh, box(10, 22, 6, C.tower, 18, 0, -14));
-  // Green Line viaduct over the Sector V stretch, with the station by Wipro More.
-  scene.add(box(260, 1.2, 3, C.viaduct, 70, 9, 9));
-  for (let x = -55; x <= 200; x += 13) scene.add(box(1.4, 9, 1.4, C.viaduct, x, 0, 9));
+  // Karunamoyee: where the real Sector V map hands over to the long ride.
+  const kar = sign('KARUNAMOYEE → SEALDAH', 9, 1.1, '#1f5f3a');
+  kar.position.set(-6, 4.5, -10.6);
+  scene.add(kar, box(0.2, 4, 0.2, 0x555555, -6, 0, -10.8));
+  // The Green Line viaduct runs alongside the whole way to Sealdah, with Central Park station on it.
+  scene.add(box(L, 1.2, 3, C.viaduct, cx, 9, 9));
+  for (let x = -55; x <= L - 60; x += 13) scene.add(box(1.4, 9, 1.4, C.viaduct, x, 0, 9));
   scene.add(box(30, 5, 7, 0xd9d4cc, METRO_IN_X, 10.2, 9));
-  const ms = sign('SECTOR V METRO', 10, 1.4, '#2e9e5b');
+  const ms = sign('CENTRAL PARK METRO', 10, 1.4, '#2e9e5b');
   ms.position.set(METRO_IN_X, 13.4, 5.4);
   scene.add(ms);
   // Metro entrance stairs on the player's footpath.

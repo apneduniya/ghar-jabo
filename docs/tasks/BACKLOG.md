@@ -19,9 +19,16 @@ Order matters: foundation first (lead, serial), then features (builders, max 2 i
       Tap to open a full map. One small 2D canvas: roads drawn once, markers per frame. Better than the
       vertical strip in Bhaiya Bandra and the pointer-only HUD in Baper Rasta.
 - [x] 006 Rapi-Nah on real roads: captain rides the road graph to you (wrong side, obviously), wrong-place arrivals.
-- [ ] 007 The ride to Sealdah: condensed real sequence (Karunamoyee → … → Sealdah) for bus and bike; metro via the
+- [x] 007 The ride to Sealdah: condensed real sequence (Karunamoyee → … → Sealdah) for bus and bike; metro via the
       Green Line stations; home at Sealdah.
 - [x] 008 Sound: licensed clips (horns, rain, shankh, hawkers, crows), synthesised tram bell and metro beep,
       Adarsh's recorded conductor and announcement lines when ready.
-- [~] 009 Street life (shelters, trees, shops, puddles done; walking pedestrians next): trees, shop fronts on the café strip (parody names), people on footpaths, puddles near Webel More.
-- [ ] 010 Newspaper ending on the new base, with the run's real photo and the seed for "beat my run".
+- [x] 009 Street life: trees, shop fronts on the café strip (parody names), people on footpaths, puddles near Webel More.
+- [x] 010 Newspaper ending on the new base, with the run's real photo and the seed for "beat my run".
+
+## Next (from playtests and known gaps)
+- [ ] 011 Move the long-ride and metro-station stages onto sim/ (they're still legacy stage code; city.ts is over 400 lines).
+- [ ] 012 Start framing: the opening camera sits tight against the TIU wall; open on a wider shot of the gate and junction.
+- [ ] 013 Pedestrians react: step aside or bump the player (they're scenery right now).
+- [ ] 014 Adarsh's recorded voice lines (conductor, Green Line announcement parody), when recorded.
+- [ ] 015 Publish: gharjabo.boogles.dev (Cloudflare Pages) once Adarsh says go.

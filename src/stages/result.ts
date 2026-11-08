@@ -93,7 +93,7 @@ function buildPaper(run: Run, title: string, photo: string, burst: string, q: Qu
     </div>
     <div class="poll">${pollLine}</div>
     <dl class="stats">${stats(run).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
-    <footer><b>${rankTitle(run)}</b> · Tumi parbe? · ${SITE}</footer>`;
+    <footer><b>${rankTitle(run)}</b> · Tumi parbe? Same evening, same traffic: <b>${SITE}/?seed=${run.seed}</b></footer>`;
   return p;
 }
 
@@ -174,13 +174,13 @@ async function shareImage(run: Run, title: string, photo: string, burst: string,
   g.fillStyle = '#ffd400';
   g.font = 'bold 36px system-ui, sans-serif';
   g.textAlign = 'center';
-  g.fillText(`Tumi parbe? · ${SITE}`, W / 2, H - 32);
+  g.fillText(`Tumi parbe? · ${SITE}/?seed=${run.seed}`, W / 2, H - 32);
 
   const blob: Blob = await new Promise((r) => cv.toBlob((b) => r(b!), 'image/png'));
   const file = new File([blob], 'ghar-jabo.png', { type: 'image/png' });
   if (share && navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], text: `${headline(run)} · Tumi parbe? ${SITE}` });
+      await navigator.share({ files: [file], text: `${headline(run)} · Tumi parbe? Same evening, same traffic: https://${SITE}/?seed=${run.seed}` });
       return;
     } catch { /* cancelled: fall through to download */ }
   }

@@ -68,7 +68,7 @@ export function station(): Scene {
   scene.add(box(PLAT[1] - PLAT[0], 0.06, 0.4, 0xf5c518, (PLAT[0] + PLAT[1]) / 2, 0, EDGE_Z + 0.3));
   scene.add(box(PLAT[1] - PLAT[0] + 20, 0.3, 4, 0x333333, (PLAT[0] + PLAT[1]) / 2, -1.2, EDGE_Z - 2.2));
   for (const d of DOORS) scene.add(box(1.6, 0.05, 0.6, C.metro, d, 0, EDGE_Z + 0.9));
-  const ps = sign('SECTOR V · সেক্টর ফাইভ · TOWARDS SEALDAH →', 14, 1.2, '#1f5f9a');
+  const ps = sign('GREEN LINE · সবুজ লাইন · TOWARDS SEALDAH →', 14, 1.2, '#1f5f9a');
   ps.position.set(64, 4.2, 6.6);
   ps.rotation.y = Math.PI;
   scene.add(ps);
@@ -299,7 +299,7 @@ export function station(): Scene {
       game.debug = { body };
       layer = sceneLayer();
       run.clockRunning = true;
-      setDateline('SECTOR V METRO');
+      setDateline(run.spawnX > 20 ? 'CENTRAL PARK METRO' : 'SECTOR V METRO');
       enableStick(true);
       const jump = el('button', 'jump-btn', 'JUMP');
       pressButton(jump, 'jump');

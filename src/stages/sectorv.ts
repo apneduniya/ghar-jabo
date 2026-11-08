@@ -9,6 +9,7 @@ import { playerPerson } from '../render/models';
 import { Actors } from '../render/actors';
 import { buildCityMap, map } from '../render/world/citymap';
 import { buildProps } from '../render/world/props';
+import { Walkers } from '../render/world/walkers';
 import { Minimap } from '../ui/minimap';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
@@ -79,6 +80,7 @@ export function sectorv(): Scene {
   world.player.x = gate.x;
   world.player.z = gate.z;
   buildProps(scene, map, world.grid, world.metroEntrance);
+  const walkers = new Walkers(scene, map, world.grid);
   buildGate(scene, gate.road.x + gate.nx * (gate.road.w / 2 + 2.8), gate.road.z + gate.nz * (gate.road.w / 2 + 2.8), gate.road, gate.nx, gate.nz);
 
   const playerObj = playerPerson();
@@ -143,7 +145,7 @@ export function sectorv(): Scene {
       case 'stage':
         leaving = true;
         if (e.to === 'station') game.go('station');
-        else { run.rideMode = e.mode ?? 'bus'; run.spawnX = 260; game.go('city'); }
+        else { run.rideMode = e.mode ?? 'bus'; run.spawnX = 6; game.go('city'); }
         break;
     }
   }
@@ -191,6 +193,7 @@ export function sectorv(): Scene {
 
       const p = world.player;
       ambience.update(dt, run.jam, p.x, p.z);
+      walkers.update(dt, performance.now());
       const ride = world.riding;
       actors.sync(world.traffic.vehicles, world.captainId, world.captain?.captain?.name ?? '');
 
