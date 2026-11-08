@@ -29,6 +29,6 @@ Order matters: foundation first (lead, serial), then features (builders, max 2 i
 ## Next (from playtests and known gaps)
 - [ ] 011 Move the long-ride and metro-station stages onto sim/ (they're still legacy stage code; city.ts is over 400 lines).
 - [ ] 012 Start framing: the opening camera sits tight against the TIU wall; open on a wider shot of the gate and junction.
-- [ ] 013 Pedestrians react: step aside or bump the player (they're scenery right now).
+- [x] 013 Pedestrians react (sim/crowd.ts), footpath stalls, side-lane depth in culled cells.
 - [ ] 014 Adarsh's recorded voice lines (conductor, Green Line announcement parody), when recorded.
 - [ ] 015 Publish: gharjabo.boogles.dev (Cloudflare Pages) once Adarsh says go.
