@@ -21,7 +21,7 @@ Order matters: foundation first (lead, serial), then features (builders, max 2 i
 - [x] 006 Rapi-Nah on real roads: captain rides the road graph to you (wrong side, obviously), wrong-place arrivals.
 - [ ] 007 The ride to Sealdah: condensed real sequence (Karunamoyee → … → Sealdah) for bus and bike; metro via the
       Green Line stations; home at Sealdah.
-- [ ] 008 Sound: licensed clips (horns, rain, shankh, hawkers, crows), synthesised tram bell and metro beep,
+- [x] 008 Sound: licensed clips (horns, rain, shankh, hawkers, crows), synthesised tram bell and metro beep,
       Adarsh's recorded conductor and announcement lines when ready.
 - [~] 009 Street life (shelters, trees, shops, puddles done; walking pedestrians next): trees, shop fronts on the café strip (parody names), people on footpaths, puddles near Webel More.
 - [ ] 010 Newspaper ending on the new base, with the run's real photo and the seed for "beat my run".
