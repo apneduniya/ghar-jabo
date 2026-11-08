@@ -9,6 +9,8 @@ const phone = matchMedia('(pointer: coarse)').matches;
 export const renderer = new THREE.WebGLRenderer({ canvas, antialias: !phone, powerPreference: 'high-performance' });
 export const maxPixelRatio = Math.min(devicePixelRatio, phone ? 1.5 : 2);
 renderer.setPixelRatio(maxPixelRatio);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
 renderer.shadowMap.enabled = false;
 
 export const C = {

@@ -86,7 +86,20 @@ for e in bld:
     if t.get('name') and not t['name'].isdigit(): b['n'] = t['name']
     buildings.append(b)
 
-data = {'scale': SCALE, 'roads': roads, 'rails': rails, 'stations': stations, 'stops': stops, 'buildings': buildings,
+# Water (the Keshtopur canal) and green spaces (parks, grounds), if the extract exists.
+water, green = [], []
+wpath = os.path.join(SRC, 'water.json')
+if os.path.exists(wpath):
+    for e in json.load(open(wpath))['elements']:
+        t = e.get('tags', {})
+        if e['type'] != 'way' or 'geometry' not in e: continue
+        pts = [to_game(g['lat'], g['lon']) for g in e['geometry']]
+        if len(pts) < 4 or not any(inside(q, RADIUS_M * SCALE * 1.3) for q in pts): continue
+        pts = simplify(pts[:-1], 0.5)
+        if t.get('natural') == 'water': water.append(pts)
+        elif t.get('leisure') in ('park', 'pitch', 'garden') or t.get('landuse') in ('grass', 'park', 'recreation_ground'): green.append(pts)
+
+data = {'scale': SCALE, 'roads': roads, 'rails': rails, 'stations': stations, 'stops': stops, 'buildings': buildings, 'water': water, 'green': green,
         'attribution': 'Map data © OpenStreetMap contributors (ODbL)'}
 json.dump(data, open(OUT, 'w'), separators=(',', ':'))
 print(f"roads {len(roads)} rails {len(rails)} stations {len(stations)} stops {len(stops)} buildings {len(buildings)} -> {os.path.getsize(OUT)//1024} KB")

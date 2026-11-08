@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
-import { C, resize, Shake, sign } from '../render/gfx';
+import { resize, Shake, sign } from '../render/gfx';
 import { playerPerson } from '../render/models';
 import { Actors } from '../render/actors';
 import { buildCityMap, map } from '../render/world/citymap';
@@ -38,7 +38,7 @@ function gateSpot(world: World) {
     }
   }
   const nx = (tiu[0] - best.x) / (best.d || 1), nz = (tiu[1] - best.z) / (best.d || 1);
-  const spot = world.freeSpotNear(best.x + nx * (best.w / 2 + 1.2), best.z + nz * (best.w / 2 + 1.2));
+  const spot = world.freeSpotNear(best.x + nx * (best.w / 2 + 0.8), best.z + nz * (best.w / 2 + 0.8));
   return { ...spot, road: best, nx, nz };
 }
 
@@ -59,14 +59,32 @@ function buildGate(scene: THREE.Scene, x: number, z: number, along: { dx: number
   scene.add(board);
 }
 
+/** A vertical sky gradient as the scene background (cheaper than a sky dome). */
+function skyGradient() {
+  const cv = document.createElement('canvas');
+  cv.width = 2; cv.height = 256;
+  const g = cv.getContext('2d')!;
+  const grad = g.createLinearGradient(0, 0, 0, 256);
+  grad.addColorStop(0, '#5f86c2');
+  grad.addColorStop(0.55, '#b9a7c4');
+  grad.addColorStop(0.8, '#f2b27c');
+  grad.addColorStop(1, '#f6c79a');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 2, 256);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
 export function sectorv(): Scene {
   const run = game.run;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(C.sky);
-  scene.fog = new THREE.Fog(C.sky, 90, 260);
-  scene.add(new THREE.HemisphereLight(0xffe2c4, 0x40304a, 1.7));
-  const sun = new THREE.DirectionalLight(0xffc48a, 1.3);
-  sun.position.set(-60, 90, 40);
+  // A monsoon evening at 6:30 PM: low warm sun in the west, a blue sky going orange at the horizon, haze.
+  scene.background = skyGradient();
+  scene.fog = new THREE.Fog(0xe8b48a, 120, 340);
+  scene.add(new THREE.HemisphereLight(0xbfd3ff, 0x5c4a3c, 1.5));
+  const sun = new THREE.DirectionalLight(0xffc28a, 2.6);
+  sun.position.set(-120, 70, 30);
   scene.add(sun);
   const camera = new THREE.PerspectiveCamera(55, 1, 0.5, 600);
   const shake = new Shake();
@@ -112,7 +130,9 @@ export function sectorv(): Scene {
   const exit = map.busPath[map.busPath.length - 1];
   let phoneBtn: HTMLButtonElement;
   let balanceUi: HTMLElement | null = null;
-  let yaw = Math.atan2(-gate.z, -gate.x); // face the junction
+  // Open looking along Street No. 2 towards the junction, not diagonally into a wall.
+  const toJunction = -gate.x * gate.road.dx - gate.z * gate.road.dz > 0 ? 1 : -1;
+  let yaw = Math.atan2(gate.road.dz * toJunction, gate.road.dx * toJunction);
   let acc = 0;
   let lastPlace = '';
   let leaving = false;
