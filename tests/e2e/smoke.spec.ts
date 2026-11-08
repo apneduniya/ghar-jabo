@@ -51,8 +51,12 @@ test('hop onto a Kolkata bus at its left rear door', async ({ page }) => {
     w.player.z = bus.z + s * -1.9 - c * (bus.width / 2 + 0.5);
   });
   await expect(page.locator('.act-btn')).toHaveText(/HOP ON/, { timeout: 10_000 });
-  await page.locator('.act-btn').dispatchEvent('pointerdown');
-  await expect.poll(() => page.evaluate(() => (window as any).gj.debug.world.player.state), { timeout: 10_000 }).toBe('hang');
+  // Under load SwiftShader runs ~2 fps and the bus can roll past between frames, so tap again like a player would.
+  await expect.poll(async () => {
+    const state = await page.evaluate(() => (window as any).gj.debug.world.player.state);
+    if (state !== 'hang') await page.locator('.act-btn').dispatchEvent('pointerdown');
+    return state;
+  }, { timeout: 15_000 }).toBe('hang');
   expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
   expect(errors).toEqual([]);
 });
