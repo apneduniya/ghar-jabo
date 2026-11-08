@@ -67,8 +67,13 @@ export function buildProps(scene: THREE.Scene, map: MapData, grid: BuildingGrid,
   ent.position.set(metro.x, 0, metro.z);
   statics.add(ent);
 
-  // Puddles that never dry (Webel More), as flat dark patches.
-  for (const f of floods) statics.add(box(f.r * 1.6, 0.04, f.r * 1.2, 0x3f5f78, f.x, 0.06, f.z));
+  // Puddles that never dry (Webel More): a cluster of shallow, sky-tinted pools rather than one slab.
+  for (const f of floods) {
+    for (let i = 0; i < 9; i++) {
+      const a = i * 2.4, d = (i % 3) * f.r * 0.3;
+      statics.add(box(f.r * (0.35 + (i % 4) * 0.08), 0.03, f.r * (0.25 + (i % 3) * 0.07), 0x7d9bb3, f.x + Math.cos(a) * d, 0.07, f.z + Math.sin(a) * d));
+    }
+  }
 
   // Shop fronts along the café strip: Street No. 13 from the PWH junction towards College More.
   const strip = map.busPath.slice(0, 2);
