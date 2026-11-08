@@ -12,6 +12,7 @@ import { RoadGraph } from './roadgraph';
 import type { Rng } from './rng';
 import type { Run } from './run';
 import { Traffic, type Vehicle } from './traffic';
+import { Crowd } from './crowd';
 import { BUS_REAR_DOOR } from './vehicles';
 
 export type Action = { kind: 'hop'; bus: Vehicle } | { kind: 'bike'; captain: Vehicle } | null;
@@ -20,6 +21,7 @@ export class World {
   readonly graph: RoadGraph;
   readonly traffic: Traffic;
   readonly grid: BuildingGrid;
+  readonly crowd: Crowd;
   readonly player = new Player();
   readonly events = new Events();
   t = 0;
@@ -37,6 +39,7 @@ export class World {
     this.player.x = start.x;
     this.player.z = start.z;
     this.traffic.populate(start.x, start.z);
+    this.crowd = new Crowd(map, this.grid, rng, 110);
     const st = map.stations.find((s) => s.n === 'Salt Lake Sector V') ?? map.stations[0];
     this.metroEntrance = this.freeSpotNear(st.p[0], st.p[1] + 6);
     const end = map.busPath[map.busPath.length - 1];
@@ -89,6 +92,16 @@ export class World {
     const pinned = new Set(p.rideId ? [p.rideId] : []);
     if (this.captainId) pinned.add(this.captainId);
     this.traffic.update(dt, p.x, p.z, this.run.jam, pinned);
+    const bump = this.crowd.update(dt, p.x, p.z, p.state === 'foot' ? Math.hypot(p.vx, p.vz) : 0, this.rng);
+    if (bump) {
+      // Barged into someone at a run: you both stagger, and they let you know.
+      p.vx *= 0.3; p.vz *= 0.3;
+      this.run.hurtDignity(1);
+      this.run.stats.bumped++;
+      this.events.sfx('bump');
+      this.events.push({ type: 'shake', amp: 0.15, secs: 0.15 });
+      this.events.toast('DHAKKA!', bump.line);
+    }
 
     if (p.state === 'foot') this.stepFoot(dt, intent);
     else if (p.state === 'hang') this.stepHang(dt, intent);

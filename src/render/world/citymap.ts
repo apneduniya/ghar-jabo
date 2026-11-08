@@ -86,7 +86,7 @@ function flatPoly(p: Pt[], y: number, color: THREE.Color) {
   return g;
 }
 
-export interface BuiltMap { group: THREE.Group; stationPos: THREE.Vector3; stationDir: number }
+export interface BuiltMap { group: THREE.Group; stationPos: THREE.Vector3; stationDir: number; cull: (x: number, z: number) => void }
 
 export function buildCityMap(): BuiltMap {
   const group = new THREE.Group();
@@ -146,19 +146,21 @@ export function buildCityMap(): BuiltMap {
 
   // Which wall midpoints face a main road: those get balconies, awnings and signs.
   const mainSegs: number[][] = [];
-  for (const r of map.roads) if (MAIN.has(r.k) && !r.b) for (let i = 1; i < r.p.length; i++) mainSegs.push([...r.p[i - 1], ...r.p[i], r.w]);
+  // Main roads and the side lanes alike (not private service roads): the culling cells keep this cheap.
+  for (const r of map.roads) if (r.k !== 'service' && !r.b) for (let i = 1; i < r.p.length; i++) mainSegs.push([...r.p[i - 1], ...r.p[i], r.w]);
   const streetSide = (x: number, z: number) => mainSegs.some(([ax, az, bx, bz, w]) => {
     const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1;
     const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / L2));
     return Math.hypot(ax + dx * t - x, az + dz * t - z) < w / 2 + 9;
   });
   const b = buildBuildings(map.buildings, streetSide);
-  group.add(b.group, buildFrontage(b.bays).group);
+  const frontage = buildFrontage(b.bays);
+  group.add(b.group, frontage.group);
 
   const st = map.stations.find((s) => s.n === 'Salt Lake Sector V') ?? map.stations[0];
   const s = buildStructures(map.roads, map.rails, st.p);
   group.add(s.group);
-  return { group, stationPos: s.stationPos, stationDir: s.stationDir };
+  return { group, stationPos: s.stationPos, stationDir: s.stationDir, cull: frontage.cull };
 }
 
 export { polyLen };

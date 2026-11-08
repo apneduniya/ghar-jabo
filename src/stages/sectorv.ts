@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
-import { resize, Shake, sign } from '../render/gfx';
+import { bake, batchSigns, resize, Shake, sign } from '../render/gfx';
 import { playerPerson } from '../render/models';
 import { Actors } from '../render/actors';
 import { buildCityMap, map } from '../render/world/citymap';
@@ -46,7 +46,7 @@ function gateSpot(world: World) {
   return { ...spot, road: best, nx, nz };
 }
 
-function buildGate(scene: THREE.Scene, x: number, z: number, along: { dx: number; dz: number }, nx: number, nz: number) {
+function buildGate(scene: THREE.Object3D, x: number, z: number, along: { dx: number; dz: number }, nx: number, nz: number) {
   const mat = new THREE.MeshLambertMaterial({ color: 0xb04a3a });
   for (const s of [-3.2, 3.2]) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.4, 0.8), mat);
@@ -101,9 +101,11 @@ export function sectorv(): Scene {
   const gate = gateSpot(world);
   world.player.x = gate.x;
   world.player.z = gate.z;
-  buildProps(scene, map, world.grid, world.metroEntrance);
-  const walkers = new Walkers(scene, map, world.grid);
-  buildGate(scene, gate.road.x + gate.nx * (gate.road.w / 2 + 2.8), gate.road.z + gate.nz * (gate.road.w / 2 + 2.8), gate.road, gate.nx, gate.nz);
+  // Everything static that stands on the map goes in `dressing`, merged into a few draw calls below.
+  const dressing = new THREE.Group();
+  buildProps(dressing, map, world.grid, world.metroEntrance);
+  const walkers = new Walkers(scene, world.crowd);
+  buildGate(dressing, gate.road.x + gate.nx * (gate.road.w / 2 + 2.8), gate.road.z + gate.nz * (gate.road.w / 2 + 2.8), gate.road, gate.nx, gate.nz);
 
   const playerObj = playerPerson();
   scene.add(playerObj);
@@ -111,22 +113,26 @@ export function sectorv(): Scene {
   // Landmark boards.
   const pwh = sign('PWH TOWER', 10, 1.4, '#22324a');
   pwh.position.set(map.pois.pwc[0], 14, map.pois.pwc[1]);
-  scene.add(pwh);
+  dressing.add(pwh);
   const seenStops = new Set<string>();
   for (const s of map.stops) {
     if (seenStops.has(s.n)) continue;
     seenStops.add(s.n);
     const b = sign(`${s.n.toUpperCase()} · BUS`, 5, 0.7, '#f5c518', '#1b1b1b');
     b.position.set(s.p[0], 3, s.p[1]);
-    scene.add(b);
+    dressing.add(b);
   }
   const ms = sign('SALT LAKE SECTOR V · METRO', 12, 1.4, '#2e9e5b');
   ms.position.set(built.stationPos.x, 17, built.stationPos.z);
   ms.rotation.y = built.stationDir;
-  scene.add(ms);
+  dressing.add(ms);
   const ent = sign('🚇 METRO ↓', 3.6, 0.8, '#2e9e5b');
   ent.position.set(world.metroEntrance.x, 3.8, world.metroEntrance.z);
-  scene.add(ent);
+  dressing.add(ent);
+  // Static geometry in one draw call, every static board (landmarks, shops, billboards) in one more.
+  bake(dressing);
+  batchSigns(dressing);
+  scene.add(dressing);
 
   // Points along the flyover deck, so the camera can stay underneath it.
   const deck: { x: number; z: number; y: number; r: number }[] = [];
@@ -229,10 +235,11 @@ export function sectorv(): Scene {
         acc += dt;
         while (acc >= T.step) { acc -= T.step; world.step(NO_INTENT); world.events.drain(); }
         actors.sync(world.traffic.vehicles, 0, '');
-        walkers.update(dt, performance.now());
+        walkers.update(performance.now());
         orbit += dt * 0.06;
         camera.position.set(Math.cos(orbit) * 75, 36, Math.sin(orbit) * 75);
         camera.lookAt(0, 4, 0);
+        built.cull(0, 0);
         playerObj.position.set(world.player.x, 0, world.player.z);
         return;
       }
@@ -279,7 +286,7 @@ export function sectorv(): Scene {
 
       const p = world.player;
       ambience.update(dt, run.jam, p.x, p.z);
-      walkers.update(dt, performance.now());
+      walkers.update(performance.now());
       const ride = world.riding;
       actors.sync(world.traffic.vehicles, world.captainId, world.captain?.captain?.name ?? '');
 
@@ -325,6 +332,7 @@ export function sectorv(): Scene {
       camera.lookAt(p.x + fx * 6, 1.2, p.z + fz * 6);
       shake.apply(camera, dt);
       actors.billboard(camera);
+      built.cull(camera.position.x, camera.position.z);
       minimap.draw({ x: p.x, z: p.z, yaw, vehicles: world.traffic.vehicles, captainId: world.captainId, metro: world.metroEntrance, exit: { x: exit[0], z: exit[1] } }, performance.now());
 
       const place = placeName(p.x, p.z);

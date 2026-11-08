@@ -63,7 +63,7 @@ export function bake(root: THREE.Object3D): THREE.Mesh | null {
   const doomed: THREE.Mesh[] = [];
   root.traverse((o) => {
     const m = o as THREE.Mesh;
-    if (!m.isMesh || o.userData.keep) return;
+    if (!m.isMesh || o.userData.keep || (m as THREE.InstancedMesh).isInstancedMesh) return;
     const material = m.material as THREE.MeshLambertMaterial;
     if (Array.isArray(material) || material.map || material.transparent) return;
     const g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone();
@@ -171,4 +171,56 @@ export function capturePhoto(): string {
   const srcH = canvas.width * (cv.height / w);
   g.drawImage(canvas, 0, (canvas.height - srcH) / 2, canvas.width, srcH, 0, 0, w, cv.height);
   return cv.toDataURL('image/jpeg', 0.8);
+}
+
+/**
+ * Pack every static canvas-textured sign under `root` into one texture atlas and one mesh.
+ * Forty separate signboards become a single draw call. Moving things (vehicles) must not be under `root`.
+ */
+export function batchSigns(root: THREE.Object3D): THREE.Mesh | null {
+  root.updateMatrixWorld(true);
+  const found: { mesh: THREE.Mesh; img: HTMLCanvasElement; side: THREE.Side }[] = [];
+  root.traverse((o) => {
+    const m = o as THREE.Mesh;
+    if (!m.isMesh || o.userData.keep) return;
+    const mat = m.material as THREE.MeshBasicMaterial;
+    const img = (mat as THREE.MeshBasicMaterial).map?.image as HTMLCanvasElement | undefined;
+    if (Array.isArray(m.material) || !(mat instanceof THREE.MeshBasicMaterial) || !(img instanceof HTMLCanvasElement)) return;
+    if (img.width > 1024) return; // atlases themselves (bus text) are left alone
+    found.push({ mesh: m, img, side: mat.side });
+  });
+  if (found.length < 2) return null;
+  // Shelf-pack scaled-down copies into a 2048-wide atlas.
+  const W = 2048, scale = 0.5;
+  let x = 0, y = 0, rowH = 0;
+  const slots = found.map((f) => {
+    const w = Math.ceil(f.img.width * scale), h = Math.ceil(f.img.height * scale);
+    if (x + w > W) { x = 0; y += rowH + 2; rowH = 0; }
+    const s = { x, y, w, h };
+    x += w + 2; rowH = Math.max(rowH, h);
+    return s;
+  });
+  const H = THREE.MathUtils.ceilPowerOfTwo(y + rowH);
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const g = cv.getContext('2d')!;
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const geos: THREE.BufferGeometry[] = [];
+  found.forEach((f, i) => {
+    const s = slots[i];
+    g.drawImage(f.img, s.x, s.y, s.w, s.h);
+    const geo = (f.mesh.geometry.index ? f.mesh.geometry.toNonIndexed() : f.mesh.geometry.clone());
+    geo.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, f.mesh.matrixWorld));
+    const uv = geo.attributes.uv as THREE.BufferAttribute;
+    for (let k = 0; k < uv.count; k++) uv.setXY(k, (s.x + uv.getX(k) * s.w) / W, 1 - (s.y + (1 - uv.getY(k)) * s.h) / H);
+    for (const name of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv'].includes(name)) geo.deleteAttribute(name);
+    geos.push(geo);
+    f.mesh.parent?.remove(f.mesh);
+  });
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  const mesh = new THREE.Mesh(mergeGeometries(geos), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+  root.add(mesh);
+  return mesh;
 }

@@ -65,3 +65,19 @@ test('minimap opens the full real map and stays within budget', async ({ page })
   expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
   expect(errors).toEqual([]);
 });
+
+test('landscape phone: title street and the start stay within budget', async ({ page }) => {
+  // Landscape sees the widest slice of the city (side lanes included), so it is the worst case.
+  await page.setViewportSize({ width: 844, height: 390 });
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await page.waitForFunction(() => (window as any).gjr?.info.render.calls > 0);
+  await page.waitForTimeout(1500);
+  expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  await page.locator('.play-btn').click();
+  await expect(page.locator('.hud-clock')).toHaveText(/PM/);
+  await page.waitForTimeout(1500);
+  expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  expect(errors).toEqual([]);
+});

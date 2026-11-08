@@ -142,3 +142,27 @@ describe('Rapi-Nah captains', () => {
     expect(waited).toBe(true);
   });
 });
+
+describe('pedestrians', () => {
+  it('step aside when you walk up to them', () => {
+    const w = makeWorld();
+    const ped = w.crowd.walkers[0];
+    const before = { x: ped.x, z: ped.z };
+    w.player.x = ped.x + 1; w.player.z = ped.z;
+    steps(w, 60);
+    expect(Math.hypot(ped.x - before.x, ped.z - before.z)).toBeGreaterThan(0.3);
+  });
+
+  it('stagger and shout if you barge into them at a run', () => {
+    const w = makeWorld();
+    const ped = w.crowd.walkers[0];
+    ped.speed = 0;
+    w.player.x = ped.x - 0.4; w.player.z = ped.z;
+    w.player.vx = 6.5; w.player.vz = 0;
+    w.step();
+    const ev = w.events.drain();
+    expect(ev.some((e) => e.type === 'toast' && e.title === 'DHAKKA!')).toBe(true);
+    expect(ped.stunned).toBeGreaterThan(0);
+    expect(w.run.stats.bumped).toBe(1);
+  });
+});

@@ -25,6 +25,7 @@ export interface Stats {
   tipsPaid: number;
   footboardStops: number;
   falls: number;
+  bumped: number;
   busHops: number;
   ditched: number;
   missedBuses: number;
@@ -60,7 +61,7 @@ export class Run {
   /** Set when the player leaves the real map on a vehicle: the long ride continues on it. */
   rideMode: 'bus' | 'rapinah' | null = null;
   stats: Stats = {
-    cancels: 0, rebooks: 0, tipsPaid: 0, footboardStops: 0, falls: 0, busHops: 0, ditched: 0,
+    cancels: 0, rebooks: 0, tipsPaid: 0, footboardStops: 0, falls: 0, bumped: 0, busHops: 0, ditched: 0,
     missedBuses: 0, missedTrains: 0, seatFound: false, gaveSeat: false,
     squeezes: 0, taxiHits: 0, momMissed: 0, momAnswered: 0, surgePaid: 0, modesTried: [],
   };

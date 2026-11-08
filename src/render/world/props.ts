@@ -46,7 +46,7 @@ const ADS = [
 
 const SHOPS = ['BURGER RAJA', 'CHA-BUCKS', 'RONG DE BASANTI DHABA', 'MOMO MAHAL', 'PUCHKA POINT', 'XEROX · LAMINATION · RECHARGE', 'BIRYANI BHAVAN', 'MAA KALI FAST FOOD'];
 
-export function buildProps(scene: THREE.Scene, map: MapData, grid: BuildingGrid, metro: { x: number; z: number }) {
+export function buildProps(scene: THREE.Object3D, map: MapData, grid: BuildingGrid, metro: { x: number; z: number }) {
   const statics = new THREE.Group();
 
   // Bus shelters at the real stops, with a few people waiting.
@@ -151,6 +151,24 @@ export function buildProps(scene: THREE.Scene, map: MapData, grid: BuildingGrid,
     if (!grid.blocked(g.position.x, g.position.z, 2)) statics.add(g);
   }
 
+  // Footpath stalls: fruit carts, clothes racks, a phuchka cart and a flower seller, near stops and the café strip.
+  const stallSpots: { x: number; z: number; rot: number }[] = [];
+  for (const r of map.roads) {
+    if (!MAIN.has(r.k) || r.b) continue;
+    for (const p of along(r.p, 26)) for (const side of [1, -1]) {
+      const off = r.w / 2 + 2.4, x = p.x + p.dz * off * side, z = p.z - p.dx * off * side;
+      const nearStop = map.stops.some((st) => Math.hypot(st.p[0] - x, st.p[1] - z) < 60);
+      if (!nearStop || grid.blocked(x, z, 1.6) || roadClearance(map, x, z) < 0.8) continue;
+      stallSpots.push({ x, z, rot: Math.atan2(-side * p.dz, side * p.dx) });
+    }
+  }
+  stallSpots.forEach((sp, i) => {
+    const g = stall(i);
+    g.position.set(sp.x, 0, sp.z);
+    g.rotation.y = sp.rot;
+    statics.add(g);
+  });
+
   bake(statics);
   scene.add(statics);
 
@@ -209,4 +227,39 @@ function adBoard(title: string, line: string, bg: string, fg: string) {
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
   return new THREE.Mesh(new THREE.PlaneGeometry(8, 4), new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide }));
+}
+
+const FRUIT = [0xe2402c, 0xf2c230, 0x6cae5a, 0xf08a24, 0x8e2a6b];
+const CLOTH = [0xd9342b, 0x2f6db5, 0xf2c230, 0x1f8a46, 0xd35c8a, 0xffffff, 0x5a3fa0];
+
+/** One of four footpath stalls, chosen by index. All plain boxes, baked with the rest of the street. */
+function stall(i: number): THREE.Group {
+  const g = new THREE.Group();
+  const kind = i % 4;
+  if (kind === 0) {
+    // Fruit cart: wooden handcart, rows of fruit, a big umbrella.
+    g.add(box(2.2, 0.15, 1.1, 0x7a5232, 0, 0.75, 0), box(0.08, 0.75, 0.08, 0x3a2a1a, -0.9, 0, 0.4), box(0.08, 0.75, 0.08, 0x3a2a1a, 0.9, 0, 0.4));
+    g.add(box(0.5, 0.5, 0.1, 0x222222, -0.6, 0.1, -0.6), box(0.5, 0.5, 0.1, 0x222222, 0.6, 0.1, -0.6));
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) g.add(box(0.42, 0.18, 0.26, FRUIT[(r + c + i) % FRUIT.length], -0.75 + c * 0.5, 0.9 + r * 0.06, -0.35 + r * 0.33));
+    g.add(box(0.05, 2.4, 0.05, 0x333333, 0, 0.9, 0), box(2.4, 0.08, 2.0, 0xd9342b, 0, 3.3, 0));
+    const seller = person(0x6b5d4a); seller.position.set(0, 0, 1.0); seller.rotation.y = Math.PI; g.add(seller);
+  } else if (kind === 1) {
+    // Clothes stall: a rack of hanging shirts and kurtas under a tarp.
+    g.add(box(2.6, 0.08, 1.6, 0x2f6db5, 0, 2.5, 0), box(0.06, 2.5, 0.06, 0x555555, -1.25, 0, 0.75), box(0.06, 2.5, 0.06, 0x555555, 1.25, 0, 0.75));
+    g.add(box(2.4, 0.05, 0.05, 0x444444, 0, 2.1, 0.3));
+    for (let c = 0; c < 7; c++) g.add(box(0.3, 0.75, 0.05, CLOTH[(c + i) % CLOTH.length], -1.05 + c * 0.35, 1.3, 0.3));
+    g.add(box(2.2, 0.5, 0.8, 0x8a5a3c, 0, 0, -0.3));
+    for (let c = 0; c < 5; c++) g.add(box(0.4, 0.08, 0.6, CLOTH[(c * 2 + i) % CLOTH.length], -0.8 + c * 0.4, 0.5 + (c % 2) * 0.08, -0.3));
+  } else if (kind === 2) {
+    // Phuchka cart: glass case of puris on a cart, a steel bucket, customers waiting.
+    g.add(box(1.4, 0.8, 0.9, 0x8a8a8a, 0, 0, 0), box(1.2, 0.5, 0.7, 0x9fc4d6, 0, 0.8, 0), box(0.4, 0.35, 0.4, 0xb0b0b0, 0.9, 0, 0.6));
+    for (let k = 0; k < 6; k++) g.add(box(0.12, 0.12, 0.12, 0xe0b060, -0.4 + (k % 3) * 0.3, 0.9 + Math.floor(k / 3) * 0.15, 0));
+    const seller = person(0xeeeeee); seller.position.set(0, 0, -0.9); g.add(seller);
+    for (let k = 0; k < 2; k++) { const c = person(); c.position.set(-0.5 + k, 0, 1.2); c.rotation.y = Math.PI; g.add(c); }
+  } else {
+    // Flower seller: baskets of marigold and white flowers on the pavement.
+    for (let k = 0; k < 4; k++) g.add(box(0.6, 0.35, 0.6, 0x9a7a4a, -0.9 + k * 0.6, 0, 0), box(0.5, 0.15, 0.5, k % 2 ? 0xf08a24 : 0xf6efe0, -0.9 + k * 0.6, 0.35, 0));
+    const seller = person(0xf2c230); seller.position.set(0, 0, -0.8); seller.scale.y = 0.75; g.add(seller);
+  }
+  return g;
 }
