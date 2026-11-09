@@ -177,3 +177,15 @@ export function rankTitle(run: Run): string {
   if (run.ending === 'home-early') return 'Sector V Survivor';
   return 'Daily Passenger';
 }
+
+/** Signs on the elevated north (parody brands only). */
+export const northSigns = {
+  gantry: '← NEWTOWN  ·  WELCOME TO NABADIGANTA',
+  sectorV: 'SALT LAKE SECTOR V',
+  sectorVBn: 'সল্টলেক সেক্টর V · SALT LAKE SECTOR V',
+  bank: 'BANDH-ON BANK',
+  bankLine: 'Open every day except bandh days',
+  itCentre: 'आईटी सेंटर · IT CENTRE',
+  itCentreBn: 'আইটি সেন্টার',
+  gate: 'METRO · GATE A',
+};

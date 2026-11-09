@@ -52,7 +52,7 @@ export function box(w: number, h: number, d: number, color: number, x = 0, y = 0
 
 /** 0 by day, 1 at night. Baked vertices with a `glow` value (headlights, lamps) light up as it rises. */
 export const nightUniform = { value: 0 };
-const bakedMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+export const bakedMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 bakedMat.onBeforeCompile = (sh) => {
   sh.uniforms.uNight = nightUniform;
   sh.vertexShader = sh.vertexShader

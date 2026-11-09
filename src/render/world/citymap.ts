@@ -1,6 +1,6 @@
 // Builds the real Sector V streets from src/content/maps/sectorv.json (OpenStreetMap, ODbL):
 // textured asphalt, paver footpaths, yellow-black kerbs, lane markings, the Keshtopur canal and parks,
-// Kolkata buildings, the flyover and the Green Line. Static, and merged into a handful of draw calls.
+// Kolkata buildings, the flyover, the metro and the sunken canal. Static, and merged into a handful of draw calls.
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -9,7 +9,9 @@ import type { MapData, Pt } from '../../sim/mapdata';
 import { asphalt, kerbStripes, pavers } from './textures';
 import { buildBuildings } from './buildings';
 import { buildFrontage } from './frontage';
-import { buildStructures, flyoverY, isFlyover, polyLen } from './structures';
+import { buildStructures } from './structures';
+import { deckY, flyoverDecks, nearest } from '../../sim/elevated';
+import { canalOf } from '../../sim/canal';
 
 export type { Pt };
 export const map = mapData as unknown as MapData & { water: Pt[][]; green: Pt[][] };
@@ -86,21 +88,30 @@ function flatPoly(p: Pt[], y: number, color: THREE.Color) {
   return g;
 }
 
-export interface BuiltMap { group: THREE.Group; stationPos: THREE.Vector3; stationDir: number; cull: (x: number, z: number) => void }
+export interface BuiltMap { group: THREE.Group; signs: THREE.Object3D[]; cull: (x: number, z: number) => void }
 
 export function buildCityMap(): BuiltMap {
   const group = new THREE.Group();
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), new THREE.MeshLambertMaterial({ color: 0x8a8174 }));
-  ground.rotation.x = -Math.PI / 2;
-  group.add(ground);
+  const s = buildStructures(map);
+  // The ground, with a hole where the canal channel sinks below grade.
+  const shape = new THREE.Shape([[-600, -600], [600, -600], [600, 600], [-600, 600]].map(([x, z]) => new THREE.Vector2(x, -z)));
+  if (s.hole) shape.holes.push(new THREE.Path(s.hole.map(([x, z]) => new THREE.Vector2(x, -z))));
+  const groundGeo = new THREE.ShapeGeometry(shape);
+  groundGeo.rotateX(-Math.PI / 2);
+  group.add(new THREE.Mesh(groundGeo, new THREE.MeshLambertMaterial({ color: 0x8a8174 })));
+  const decks = flyoverDecks(map.roads);
 
   const roads: THREE.BufferGeometry[] = [], paths: THREE.BufferGeometry[] = [], kerbs: THREE.BufferGeometry[] = [], marks: THREE.BufferGeometry[] = [];
   const mainCol = new THREE.Color(0xffffff), minorCol = new THREE.Color(0xc9c4c0), pathCol = new THREE.Color(0xffffff), white = new THREE.Color(0xf1ece2), yellow = new THREE.Color(0xf2c230);
 
-  for (const r of map.roads) {
-    const L = cumLen(r.p), total = L[L.length - 1];
-    const fly = isFlyover(r);
-    const lift = (i: number) => (fly ? flyoverY(L[i], total) : r.b ? 0.2 : 0);
+  for (const r0 of map.roads) {
+    // A flyover is drawn along its deck (sim/elevated.ts), which is narrower than the OSM way and pushed apart
+    // from the other direction's deck; canal crossings are flat, just a hair above the street.
+    const deck = decks.find((d) => d.road === r0);
+    const r = deck ? { ...r0, p: deck.p, w: deck.w - 0.8 } : r0;
+    const L = deck ? deck.d : cumLen(r.p);
+    const at = (d: number) => (deck ? deckY(deck, d) : r.b ? 0.008 : 0);
+    const lift = (i: number) => at(L[i]);
     const main = MAIN.has(r.k);
     const road = ribbon(r.p, r.w, main ? mainCol : minorCol, (i) => (ROAD_Y[r.k] ?? 0.04) + lift(i));
     if (road) roads.push(road);
@@ -116,7 +127,7 @@ export function buildCityMap(): BuiltMap {
         const seg = Math.hypot(bx - ax, bz - az);
         const dx = (bx - ax) / seg, dz = (bz - az) / seg;
         for (let d = 1; d < seg - 1; d += 5) {
-          const x = ax + dx * d, z = az + dz * d, y = (ROAD_Y[r.k] ?? 0.05) + 0.012 + (fly ? flyoverY(L[i - 1] + d, total) : r.b ? 0.2 : 0);
+          const x = ax + dx * d, z = az + dz * d, y = (ROAD_Y[r.k] ?? 0.05) + 0.012 + at(L[i - 1] + d);
           const dash = r.o ? [x + dz * (r.w / 2 - 0.4), z - dx * (r.w / 2 - 0.4)] : [x, z];
           const g = new THREE.PlaneGeometry(r.o ? 4.8 : 2.2, r.o ? 0.14 : 0.18).toNonIndexed();
           g.rotateX(-Math.PI / 2);
@@ -136,7 +147,11 @@ export function buildCityMap(): BuiltMap {
   // Water and parks.
   const flats: THREE.BufferGeometry[] = [];
   for (const g of map.green ?? []) flats.push(flatPoly(g, 0.012, new THREE.Color(0x6d8f4e)));
-  const water = (map.water ?? []).map((w) => flatPoly(w, 0.02, new THREE.Color(0x3d6f86)));
+  // Ponds lie flat; the canal rings (and the little rings OSM uses to widen it at Street 13) are the sunken channel.
+  const line = canalOf(map).line;
+  const inCanal = (w: Pt[]) => !!line && w.every(([x, z]) => nearest(line.p, x, z).d < 14);
+  const water = (map.water ?? []).filter((w) => !inCanal(w)).map((w) => flatPoly(w, 0.02, new THREE.Color(0x3d6f86)));
+  if (s.water) water.push(s.water);
 
   group.add(new THREE.Mesh(mergeGeometries(roads), new THREE.MeshLambertMaterial({ vertexColors: true, map: asphalt() })));
   group.add(new THREE.Mesh(mergeGeometries(paths), new THREE.MeshLambertMaterial({ vertexColors: true, map: pavers() })));
@@ -157,10 +172,6 @@ export function buildCityMap(): BuiltMap {
   const frontage = buildFrontage(b.bays);
   group.add(b.group, frontage.group);
 
-  const st = map.stations.find((s) => s.n === 'Salt Lake Sector V') ?? map.stations[0];
-  const s = buildStructures(map.roads, map.rails, st.p);
   group.add(s.group);
-  return { group, stationPos: s.stationPos, stationDir: s.stationDir, cull: frontage.cull };
+  return { group, signs: s.signs, cull: frontage.cull };
 }
-
-export { polyLen };

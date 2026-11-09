@@ -98,9 +98,42 @@
       "src": "Missing from OSM. Footprint traced on sat275_a_tiu_pwc under the 'Ambuja Neotia EcoCentre' pin (atrium-grid roof), south of the west arm of Street 13 and west of the service road at x=-40 (SOUTH.md calls it NW; registered against OSM roads it is SW of the junction, behind the new peach tower; d3_pwc_h270 agrees). Floors NOT counted: 8 is a placeholder until the north survey sees it."
     },
     "new:altair": {
-      "lv": 8, "t": "office", "hs": "guess",
-      "ll": [[22.5771918, 88.4275677], [22.576886, 88.4282079], [22.5766599, 88.4281222], [22.5770145, 88.4274996]],
-      "src": "Missing from OSM. Long slab traced on sat275_a_tiu_pwc under the 'AltAir - Capella' pin, south of the west arm of Street 13, west of the EcoCentre. Floors NOT counted: 8 is a placeholder until the north survey sees it."
+      "lv": 13, "t": "office", "colour": "#b88a7c",
+      "ll": [[22.5770389, 88.4278878], [22.576886, 88.4282079], [22.5766599, 88.4281222], [22.5768372, 88.4278109]],
+      "src": "NORTH.md §1 (~50-90 m from PwC More, west side): a 12-14 floor glass tower with brown/pink spandrels close to the road behind palms and car parking (s13_01_h309, s13_02_h309). OSM has no footprint on the west side of Street 13 between the PwC corner tower and x=-100; the only candidate is the long slab traced on sat275_a_tiu_pwc under the 'AltAir - Capella' pin (was one 'new:altair' entry, 8 floors as a placeholder). Its east half is this tower: bearing from s13_01 to its east end is ~255 deg, at the left edge of the h309 view. Split at the midpoints of the long sides; the split line itself is a guess."
+    },
+    "new:capella": {
+      "lv": 11, "t": "office", "colour": "#c4927f",
+      "ll": [[22.5771918, 88.4275677], [22.5770389, 88.4278878], [22.5768372, 88.4278109], [22.5770145, 88.4274996]],
+      "src": "NORTH.md §1 (~180 m from PwC More, west side): AltAir Capella-type brown-glass office tower of about 10-12 floors with salmon spandrels, royal palms and surface parking in front (g2_h219). It is the west half of the slab under the 'AltAir - Capella' pin (see new:altair): the bearing from g2 to its west end is ~200 deg, the tower at the left of g2_h219."
+    },
+    "193478726": {
+      "lv": 7, "t": "college", "colour": "#eef0f2",
+      "src": "NORTH.md §1 (~180 m, east side): IIHM Global Campus, white, about 6-8 floors, behind the lunch-hotel shed (g2_h39, g2_h129; courtyard g1_*). OSM w193478726 is the nearest east-side footprint to the g2 pano (~19 units, 38 m) and fronts Street 13. Note OSM's 'Hotel Monotel' node sits in the neighbouring footprint w193478723, not here. Name left off (no real brand on screen)."
+    },
+    "158642186": {
+      "lv": 14, "t": "block", "colour": "#efe6d2",
+      "src": "NORTH.md §1 (~320 m, east side): cream/white tower of about 14+ floors with a rounded drum-shaped base behind a black iron railing, tea stall and kiosks on the footpath (s13_07_h39, wm_1_*). OSM w158642186 is the footprint straight ahead in s13_07_h39 (bearing ~42 deg, 16 units) and its outline is a curved crescent, i.e. the drum. NORTH.md guessed Hotel Monotel; OSM puts that node elsewhere, so the identity is unverified."
+    },
+    "158019906": {
+      "lv": 12, "t": "office", "colour": "#b8574a",
+      "src": "NORTH.md §2: the SE corner of Wipro More, a blue glass curtain wall with a red-framed residential section of about 12+ floors (s13_08_h39 right edge, s13_08_h129 left). OSM w158019906 is the next footprint east of w158642186 towards the flyover, at bearing ~87 deg from s13_08, which matches both views. Red tint for the red-balcony section; the blue glass half isn't modelled."
+    },
+    "362948042": {
+      "lv": 6, "t": "block", "colour": "#a8553e",
+      "src": "NORTH.md §1 (~320 m, west side) and §2 SW corner: red-brick-and-cream 5-6 storey block with a crowned parapet in a walled compound with big trees (s13_07_h219; Google label suggests a Ministry of Defence training centre, unverified). OSM w362948042 is the nearest west-side footprint to s13_07 (32 units) on the SW corner of Wipro More."
+    },
+    "193479375": {
+      "lv": 15, "t": "resi", "colour": "#d9a99a",
+      "src": "NORTH.md §1 (~280 m): tall pinkish-beige slab towers of about 14-16 floors further SW of Street 13 (s13_06_*). Matched by position: OSM w193479375 is the largest west-side footprint between Street 13 and the TIU plot, south-west of s13_06. Floors are a count from a distance; which slab is which is low confidence."
+    },
+    "362948053": {
+      "lv": 14, "t": "resi", "colour": "#d4a395",
+      "src": "NORTH.md §1 (~280 m): the second pinkish-beige slab tower SW of Street 13 (s13_06_*). OSM w362948053 is the west-side footprint between w193479375 and the road, closest to s13_06. Low confidence (seen at distance only)."
+    },
+    "535333500": {
+      "drop": true,
+      "src": "OSM w535333500 'IT Centre (Sector V)' (building=construction, construction:railway=station) is the Orange Line station box. It is drawn with the viaducts by src/render/world/stations.ts (NORTH.md §4), so the footprint must not also become a building."
     },
     "237896675": {
       "n": null,

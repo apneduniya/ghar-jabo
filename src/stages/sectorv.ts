@@ -15,14 +15,14 @@ import { Minimap } from '../ui/minimap';
 import { showTitle } from '../ui/title';
 import { unlockAudio } from '../audio/audio';
 import { NO_INTENT } from '../sim/player';
-import { flyoverY, isFlyover, polyLen } from '../render/world/structures';
+import { roofs } from '../sim/elevated';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';
 import { Ambience } from '../audio/ambience';
 import { floods } from '../content/sectorv';
 import { T } from '../content/tuning';
-import { pick, ticker } from '../content/text';
+import { northSigns, pick, ticker } from '../content/text';
 import { rng } from '../sim/rng';
 import { World } from '../sim/world';
 import type { Intent } from '../sim/player';
@@ -104,11 +104,9 @@ export function sectorv(): Scene {
     b.position.set(s.p[0], 3, s.p[1]);
     dressing.add(b);
   }
-  const ms = sign('SALT LAKE SECTOR V · METRO', 12, 1.4, '#2e9e5b');
-  ms.position.set(built.stationPos.x, 17, built.stationPos.z);
-  ms.rotation.y = built.stationDir;
-  dressing.add(ms);
-  const ent = sign('🚇 METRO ↓', 3.6, 0.8, '#2e9e5b');
+  // Station names, the IT Centre sign and the Nabadiganta gantry (render/world/structures.ts).
+  dressing.add(...built.signs);
+  const ent = sign(`🚇 ${northSigns.gate}`, 3.6, 0.8, '#2e9e5b');
   ent.position.set(world.metroEntrance.x, 3.8, world.metroEntrance.z);
   dressing.add(ent);
   // Static geometry in one draw call, every static board (landmarks, shops, billboards) in one more.
@@ -116,19 +114,8 @@ export function sectorv(): Scene {
   batchSigns(dressing);
   scene.add(dressing);
 
-  // Points along the flyover deck, so the camera can stay underneath it.
-  const deck: { x: number; z: number; y: number; r: number }[] = [];
-  for (const r of map.roads.filter(isFlyover)) {
-    const total = polyLen(r.p);
-    let dist = 0;
-    for (let i = 1; i < r.p.length; i++) {
-      const [ax, az] = r.p[i - 1], [bx, bz] = r.p[i];
-      const L = Math.hypot(bx - ax, bz - az);
-      for (let d = 0; d < L; d += 3) deck.push({ x: ax + (bx - ax) * d / L, z: az + (bz - az) * d / L, y: flyoverY(dist + d, total), r: r.w / 2 + 2 });
-      dist += L;
-    }
-  }
-  const underDeck = (x: number, z: number) => deck.find((d) => d.y > 3.5 && Math.hypot(d.x - x, d.z - z) < d.r);
+  // What is overhead (a flyover deck or a station), so the camera can stay underneath it.
+  const overhead = roofs(map.roads);
 
   let layer: HTMLElement;
   let actionBtn: HTMLButtonElement;
@@ -191,7 +178,7 @@ export function sectorv(): Scene {
     scene, camera,
     enter() {
       resize(camera, 55, 72);
-      game.debug = { world, map, yaw: () => yaw };
+      game.debug = { world, map, yaw: () => yaw, look: (y: number) => { yaw = y; camReady = false; } };
       layer = sceneLayer();
       if (attracting) {
         showHud(false);
@@ -308,8 +295,8 @@ export function sectorv(): Scene {
       for (let k = 1.5; k <= back; k += 0.75) if (world.grid.blocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
       const high = portrait ? 8 : 6.5;
       const want = new THREE.Vector3(p.x - fx * dist, 2.6 + (high - 2.6) * (dist / back), p.z - fz * dist);
-      const roof = underDeck(want.x, want.z) ?? underDeck(p.x, p.z);
-      if (roof) want.y = Math.min(want.y, roof.y - 1.4);
+      const roof = Math.min(overhead(want.x, want.z) ?? Infinity, overhead(p.x, p.z) ?? Infinity);
+      if (roof < Infinity) want.y = Math.min(want.y, roof - 1.4);
       // First frame: snap behind the player instead of gliding in from the map's centre.
       if (!camReady) { camera.position.copy(want); camReady = true; }
       camera.position.lerp(want, Math.min(1, dt * 6));
