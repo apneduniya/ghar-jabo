@@ -16,6 +16,8 @@ const SIGNS = [
   ['CYBER CAFÉ · PRINT', '#2f6db5', '#ffffff'], ['EGG ROLL · CHICKEN ROLL', '#c0281f', '#fff'], ['TEA · TOAST · OMELETTE', '#f6efe0', '#7a2a1f'],
   ['MOBILE REPAIRING', '#00a3a3', '#ffffff'], ['মিষ্টি মুখ', '#f08a24', '#ffffff'], ['NEW STAR TAILORS', '#5a3fa0', '#ffffff'], ['ঘরোয়া হোটেল', '#2b2b2b', '#ffd400'],
 ];
+/** The shop signboards, shared with the streamed chunks' atlas (chunkmat.ts). */
+export const SHOP_SIGNS = SIGNS;
 const AWNINGS = [0xd9342b, 0x1f8a46, 0x2f6db5, 0xf2c230, 0xe86a1a, 0x8e2a6b];
 
 function signAtlas() {

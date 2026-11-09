@@ -4,6 +4,8 @@
 
 import type { MapData } from '../sim/mapdata';
 import type { Vehicle } from '../sim/traffic';
+import type { ChunkSource } from '../sim/gen/types';
+import { StreamedLayer } from './minimapworld';
 
 const PX_PER_UNIT = 1; // offscreen map resolution
 const VIEW_UNITS = 110; // radius of the round view, in world units
@@ -23,6 +25,7 @@ export class Minimap {
   private half: number;
   private big = false;
   private lastDraw = 0;
+  private world: StreamedLayer | null = null;
 
   constructor(private map: MapData) {
     this.half = 380; // the playable area; long roads are cropped at the edge
@@ -40,6 +43,9 @@ export class Minimap {
     };
     addEventListener('resize', onResize);
   }
+
+  /** Show the streamed world: loaded chunks' roads, the corridor network (big map) and the way to Sealdah. */
+  attachWorld(src: ChunkSource) { this.world = new StreamedLayer(src); this.lastDraw = 0; }
 
   /** Small map size in CSS px: scales with the short side so it fits its corner slot (see style.css). */
   static size(w = innerWidth, h = innerHeight) {
@@ -95,10 +101,13 @@ export class Minimap {
     const g = this.ctx, R = this.el.width / 2;
     // Marker sizes are tuned for the small map; the big map keeps them the same size on screen.
     const W = Math.min(this.el.width, 128 * Math.min(devicePixelRatio, 2));
-    const view = this.big ? this.half : VIEW_UNITS;
+    // Big map: the whole network when the streamed world is on, else the real map; centred on what it shows.
+    const frame = this.big && this.world ? this.world.bounds(s.x, s.z, this.half) : null;
+    const view = frame ? frame.half : this.big ? this.half : VIEW_UNITS;
     const scale = R / view; // canvas px per world unit
     g.save();
     g.clearRect(0, 0, R * 2, R * 2);
+    if (this.world) { g.fillStyle = '#c9c2b4'; g.fillRect(0, 0, R * 2, R * 2); }
     g.beginPath();
     if (this.big) g.rect(0, 0, R * 2, R * 2); else g.arc(R, R, R, 0, Math.PI * 2);
     g.clip();
@@ -106,10 +115,12 @@ export class Minimap {
     // Small map: rotate so the camera's heading points up. Big map: north up, centred on the map.
     const rot = this.big ? 0 : -s.yaw - Math.PI / 2;
     g.rotate(rot);
-    const cx = this.big ? 0 : s.x, cz = this.big ? 0 : s.z;
+    const cx = frame ? frame.x : this.big ? 0 : s.x, cz = frame ? frame.z : this.big ? 0 : s.z;
     g.scale(scale / PX_PER_UNIT, scale / PX_PER_UNIT);
     const [bx, bz] = this.px(cx, cz);
     g.drawImage(this.base, -bx, -bz);
+    // Streamed roads in world units around (cx, cz); real corridor roads bolder.
+    if (this.world) { g.translate(-cx * PX_PER_UNIT, -cz * PX_PER_UNIT); this.world.draw(g, cx, cz, view, this.big, 1 / scale); }
     g.setTransform(1, 0, 0, 1, 0, 0);
 
     // Markers, in canvas space.
@@ -136,7 +147,8 @@ export class Minimap {
     g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillText('M', mx, mz + 1);
     // Sealdah: an arrow on the rim when it's off the edge, a flag when it's in view.
-    const [ex, ez] = toCanvas(s.exit.x, s.exit.z);
+    const home = this.world?.sealdah ?? s.exit;
+    const [ex, ez] = toCanvas(home.x, home.z);
     const dx = ex - R, dz = ez - R, d = Math.hypot(dx, dz);
     const edge = R - W * 0.07;
     const ax = d > edge ? R + dx / d * edge : ex, az = d > edge ? R + dz / d * edge : ez;
