@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import mapJson from '../content/maps/sectorv.json';
+import mapJson from '../../public/data/sectorv.json';
 import { north } from '../content/sectorv';
 import { canalAt, canalLine, canalOf, canalRailings, RailingMask } from './canal';
 import { inBox, isCanalBridge, nearest, onCarriageway, stations } from './elevated';

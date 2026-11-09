@@ -1,4 +1,4 @@
-"""Convert OpenStreetMap extracts (research/map/*.json) into the game's compact map: src/content/maps/sectorv.json.
+"""Convert OpenStreetMap extracts (research/map/*.json) into the game's compact map: public/data/sectorv.json.
 
 Game units: x = east, z = south (so north is -z), SCALE units per metre. Centre = the Street 13 x Street 2 junction.
 Street View corrections live in research/map/overrides.json (keyed by OSM way id, 'r<relation id>' or 'new:<slug>').
@@ -14,7 +14,7 @@ import water as W       # noqa: E402
 from geo import HALF, SCALE, centroid, clip_square, inside_sq, line_dist, ring_of, simplify, simplify_ring, to_game  # noqa: E402
 
 SRC = os.path.join(ROOT, 'research', 'map')
-OUT = os.path.join(ROOT, 'src', 'content', 'maps', 'sectorv.json')
+OUT = os.path.join(ROOT, 'public', 'data', 'sectorv.json')
 CLIP = HALF * 1.15           # water and green are kept a little past the square, for the horizon
 
 

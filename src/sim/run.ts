@@ -1,3 +1,5 @@
+import { T } from '../content/tuning';
+
 // The run. Every run starts at 6:30 PM on day 1. `minute` counts game minutes since midnight of day 1,
 // so 1:14 AM the next night is 1440 + 74.
 //  - timed: get home before 10:30 PM (about 4 real minutes).
@@ -6,7 +8,7 @@
 export const START_MIN = 18 * 60 + 30;
 export const END_MIN = 22 * 60 + 30;
 export const DAY = 24 * 60;
-/** Game minutes that pass per real second while the clock runs. */
+/** Game minutes that pass per real second while the clock runs (timed); free roam uses T.clock.free. */
 export const CLOCK_RATE = 1;
 export type PlayMode = 'timed' | 'free';
 export const START_MONEY = 150;
@@ -61,12 +63,10 @@ export class Run {
   clockRunning = false;
   /** When Ma calls next. */
   nextCall = 19 * 60;
-  /** Where the player appears when the city scene starts (the metro drops you near Sealdah). */
-  spawnX = 0;
+  /** The Green Line station the player entered the metro at (null: Sector V). */
+  metroFrom: string | null = null;
   /** The seed this run was played with (for "beat my run" links). */
   seed = 0;
-  /** Set when the player leaves the real map on a vehicle: the long ride continues on it. */
-  rideMode: 'bus' | 'rapinah' | null = null;
   stats: Stats = {
     cancels: 0, rebooks: 0, tipsPaid: 0, footboardStops: 0, falls: 0, bumped: 0, busHops: 0, ditched: 0,
     missedBuses: 0, missedTrains: 0, seatFound: false, gaveSeat: false,
@@ -79,7 +79,7 @@ export class Run {
   photoRequest: { drama: number; burst: string } | null = null;
 
   tick(dt: number) {
-    if (this.clockRunning && !this.ending) this.minute += dt * CLOCK_RATE;
+    if (this.clockRunning && !this.ending) this.minute += dt * (this.mode === 'free' ? T.clock.free : CLOCK_RATE);
   }
 
   addMinutes(m: number) { this.minute += m; }

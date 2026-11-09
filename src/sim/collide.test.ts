@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { WaterMask, type Pt } from './collide';
-import map from '../content/maps/sectorv.json';
+import map from '../../public/data/sectorv.json';
 import type { MapData } from './mapdata';
 
 describe('WaterMask', () => {

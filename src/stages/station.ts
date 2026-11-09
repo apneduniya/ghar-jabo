@@ -11,7 +11,6 @@ import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';
 import { Body } from './player';
 import { greenLine, pick, ticker } from '../content/text';
-import { METRO_OUT_X } from '../content/route';
 
 const GATE_X = 12;
 const ESC: [number, number] = [22, 34];
@@ -207,7 +206,8 @@ export function station(): Scene {
   }
 
   // --- The ride ---
-  let leg = 0;
+  // Boarded at Sector V, or at a Green Line station further along the streamed world.
+  let leg = Math.max(0, greenLine.findIndex((n) => n === run.metroFrom));
   let legT = 2;
   let drowsy = 0;
   let exitT = 0;
@@ -232,7 +232,7 @@ export function station(): Scene {
     pressButton(tapBtn, 'action');
     layer.append(meter, tapBtn);
     hint(seated ? 'A seat! Tap to stay awake. Don\'t miss Sealdah.' : 'Standing. Tap when the train brakes.');
-    notify(`Agla station: ${greenLine[1]}`, 'Next station · porer station', 'metro');
+    notify(`Agla station: ${greenLine[Math.min(leg + 1, greenLine.length - 1)]}`, 'Next station · porer station', 'metro');
   }
 
   function rideUpdate(dt: number) {
@@ -288,8 +288,7 @@ export function station(): Scene {
     phase = 'done';
     sfx.win();
     toast('SEALDAH!', 'Out of the coach. Barely.');
-    run.spawnX = METRO_OUT_X;
-    setTimeout(() => game.go('city'), 1000);
+    setTimeout(() => game.arrive('metro'), 1000);
   }
 
   return {
@@ -299,7 +298,7 @@ export function station(): Scene {
       game.debug = { body };
       layer = sceneLayer();
       run.clockRunning = true;
-      setDateline(run.spawnX > 20 ? 'CENTRAL PARK METRO' : 'SECTOR V METRO');
+      setDateline(`${(run.metroFrom ?? 'Sector V').toUpperCase()} METRO`);
       enableStick(true);
       const jump = el('button', 'jump-btn', 'JUMP');
       pressButton(jump, 'jump');

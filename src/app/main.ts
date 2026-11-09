@@ -4,14 +4,14 @@ import { game } from './game';
 import { endFrame, readInput } from '../input/input';
 import { el, updateHud, notify, streamEl, toast } from '../ui/ui';
 import { sfx, toggleMute } from '../audio/audio';
-import { momLines, pick } from '../content/text';
+import { loadingTips, momLines, pick } from '../content/text';
+import { loadAssets } from './assets';
+import { useMap } from '../render/world/citymap';
 import { rand } from '../render/gfx';
-import { city } from '../stages/city';
 import { sectorv } from '../stages/sectorv';
 import { station } from '../stages/station';
 import { result } from '../stages/result';
 
-game.register('city', city);
 game.register('sectorv', sectorv);
 game.register('station', station);
 game.register('result', result);
@@ -111,7 +111,16 @@ addEventListener('resize', () => {
 (window as unknown as { gjr: typeof renderer }).gjr = renderer;
 (window as unknown as { gjui: unknown }).gjui = { notify, toast };
 
-// Boot straight into the real map, with the title screen floating over it.
-game.attract = true;
-game.newRun();
-requestAnimationFrame(frame);
+// Fetch the map and the world (not bundled), with the logo and a loading line meanwhile; then boot straight into
+// the real map, with the title screen floating over it.
+const loading = el('div', 'title-screen loading', `<header class="logo"><h1><span>GHAR</span> <span>JABO</span></h1><div class="bn">ঘর যাবো</div><p>${pick(loadingTips)}</p></header>`);
+document.body.appendChild(loading);
+loadAssets().then(() => {
+  useMap();
+  loading.remove();
+  game.attract = true;
+  game.newRun();
+  requestAnimationFrame(frame);
+}).catch((e: Error) => {
+  loading.querySelector('p')!.textContent = `Could not load the city (${e.message}). Pull to refresh.`;
+});

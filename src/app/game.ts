@@ -13,7 +13,7 @@ export interface Scene {
   exit(): void;
 }
 
-type SceneName = 'lobby' | 'sectorv' | 'city' | 'station' | 'result';
+type SceneName = 'lobby' | 'sectorv' | 'station' | 'result';
 
 class Game {
   run = new Run();

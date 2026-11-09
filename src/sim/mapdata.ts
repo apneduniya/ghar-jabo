@@ -1,4 +1,4 @@
-// Types for the real map data (src/content/maps/sectorv.json, built by tools/build-map.py from OpenStreetMap
+// Types for the real map data (public/data/sectorv.json, fetched at boot, built by tools/build-map.py from OpenStreetMap
 // plus the Street View corrections in research/map/overrides.json).
 
 export type Pt = [number, number]; // x (east), z (south), in world units

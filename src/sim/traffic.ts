@@ -3,7 +3,7 @@
 // Everyone keeps left. Pure logic: the renderer reads `vehicles`.
 
 import { T } from '../content/tuning';
-import type { MapData } from './mapdata';
+import type { MapData, Pt } from './mapdata';
 import { Polyline } from './polyline';
 import type { Edge, RoadGraph } from './roadgraph';
 import type { Rng } from './rng';
@@ -51,6 +51,8 @@ export interface Vehicle {
   gone?: boolean;
 }
 
+export interface BusLine { path: Pt[]; stops: { n: string; p: Pt; thin?: boolean }[] }
+
 export class Traffic {
   vehicles: Vehicle[] = [];
   readonly busRoute: Polyline;
@@ -60,11 +62,17 @@ export class Traffic {
   private spawnT = 0;
   private busT = [2, 6];
 
-  constructor(map: MapData, private graph: RoadGraph, private rng: Rng) {
-    this.busRoute = new Polyline(map.busPath);
-    this.routeStops = map.stops
-      .map((st) => ({ ...this.busRoute.project(st.p[0], st.p[1]), name: st.n }))
+  /** `route`: the bus line (defaults to the map's own bus path and stops). */
+  /** `route`: the bus line (defaults to the map's own bus path and stops). Stops flagged `thin` (beyond the map,
+   *  where the timed world squeezes real stops close together) are kept one per T.bus.minStopGap of route. */
+  constructor(map: MapData, private graph: RoadGraph, private rng: Rng, route: BusLine = { path: map.busPath, stops: map.stops }) {
+    this.busRoute = new Polyline(route.path);
+    let last = -Infinity;
+    this.routeStops = route.stops
+      .map((st) => ({ ...this.busRoute.project(st.p[0], st.p[1]), name: st.n, thin: st.thin }))
       .filter((p) => p.dist < 14)
+      .sort((a, b) => a.s - b.s)
+      .filter((p) => { const keep = !p.thin || p.s - last >= T.bus.minStopGap; if (keep) last = p.s; return keep; })
       .map((p) => ({ s: p.s, name: p.name }));
   }
 
@@ -131,9 +139,16 @@ export class Traffic {
       this.spawnT = this.rng.range(...tr.spawnEvery);
       this.spawnNear(px, pz, 70, tr.window);
     }
+    // Buses enter the route out of sight behind the player (towards Sealdah) or ahead (coming back), wherever on
+    // the long line the player is.
+    let ps: number | null = null;
     for (let d = 0; d < 2; d++) {
       this.busT[d] -= dt;
-      if (this.busT[d] <= 0) { this.busT[d] = T.bus.every * this.rng.range(0.7, 1.3); this.spawnBus(d === 0 ? 1 : -1); }
+      if (this.busT[d] > 0) continue;
+      this.busT[d] = T.bus.every * this.rng.range(0.7, 1.3);
+      ps ??= this.busRoute.project(px, pz).s;
+      const s = d === 0 ? Math.max(0, ps - tr.window + 20) : Math.min(this.busRoute.length, ps + tr.window - 20);
+      if (this.busRoute.project(px, pz).dist < tr.window) this.spawnBus(d === 0 ? 1 : -1, s);
     }
 
     for (const v of this.vehicles) {

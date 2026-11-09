@@ -1,10 +1,10 @@
-// Builds the real Sector V streets from src/content/maps/sectorv.json (OpenStreetMap, ODbL):
+// Builds the real Sector V streets from public/data/sectorv.json (OpenStreetMap, ODbL; fetched at boot):
 // textured asphalt, paver footpaths, blue-and-white kerbs, raised medians, lane markings, the sunken Keshtopur canal
 // and parks, Kolkata buildings, the flyover, the metro and its stations. Static, and merged into a handful of draw calls.
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import mapData from '../../content/maps/sectorv.json';
+import { assets } from '../../app/assets';
 import type { MapData, Pt, Road } from '../../sim/mapdata';
 import { clearance, medians, medianStyle } from '../../sim/streetlife';
 import { NO_SHOPS } from '../../content/streetlife';
@@ -16,7 +16,11 @@ import { deckY, flyoverDecks, nearest } from '../../sim/elevated';
 import { canalOf } from '../../sim/canal';
 
 export type { Pt };
-export const map = mapData as unknown as MapData & { water: Pt[][]; green: Pt[][] };
+type FullMap = MapData & { water: Pt[][]; green: Pt[][] };
+/** The real map (clipped to the Sector V square), set once the boot fetch lands (app/assets.ts). */
+export let map = null as unknown as FullMap;
+/** Called after loadAssets(): every importer of `map` sees the live binding. */
+export function useMap(): FullMap { map = assets.map as FullMap; return map; }
 
 const ROAD_Y: Record<string, number> = { primary: 0.06, trunk: 0.06, secondary: 0.055, tertiary: 0.05, primary_link: 0.052, secondary_link: 0.052, tertiary_link: 0.048, residential: 0.04, unclassified: 0.04, service: 0.035 };
 const MAIN = new Set(['primary', 'trunk', 'secondary', 'tertiary', 'primary_link', 'secondary_link']);

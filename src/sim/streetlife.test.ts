@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import map from '../content/maps/sectorv.json';
+import map from '../../public/data/sectorv.json';
 import { FURNITURE, ROWS, STREETS, type RowSpec } from '../content/streetlife';
 import type { MapData, Road } from './mapdata';
 import { clearance, footprintClear, frameAt, kerbOffset, medians, placeRow, placeSpot, project, sideNormal } from './streetlife';

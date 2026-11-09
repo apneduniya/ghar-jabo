@@ -13,6 +13,7 @@
     "e2e": "playwright test",
     "size": "size-limit",
     "map": "python3 -I tools/build-map.py",
+    "world": "python3 -I tools/build-world.py",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build && npm run size && npm run e2e"
   },
   "dependencies": {

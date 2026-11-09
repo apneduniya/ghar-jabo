@@ -3,7 +3,7 @@
 Ghar Jabo: phone-first 3D browser game (Vite + TypeScript + three.js). Read `docs/PROPOSAL.md` for the why.
 
 ## Commands
-- `npm run dev`: dev server. `npm run map`: rebuild `src/content/maps/sectorv.json` from OSM extracts.
+- `npm run dev`: dev server. `npm run map`: rebuild `public/data/sectorv.json` from OSM extracts; `npm run world`: rebuild `public/data/world.json` (the streamed world's network) from `research/routes/`. Both are fetched at boot, not bundled.
 - `npm run check`: typecheck, lint, unit tests, build, size limit, Playwright smoke. **Must pass before you finish.**
 - The pre-push hook runs `npm run check` (local CI; there is no GitHub Actions run).
 

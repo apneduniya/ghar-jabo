@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import mapJson from '../content/maps/sectorv.json';
+import mapJson from '../../public/data/sectorv.json';
 import { north } from '../content/sectorv';
 import { at, deckY, flyoverDecks, gateSpot, greenLine, inBox, isFlyover, local, nearest, onCarriageway, orangeLine, pierSpots, roofs, stations } from './elevated';
 import type { MapData } from './mapdata';

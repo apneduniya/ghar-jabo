@@ -22,15 +22,21 @@ export class RoadGraph {
   nodes: Pt[] = [];
   private index = new Map<string, number>();
 
-  constructor(map: MapData) {
+  /** `extra`: more roads in game coords (the streamed world's net roads), joined to the map where ends coincide. */
+  constructor(map: MapData, extra: { p: Pt[]; w: number; oneway: boolean }[] = []) {
     for (const r of map.roads) {
       if (!TRAFFIC_ROADS.has(r.k) || r.b) continue; // the flyover deck stays empty for now
-      for (let i = 1; i < r.p.length; i++) {
-        const a = this.node(r.p[i - 1]), b = this.node(r.p[i]);
-        if (a === b) continue;
-        this.add(a, b, r.w);
-        if (!r.o) this.add(b, a, r.w);
-      }
+      this.addLine(r.p, r.w, !!r.o);
+    }
+    for (const r of extra) this.addLine(r.p, r.w, r.oneway);
+  }
+
+  private addLine(p: Pt[], w: number, oneway: boolean) {
+    for (let i = 1; i < p.length; i++) {
+      const a = this.node(p[i - 1]), b = this.node(p[i]);
+      if (a === b) continue;
+      this.add(a, b, w);
+      if (!oneway) this.add(b, a, w);
     }
   }
 

@@ -1,3 +1,5 @@
+import type { ArriveMode } from './run';
+
 // What the sim tells the presentation layers: they turn these into toasts, sounds, camera shake and stage changes.
 
 export type Sfx = 'ting' | 'cancel' | 'coin' | 'tap' | 'bad' | 'horn' | 'bump' | 'crash' | 'doorBeep' | 'chime' | 'sting' | 'ring' | 'whoosh' | 'win';
@@ -10,7 +12,9 @@ export type GameEvent =
   | { type: 'hitstop'; secs: number }
   | { type: 'slowmo'; scale: number; secs: number }
   | { type: 'photo'; drama: number; burst: string }
-  | { type: 'stage'; to: 'station' | 'ride'; mode?: 'bus' | 'rapinah' }
+  | { type: 'stage'; to: 'station' }
+  /** Reached the Sealdah forecourt (the streamed world's finish). */
+  | { type: 'arrive'; mode: ArriveMode }
   | { type: 'end'; ending: 'still-sector-v' };
 
 export class Events {

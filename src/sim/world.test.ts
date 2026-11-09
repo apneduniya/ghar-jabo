@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import mapJson from '../content/maps/sectorv.json';
+import mapJson from '../../public/data/sectorv.json';
 import type { MapData } from './mapdata';
 import { NO_INTENT, type Intent } from './player';
 import { Rng } from './rng';
@@ -8,6 +8,9 @@ import { Traffic } from './traffic';
 import { BUS_REAR_DOOR } from './vehicles';
 import { World } from './world';
 import { clearance } from './streetlife';
+import worldJson from '../../public/data/world.json';
+import { clipMap } from './gen/clip';
+import { loadNet } from './gen/net';
 
 const map = mapJson as unknown as MapData;
 
@@ -86,7 +89,7 @@ describe('bus hopping', () => {
     expect(w.run.stats.falls).toBe(1);
   });
 
-  it('a bus heading for Sealdah carries you off the map into the ride', () => {
+  it('a bus heading for Sealdah carries you to the end of its line, and you arrive', () => {
     const w = makeWorld();
     const bus = w.traffic.spawnBus(1, w.traffic.busRoute.length - 40);
     bus.depotAt = undefined;
@@ -98,9 +101,9 @@ describe('bus hopping', () => {
     const events: string[] = [];
     for (let i = 0; i < 60 * 20 && w.player.state === 'hang'; i++) {
       w.step({ ...NO_INTENT, lean: w.player.lean * 3 + w.player.leanVel });
-      events.push(...w.events.drain().filter((e) => e.type === 'stage').map((e) => JSON.stringify(e)));
+      events.push(...w.events.drain().filter((e) => e.type === 'arrive').map((e) => JSON.stringify(e)));
     }
-    expect(events).toContain(JSON.stringify({ type: 'stage', to: 'ride', mode: 'bus' }));
+    expect(events).toContain(JSON.stringify({ type: 'arrive', mode: 'bus' }));
   });
 });
 
@@ -183,5 +186,86 @@ describe('street level', () => {
     steps(w, 120, () => ({ ...NO_INTENT, moveX: -wall.nx, moveZ: -wall.nz }));
     const side = (w.player.x - cx) * wall.nx + (w.player.z - cz) * wall.nz;
     expect(side).toBeGreaterThan(0);
+  });
+});
+
+describe('the streamed world beyond the map', () => {
+  const net = loadNet(worldJson);
+  const clipped = clipMap(map);
+
+  function streamWorld(mode: 'timed' | 'free', seed = 5) {
+    const run = new Run(mode);
+    run.clockRunning = true;
+    run.seed = seed;
+    const start = { x: map.pois.tiu[0] + 12, z: map.pois.tiu[1] - 12 };
+    const w = new World(clipped, run, new Rng(seed), start, net);
+    const s = w.freeSpotNear(start.x, start.z);
+    w.player.x = s.x; w.player.z = s.z;
+    return w;
+  }
+
+  it('drives the warped network: Sealdah is reachable from Sector V on the road graph', () => {
+    for (const mode of ['timed', 'free'] as const) {
+      const w = streamWorld(mode);
+      const from = w.graph.nearestNode(map.pois.tiu[0], map.pois.tiu[1]);
+      const to = w.graph.nearestNode(w.streamed!.sealdah.x, w.streamed!.sealdah.z);
+      const [tx, tz] = w.graph.nodes[to];
+      expect(Math.hypot(tx - w.streamed!.sealdah.x, tz - w.streamed!.sealdah.z)).toBeLessThan(60);
+      expect(w.graph.route(from, to), mode).not.toBeNull();
+    }
+  });
+
+  it('the bus line runs from Sector V to Sealdah, about 1,500 u beyond the square when timed', () => {
+    const w = streamWorld('timed');
+    // Corridor A ends by road at the foot of Vidyapati Setu, a short walk (squeezed) from the forecourt.
+    const end = w.traffic.busRoute.pts[w.traffic.busRoute.pts.length - 1];
+    expect(Math.hypot(end[0] - w.streamed!.sealdah.x, end[1] - w.streamed!.sealdah.z)).toBeLessThan(80);
+    expect(w.traffic.busRoute.length).toBeGreaterThan(1300);
+    expect(w.traffic.busRoute.length).toBeLessThan(2600);
+    expect(w.traffic.routeStops.length).toBeGreaterThan(6);
+  });
+
+  it('timed: hang on a bus from Sector V all the way to Sealdah and arrive', () => {
+    const w = streamWorld('timed');
+    const bus = w.traffic.spawnBus(1, 200);
+    bus.depotAt = undefined;
+    bus.base = 1; bus.speed = 1;
+    const d = Traffic.busDoor(bus, BUS_REAR_DOOR);
+    w.player.x = d.x; w.player.z = d.z;
+    w.step({ ...NO_INTENT, action: true });
+    expect(w.player.state).toBe('hang');
+    bus.base = 60;
+    let arrived = '';
+    for (let i = 0; i < 60 * 90 && !arrived; i++) {
+      w.streamed!.stream(w.player.x, w.player.z);
+      w.step({ ...NO_INTENT, lean: w.player.lean * 3 + w.player.leanVel });
+      for (const e of w.events.drain()) if (e.type === 'arrive') arrived = e.mode;
+      if (w.player.state === 'foot') { const v = w.traffic.vehicles.find((x) => x.id === bus.id)!; const dd = Traffic.busDoor(v, BUS_REAR_DOOR); w.player.x = dd.x; w.player.z = dd.z; w.step({ ...NO_INTENT, action: true }); }
+    }
+    expect(arrived).toBe('bus');
+  });
+
+  it('walking into the Sealdah forecourt arrives on foot', () => {
+    const w = streamWorld('free');
+    const s = w.streamed!.sealdah;
+    w.player.x = s.x + s.r + 3; w.player.z = s.z;
+    w.streamed!.store.fill(w.player.x, w.player.z);
+    let arrived = '';
+    for (let i = 0; i < 60 * 3 && !arrived; i++) {
+      w.step({ ...NO_INTENT, moveX: -1, moveZ: 0 });
+      for (const e of w.events.drain()) if (e.type === 'arrive') arrived = e.mode;
+      if (!arrived) { w.player.x = Math.min(w.player.x, s.x + s.r + 3) - 0.2; }
+    }
+    expect(arrived).toBe('walk');
+  });
+
+  it('streams chunks around the player and collides with them', () => {
+    const w = streamWorld('free');
+    w.player.x = -2000; w.player.z = 300;
+    for (let i = 0; i < 30; i++) w.streamed!.stream(w.player.x, w.player.z);
+    expect(w.streamed!.store.size).toBeGreaterThan(5);
+    const b = [...w.streamed!.store.loaded()].flatMap((c) => c.buildings)[0].p;
+    const cx = b.reduce((a, p) => a + p[0], 0) / 4, cz = b.reduce((a, p) => a + p[1], 0) / 4;
+    expect(w.walkBlocked(cx, cz, 0.35)).toBe(true);
   });
 });

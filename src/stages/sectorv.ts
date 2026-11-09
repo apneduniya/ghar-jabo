@@ -22,9 +22,11 @@ import { sfx } from '../audio/audio';
 import { Ambience } from '../audio/ambience';
 import { floods } from '../content/sectorv';
 import { T } from '../content/tuning';
+import { STREAM } from '../content/worldgen';
 import { northSigns, pick, ticker } from '../content/text';
 import { rng } from '../sim/rng';
 import { World } from '../sim/world';
+import { assets } from '../app/assets';
 import type { Intent } from '../sim/player';
 import type { GameEvent } from '../sim/events';
 
@@ -62,7 +64,7 @@ export function sectorv(): Scene {
   const actors = new Actors(scene);
 
   // The sim, starting at the college gate.
-  const world = new World(map, run, rng, { x: map.pois.tiu[0], z: map.pois.tiu[1] });
+  const world = new World(map, run, rng, { x: map.pois.tiu[0], z: map.pois.tiu[1] }, assets.net);
   const gate = gateSpot(world);
   world.player.x = gate.x;
   world.player.z = gate.z;
@@ -141,8 +143,11 @@ export function sectorv(): Scene {
       case 'end': game.fail(e.ending); break;
       case 'stage':
         leaving = true;
-        if (e.to === 'station') game.go('station');
-        else { run.rideMode = e.mode ?? 'bus'; run.spawnX = 6; game.go('city'); }
+        game.go('station');
+        break;
+      case 'arrive':
+        leaving = true;
+        game.arrive(e.mode);
         break;
     }
   }
@@ -157,7 +162,7 @@ export function sectorv(): Scene {
     scene, camera,
     enter() {
       resize(camera, 55, 72);
-      game.debug = { world, map, yaw: () => yaw, setYaw: (v: number) => { yaw = v; camReady = false; }, look: (v: number) => { yaw = v; camReady = false; } };
+      game.debug = { world, map, chunks: world.streamed?.store, yaw: () => yaw, setYaw: (v: number) => { yaw = v; camReady = false; }, look: (v: number) => { yaw = v; camReady = false; } };
       layer = sceneLayer();
       if (attracting) {
         showHud(false);
@@ -185,6 +190,7 @@ export function sectorv(): Scene {
         acc += dt;
         while (acc >= T.step) { acc -= T.step; world.step(NO_INTENT); world.events.drain(); }
         actors.sync(world.traffic.vehicles, 0, '');
+        streamChunks();
         walkers.update(performance.now());
         orbit += dt * 0.06;
         camera.position.set(Math.cos(orbit) * 75, 36, Math.sin(orbit) * 75);
@@ -202,6 +208,12 @@ export function sectorv(): Scene {
       hint('');
     },
   };
+
+  /** Chunk generation gets a few milliseconds a frame, nearest chunk first (sim/gen/stream.ts). */
+  function streamChunks() {
+    const t0 = performance.now();
+    world.streamed?.stream(world.player.x, world.player.z, () => performance.now() - t0 < STREAM.frameMs);
+  }
 
   function startPlay() {
       showHud(true);
@@ -235,6 +247,7 @@ export function sectorv(): Scene {
       if (leaving) return;
 
       const p = world.player;
+      streamChunks();
       ambience.update(dt, run.jam, p.x, p.z);
       walkers.update(performance.now());
       const ride = world.riding;

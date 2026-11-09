@@ -22,15 +22,13 @@ test('lobby to the real Sector V map, within budget', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-for (const stage of ['city', 'station'] as const) {
-  test(`${stage} stage renders within budget`, async ({ page }) => {
-    const errors = await boot(page);
-    await page.evaluate((s) => (window as any).gj.go(s), stage);
-    await page.waitForTimeout(2000);
-    expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
-    expect(errors).toEqual([]);
-  });
-}
+test('station stage renders within budget', async ({ page }) => {
+  const errors = await boot(page);
+  await page.evaluate(() => (window as any).gj.go('station'));
+  await page.waitForTimeout(2000);
+  expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  expect(errors).toEqual([]);
+});
 
 test('an ending shows the newspaper', async ({ page }) => {
   const errors = await boot(page);
@@ -95,5 +93,60 @@ test('free roam: the clock shows the day and never runs out', async ({ page }) =
   await page.evaluate(() => { (window as any).gj.run.minute = 24 * 60 + 74; });
   await expect(page.locator('.hud-clock')).toHaveText(/Day 2 · 1:1\d AM/);
   expect(await page.evaluate(() => (window as any).gj.run.ending)).toBeNull();
+  expect(errors).toEqual([]);
+});
+
+test('free roam: far west of Sector V the streamed world loads around you', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await page.locator('.play-btn.free').click();
+  await page.waitForFunction(() => (window as any).gj?.debug?.chunks && (window as any).gjr?.info.render.calls > 0);
+  // Teleport to Phoolbagan, 2 km west of the map (free roam is true scale).
+  await page.evaluate(() => { const p = (window as any).gj.debug.world.player; p.x = -2000; p.z = 300; });
+  await expect.poll(() => page.evaluate(() => (window as any).gj.debug.chunks.summary().chunks), { timeout: 60_000 }).toBeGreaterThan(6);
+  const sum = await page.evaluate(() => (window as any).gj.debug.chunks.summary());
+  expect(sum.buildings).toBeGreaterThan(50);
+  expect(sum.roads).toBeGreaterThan(20);
+  // Nothing near the player was left behind in Sector V's chunks.
+  const near = await page.evaluate(() => [...(window as any).gj.debug.chunks.loaded()].every((c: any) => Math.hypot(c.x0 + 64 + 2000, c.z0 + 64 - 300) < 450));
+  expect(near).toBe(true);
+  // Within budget whether or not this build renders chunks yet.
+  await page.waitForTimeout(1500);
+  expect(await calls(page)).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  expect(errors).toEqual([]);
+});
+
+test('timed: a bus from Sector V reaches Sealdah and the run ends at home', async ({ page }) => {
+  const errors = await boot(page);
+  // Hop on a bus at the start of its line, then let it run flat out (sim steps driven from the test, since
+  // SwiftShader frames are too slow to watch a whole ride), keeping your balance like a good commuter.
+  await page.evaluate(() => {
+    const w = (window as any).gj.debug.world;
+    const bus = w.traffic.spawnBus(1, 150);
+    bus.base = 1; bus.speed = 1; bus.depotAt = undefined;
+    const c = Math.cos(bus.heading), s = Math.sin(bus.heading);
+    w.player.x = bus.x + c * -1.9 + s * (bus.width / 2 + 0.5);
+    w.player.z = bus.z + s * -1.9 - c * (bus.width / 2 + 0.5);
+    (window as any).gjBus = bus;
+  });
+  await expect.poll(async () => {
+    const state = await page.evaluate(() => (window as any).gj.debug.world.player.state);
+    if (state !== 'hang') await page.locator('.act-btn').dispatchEvent('pointerdown');
+    return state;
+  }, { timeout: 15_000 }).toBe('hang');
+  const arrived = await page.evaluate(() => {
+    const w = (window as any).gj.debug.world, bus = (window as any).gjBus;
+    bus.base = 70;
+    const noIntent = { moveX: 0, moveZ: 0, jump: false, action: false, phone: false, lean: 0 };
+    for (let i = 0; i < 60 * 120; i++) {
+      if (w.player.state !== 'hang') break;
+      w.step({ ...noIntent, lean: w.player.lean * 3 + w.player.leanVel });
+    }
+    return w.events.list.some((e: any) => e.type === 'arrive');
+  });
+  expect(arrived).toBe(true);
+  await expect(page.locator('.paper h3')).not.toBeEmpty({ timeout: 30_000 });
+  expect(await page.evaluate(() => (window as any).gj.run.homeMode)).toBe('bus');
   expect(errors).toEqual([]);
 });

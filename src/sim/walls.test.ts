@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import map from '../content/maps/sectorv.json';
+import map from '../../public/data/sectorv.json';
 import { FOOTPATH, STREETS } from '../content/streetlife';
 import { BuildingGrid } from './collide';
 import type { MapData, Road } from './mapdata';

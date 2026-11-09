@@ -81,6 +81,16 @@ export interface WorldNet {
   areas: { kind: AreaKind; x: number; z: number; r: number; gridDeg?: number }[];
   /** The finish: Sealdah station forecourt. */
   sealdah: { x: number; z: number; r: number };
+  /** Real (OSM) bus stops on the network, outside the Sector V square. Optional (added by the sim builder). */
+  stops?: { name: string; x: number; z: number }[];
+  /**
+   * Real-map roads that cross the Sector V square edge with no corridor road continuing them: `p` is the exact
+   * crossing point (bit-identical to the clipped map's road end), `d` the outward unit direction, `w` the width,
+   * `k` the map's road class. The generator continues them (free) or caps them with a dead end (timed). Optional.
+   */
+  mapEnds?: { p: Pt; d: Pt; w: number; k: string }[];
+  /** The drivable line of each corridor from the TIU gate (real coords), for bus routes and the HUD. Optional. */
+  corridors?: { id: string; p: Pt[] }[];
 }
 
 /** Maps real coordinates to game coordinates for a mode (identity inside the Sector V square). */
@@ -145,6 +155,14 @@ export interface Chunk {
   landmarks: string[];
   /** Extra collision rings beyond building footprints (walls, dead-end barriers, water edges). */
   blockers: Pt[][];
+  /**
+   * Water surfaces in this chunk (game coords, clipped to the chunk): canals and lakes from the net, bheri ponds,
+   * and in timed mode a true-width canal patch at each canal crossing. Not walkable except over a bridge road.
+   * Optional (added by the sim builder; renderers may ignore it).
+   */
+  water?: Pt[][];
+  /** Roundabout islands at Salt Lake avenue crossings (raised, planted, blue-and-white kerbs). Optional. */
+  islands?: { x: number; z: number; r: number }[];
 }
 
 /**

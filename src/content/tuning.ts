@@ -41,6 +41,7 @@ export const T = {
     damping: 0.96,
     bumpEvery: [2.5, 4.5] as [number, number],
     bumpKick: 1.6,
+    minStopGap: 70, // beyond Sector V the bus slows for one real stop per this many units of route
   },
 
   rapinah: {
@@ -55,6 +56,9 @@ export const T = {
   },
 
   metro: { fare: 20 },
+
+  /** Free roam: game minutes per real second (the streamed world is true scale, so it runs on its own rate). */
+  clock: { free: 1 },
 };
 
 /** One storey in world units (see tools/map/geo.py FLOOR_U). Taller than a person (1.75), on halved footprints. */

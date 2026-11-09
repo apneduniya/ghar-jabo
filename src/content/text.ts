@@ -201,3 +201,22 @@ export const northSigns = {
   itCentreBn: 'আইটি সেন্টার',
   gate: 'METRO · GATE A',
 };
+
+/** Dead ends in the timed run (side streets that don't go to Sealdah). Situations, never communities. */
+export const deadEnds = [
+  'GOLI SHESH. Sealdah is the other way, dada.',
+  'Road closed for "work". Work started 2019.',
+  'Knee-deep water. The drain is somewhere under there.',
+  'Para football match in progress. Do not interrupt.',
+  'Wedding pandal across the lane. You are not invited.',
+  'Puja committee meeting. Lane requisitioned till Kali Puja.',
+  'A cow has claimed this lane. The cow is not moving.',
+  'Pipe-laying. The pipe is laid. The road is not.',
+  'Private lane. Says the uncle in the vest.',
+  'Carrom tournament, quarter-finals. Go round.',
+  'Water-logged since Tuesday. It is not Tuesday.',
+  'Lane ends in a wall. The wall has a sweet shop in it.',
+] as const;
+
+/** Arriving at the Sealdah forecourt in the streamed world. */
+export const arriveLine = { title: 'SEALDAH!', line: 'The forecourt. Somewhere in there is your train home.' };

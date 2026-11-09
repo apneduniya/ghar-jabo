@@ -3,7 +3,7 @@
 
 import { T } from '../content/tuning';
 import { floods } from '../content/sectorv';
-import { cancelReasons, captainNames, ticker } from '../content/text';
+import { arriveLine, cancelReasons, captainNames, ticker } from '../content/text';
 import { BuildingGrid, WaterMask } from './collide';
 import { canalOf, RailingMask } from './canal';
 import { gateSpot } from './elevated';
@@ -12,7 +12,10 @@ import type { MapData } from './mapdata';
 import { NO_INTENT, Player, type Intent } from './player';
 import { RoadGraph } from './roadgraph';
 import type { Rng } from './rng';
-import type { Run } from './run';
+import type { ArriveMode, Run } from './run';
+import type { WorldNet } from './gen/types';
+import { Streamed } from './streamed';
+import { collideTraffic } from './hits';
 import { Traffic, type Vehicle } from './traffic';
 import { Crowd } from './crowd';
 import { BUS_REAR_DOOR } from './vehicles';
@@ -40,9 +43,13 @@ export class World {
   private ditchAt = Infinity;
   private exitNode: number;
 
-  constructor(readonly map: MapData, readonly run: Run, readonly rng: Rng, start: { x: number; z: number }) {
-    this.graph = new RoadGraph(map);
-    this.traffic = new Traffic(map, this.graph, rng);
+  /** The streamed world beyond the map (null in map-only tests). */
+  readonly streamed: Streamed | null;
+
+  constructor(readonly map: MapData, readonly run: Run, readonly rng: Rng, start: { x: number; z: number }, net: WorldNet | null = null) {
+    this.streamed = net ? new Streamed(net, run.mode, run.seed) : null;
+    this.graph = new RoadGraph(map, this.streamed?.graphRoads());
+    this.traffic = new Traffic(map, this.graph, rng, this.streamed?.route(map));
     this.grid = new BuildingGrid(map.buildings.map((b) => b.p));
     this.water = new WaterMask(map.water ?? [], map.roads);
     this.street = layoutStreet(map, this.grid);
@@ -54,14 +61,23 @@ export class World {
     // Sector V's street entrance: OSM Gate A, on the footpath of the service road under the station.
     const gate = gateSpot(map.roads);
     this.metroEntrance = this.freeSpotNear(gate[0], gate[1]);
-    const end = map.busPath[map.busPath.length - 1];
+    // Where a captain carrying you heads: Sealdah when the world goes that far, else the map's exit.
+    const end = this.streamed ? [this.streamed.sealdah.x, this.streamed.sealdah.z] : map.busPath[map.busPath.length - 1];
     this.exitNode = this.graph.nearestNode(end[0], end[1]);
   }
 
-  /** True if a body of radius `pad` can't stand at (x, z): a building, water or a railing. */
+  /** True if a body of radius `pad` can't stand at (x, z): a building, water, a railing, or beyond the map. */
   walkBlocked(x: number, z: number, pad: number) {
     return this.grid.blocked(x, z, pad) || this.water.blocked(x, z, pad) || this.railings.blocked(x, z, pad) ||
-      this.street.blocks.blocked(x, z, pad);
+      this.street.blocks.blocked(x, z, pad) || !!this.streamed?.blocked(x, z, pad);
+  }
+
+  /** Arrived at the Sealdah forecourt, by whatever got you there. */
+  private arrive(mode: ArriveMode) {
+    this.player.state = 'gone';
+    this.events.sfx('win');
+    this.events.toast(arriveLine.title, arriveLine.line);
+    this.events.push({ type: 'arrive', mode });
   }
 
   /** Nearest walkable spot to (x, z), searching outwards in rings. */
@@ -131,13 +147,15 @@ export class World {
     const p = this.player;
     p.slow = floods.some((f) => Math.hypot(f.x - p.x, f.z - p.z) < f.r) ? T.player.floodSlow : 1;
     p.stepFoot(dt, intent, (x, z) => this.walkBlocked(x, z, T.player.radius));
-    if (!p.down && p.y < 1.2) this.collideTraffic();
+    if (!p.down && p.y < 1.2) collideTraffic(this);
     const a = this.action();
     if (a && intent.action) {
       if (a.kind === 'hop') this.hopOn(a.bus);
       else this.sitOnBike(a.captain);
     }
-    if (Math.hypot(this.metroEntrance.x - p.x, this.metroEntrance.z - p.z) < 2.5 && !p.down) {
+    if (this.streamed?.atSealdah(p.x, p.z)) { this.arrive('walk'); return; }
+    const station = this.streamed?.stationAt(p.x, p.z);
+    if ((station || Math.hypot(this.metroEntrance.x - p.x, this.metroEntrance.z - p.z) < 2.5) && !p.down) {
       if (!this.run.metroOpen) {
         this.events.toast('METRO BONDHO', 'Shutters down till 6:50 AM. The guard is asleep on a plastic chair.');
         p.x += 3;
@@ -147,38 +165,10 @@ export class World {
       } else {
         p.state = 'gone';
         this.run.tried('metro');
+        this.run.metroFrom = station?.name ?? null;
         this.events.sfx('chime');
         this.events.push({ type: 'stage', to: 'station' });
       }
-    }
-  }
-
-  private collideTraffic() {
-    const p = this.player;
-    for (const v of this.traffic.vehicles) {
-      const c = Math.cos(v.heading), s = Math.sin(v.heading);
-      const dx = p.x - v.x, dz = p.z - v.z;
-      const along = dx * c + dz * s, across = -dx * s + dz * c;
-      if (Math.abs(along) > v.len / 2 + 0.3 || Math.abs(across) > v.width / 2 + 0.35) continue;
-      if (v.speed > T.traffic.hitSpeed && v.id !== this.captainId) {
-        this.run.stats.taxiHits++;
-        this.run.hurtDignity(6);
-        this.run.addMinutes(2);
-        const name = v.kind === 'taxi' ? 'TAXI TAKKAR!' : v.kind === 'bus' ? 'BUS-E DHAKKA!' : v.kind === 'auto' ? 'AUTO-R DHAKKA!' : 'DHAKKA!';
-        this.events.sfx('crash');
-        this.events.push({ type: 'shake', amp: 0.6, secs: 0.35 });
-        this.events.push({ type: 'hitstop', secs: 0.12 });
-        this.events.push({ type: 'photo', drama: 3, burst: name });
-        this.events.toast(name, v.kind === 'taxi' ? 'Yellow taxi did not see you. Or did not care.' : 'Zebra crossing? Sheta abar ki?');
-        const side = Math.sign(across) || 1;
-        p.knockDown(c * 0.6 - s * side, s * 0.6 + c * side, 6);
-      } else {
-        // Slow or stopped: you just get nudged aside.
-        const side = Math.sign(across) || 1;
-        p.x += -s * side * 0.08;
-        p.z += c * side * 0.08;
-      }
-      return;
     }
   }
 
@@ -260,9 +250,10 @@ export class World {
       this.hopOff(false);
       return;
     }
-    // Riding off the edge of the map towards Sealdah continues the trip; the other way, you're dropped.
+    // The line ends at Sealdah: home by bus. The other way, it's back to College More and you're dropped.
+    if (this.streamed?.atSealdah(p.x, p.z)) { this.arrive('bus'); return; }
     if (v.gone || v.s >= this.traffic.busRoute.length - 2 || v.s <= 2) {
-      if (v.routeDir === 1) { p.state = 'gone'; this.events.push({ type: 'stage', to: 'ride', mode: 'bus' }); }
+      if (v.routeDir === 1) this.arrive('bus');
       else { this.events.toast('COLLEGE MORE', 'Conductor: "Last stop! Namun!" Wrong bus, dada.'); this.hopOff(false); }
     }
   }
@@ -383,9 +374,6 @@ export class World {
       return;
     }
     const exit = this.graph.nodes[this.exitNode];
-    if (!v.plan?.length && Math.hypot(exit[0] - v.x, exit[1] - v.z) < 12) {
-      p.state = 'gone';
-      this.events.push({ type: 'stage', to: 'ride', mode: 'rapinah' });
-    }
+    if (this.streamed?.atSealdah(p.x, p.z) || (!v.plan?.length && Math.hypot(exit[0] - v.x, exit[1] - v.z) < 12)) this.arrive('rapinah');
   }
 }

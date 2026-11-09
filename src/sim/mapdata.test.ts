@@ -1,7 +1,7 @@
-// Invariants of the built map (tools/build-map.py -> src/content/maps/sectorv.json) and the Street View overrides.
+// Invariants of the built map (tools/build-map.py -> public/data/sectorv.json) and the Street View overrides.
 import { FLOOR_U } from '../content/tuning';
 import { describe, expect, it } from 'vitest';
-import mapJson from '../content/maps/sectorv.json';
+import mapJson from '../../public/data/sectorv.json';
 import overridesJson from '../../research/map/overrides.json';
 import type { Building, MapData, Pt } from './mapdata';
 
