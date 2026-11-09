@@ -5,6 +5,8 @@ import { T } from '../content/tuning';
 import { floods } from '../content/sectorv';
 import { cancelReasons, captainNames, ticker } from '../content/text';
 import { BuildingGrid, WaterMask } from './collide';
+import { canalOf, RailingMask } from './canal';
+import { gateSpot } from './elevated';
 import { Events } from './events';
 import type { MapData } from './mapdata';
 import { NO_INTENT, Player, type Intent } from './player';
@@ -23,6 +25,8 @@ export class World {
   readonly traffic: Traffic;
   readonly grid: BuildingGrid;
   readonly water: WaterMask;
+  /** Canal railings and the Street 13 balustrade: walls you can't walk through. */
+  readonly railings: RailingMask;
   readonly crowd: Crowd;
   /** Surveyed street life: stall rows, furniture, compound walls, medians (and their collision). */
   readonly street: StreetLayout;
@@ -42,14 +46,22 @@ export class World {
     this.grid = new BuildingGrid(map.buildings.map((b) => b.p));
     this.water = new WaterMask(map.water ?? [], map.roads);
     this.street = layoutStreet(map, this.grid);
+    this.railings = new RailingMask(canalOf(map).railings);
     this.player.x = start.x;
     this.player.z = start.z;
     this.traffic.populate(start.x, start.z);
     this.crowd = new Crowd(map, this.grid, rng, 110);
-    const st = map.stations.find((s) => s.n === 'Salt Lake Sector V') ?? map.stations[0];
-    this.metroEntrance = this.freeSpotNear(st.p[0], st.p[1] + 6);
+    // Sector V's street entrance: OSM Gate A, on the footpath of the service road under the station.
+    const gate = gateSpot(map.roads);
+    this.metroEntrance = this.freeSpotNear(gate[0], gate[1]);
     const end = map.busPath[map.busPath.length - 1];
     this.exitNode = this.graph.nearestNode(end[0], end[1]);
+  }
+
+  /** True if a body of radius `pad` can't stand at (x, z): a building, water or a railing. */
+  walkBlocked(x: number, z: number, pad: number) {
+    return this.grid.blocked(x, z, pad) || this.water.blocked(x, z, pad) || this.railings.blocked(x, z, pad) ||
+      this.street.blocks.blocked(x, z, pad);
   }
 
   /** Nearest walkable spot to (x, z), searching outwards in rings. */
@@ -57,7 +69,7 @@ export class World {
     for (let r = 0; r < 30; r += 1.5)
       for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
         const px = x + Math.cos(a) * r, pz = z + Math.sin(a) * r;
-        if (!this.grid.blocked(px, pz, 0.8) && !this.street.blocks.blocked(px, pz, 0.8)) return { x: px, z: pz };
+        if (!this.walkBlocked(px, pz, 0.8)) return { x: px, z: pz };
       }
     return { x, z };
   }
@@ -118,8 +130,7 @@ export class World {
   private stepFoot(dt: number, intent: Intent) {
     const p = this.player;
     p.slow = floods.some((f) => Math.hypot(f.x - p.x, f.z - p.z) < f.r) ? T.player.floodSlow : 1;
-    p.stepFoot(dt, intent, (x, z) => this.grid.blocked(x, z, T.player.radius) || this.water.blocked(x, z, T.player.radius) ||
-      this.street.blocks.blocked(x, z, T.player.radius));
+    p.stepFoot(dt, intent, (x, z) => this.walkBlocked(x, z, T.player.radius));
     if (!p.down && p.y < 1.2) this.collideTraffic();
     const a = this.action();
     if (a && intent.action) {

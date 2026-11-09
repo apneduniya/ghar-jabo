@@ -189,3 +189,15 @@ export const streetAds = {
   booth: ['IEM-ISH PUBLIC SCHOOL', 'Admission open. Seats: fewer than on the bus.', '#3b3f9a', '#ffffff'],
   kiosk: ['DRIVE SLOW', 'Your family is waiting. So is the signal.', '#1f5f9a', '#ffffff'],
 } as const;
+
+/** Signs on the elevated north (parody brands only). */
+export const northSigns = {
+  gantry: '← NEWTOWN  ·  WELCOME TO NABADIGANTA',
+  sectorV: 'SALT LAKE SECTOR V',
+  sectorVBn: 'সল্টলেক সেক্টর V · SALT LAKE SECTOR V',
+  bank: 'BANDH-ON BANK',
+  bankLine: 'Open every day except bandh days',
+  itCentre: 'आईटी सेंटर · IT CENTRE',
+  itCentreBn: 'আইটি সেন্টার',
+  gate: 'METRO · GATE A',
+};
