@@ -14,6 +14,7 @@ import type { Run } from './run';
 import { Traffic, type Vehicle } from './traffic';
 import { Crowd } from './crowd';
 import { BUS_REAR_DOOR } from './vehicles';
+import { layoutStreet, type StreetLayout } from './streetlayout';
 
 export type Action = { kind: 'hop'; bus: Vehicle } | { kind: 'bike'; captain: Vehicle } | null;
 
@@ -23,6 +24,8 @@ export class World {
   readonly grid: BuildingGrid;
   readonly water: WaterMask;
   readonly crowd: Crowd;
+  /** Surveyed street life: stall rows, furniture, compound walls, medians (and their collision). */
+  readonly street: StreetLayout;
   readonly player = new Player();
   readonly events = new Events();
   t = 0;
@@ -38,6 +41,7 @@ export class World {
     this.traffic = new Traffic(map, this.graph, rng);
     this.grid = new BuildingGrid(map.buildings.map((b) => b.p));
     this.water = new WaterMask(map.water ?? [], map.roads);
+    this.street = layoutStreet(map, this.grid);
     this.player.x = start.x;
     this.player.z = start.z;
     this.traffic.populate(start.x, start.z);
@@ -53,7 +57,7 @@ export class World {
     for (let r = 0; r < 30; r += 1.5)
       for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
         const px = x + Math.cos(a) * r, pz = z + Math.sin(a) * r;
-        if (!this.grid.blocked(px, pz, 0.8)) return { x: px, z: pz };
+        if (!this.grid.blocked(px, pz, 0.8) && !this.street.blocks.blocked(px, pz, 0.8)) return { x: px, z: pz };
       }
     return { x, z };
   }
@@ -114,7 +118,8 @@ export class World {
   private stepFoot(dt: number, intent: Intent) {
     const p = this.player;
     p.slow = floods.some((f) => Math.hypot(f.x - p.x, f.z - p.z) < f.r) ? T.player.floodSlow : 1;
-    p.stepFoot(dt, intent, (x, z) => this.grid.blocked(x, z, T.player.radius) || this.water.blocked(x, z, T.player.radius));
+    p.stepFoot(dt, intent, (x, z) => this.grid.blocked(x, z, T.player.radius) || this.water.blocked(x, z, T.player.radius) ||
+      this.street.blocks.blocked(x, z, T.player.radius));
     if (!p.down && p.y < 1.2) this.collideTraffic();
     const a = this.action();
     if (a && intent.action) {

@@ -67,11 +67,12 @@ export function pavers() {
   });
 }
 
-/** Yellow-and-black kerb stripes. */
+/** Kerb blocks painted dark navy and white (the Kolkata standard, SOUTH survey: every kerb in the area). */
 export function kerbStripes() {
   return canvasTex(64, 16, (g) => {
-    g.fillStyle = '#f2c230'; g.fillRect(0, 0, 32, 16);
-    g.fillStyle = '#1d1d1d'; g.fillRect(32, 0, 32, 16);
+    g.fillStyle = '#f1efe8'; g.fillRect(0, 0, 32, 16);
+    g.fillStyle = '#1f3a8a'; g.fillRect(32, 0, 32, 16);
+    g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(31, 0, 2, 16); g.fillRect(63, 0, 1, 16);
   });
 }
 

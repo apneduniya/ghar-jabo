@@ -47,23 +47,6 @@ function gateSpot(world: World) {
   return { ...spot, road: best, nx, nz };
 }
 
-function buildGate(scene: THREE.Object3D, x: number, z: number, along: { dx: number; dz: number }, nx: number, nz: number) {
-  const mat = new THREE.MeshLambertMaterial({ color: 0xb04a3a });
-  for (const s of [-3.2, 3.2]) {
-    const m = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.4, 0.8), mat);
-    m.position.set(x + along.dx * s, 2.2, z + along.dz * s);
-    scene.add(m);
-  }
-  const beam = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.8, 0.8), mat);
-  beam.position.set(x, 4.6, z);
-  beam.rotation.y = -Math.atan2(along.dz, along.dx);
-  scene.add(beam);
-  const board = sign('COLLEGE GATE', 6.4, 0.7, '#f3e9d2', '#7a2a1f');
-  board.position.set(x - nx * 0.45, 4.6, z - nz * 0.45);
-  board.rotation.y = Math.atan2(-nx, -nz);
-  scene.add(board);
-}
-
 /** A vertical sky gradient as the scene background (cheaper than a sky dome). */
 export function sectorv(): Scene {
   const run = game.run;
@@ -85,17 +68,13 @@ export function sectorv(): Scene {
   world.player.z = gate.z;
   // Everything static that stands on the map goes in `dressing`, merged into a few draw calls below.
   const dressing = new THREE.Group();
-  buildProps(dressing, map, world.grid, world.metroEntrance);
+  buildProps(dressing, map, world);
   const walkers = new Walkers(scene, world.crowd);
-  buildGate(dressing, gate.road.x + gate.nx * (gate.road.w / 2 + 2.8), gate.road.z + gate.nz * (gate.road.w / 2 + 2.8), gate.road, gate.nx, gate.nz);
 
   const playerObj = playerPerson();
   scene.add(playerObj);
 
-  // Landmark boards.
-  const pwh = sign('PWH TOWER', 10, 1.4, '#22324a');
-  pwh.position.set(map.pois.pwc[0], 14, map.pois.pwc[1]);
-  dressing.add(pwh);
+  // Landmark boards. (PwC is a low building: its small "pwh" sign is on the parapet, see world/furniture.ts.)
   const seenStops = new Set<string>();
   for (const s of map.stops) {
     if (seenStops.has(s.n)) continue;
@@ -191,7 +170,7 @@ export function sectorv(): Scene {
     scene, camera,
     enter() {
       resize(camera, 55, 72);
-      game.debug = { world, map, yaw: () => yaw };
+      game.debug = { world, map, yaw: () => yaw, setYaw: (v: number) => { yaw = v; camReady = false; } };
       layer = sceneLayer();
       if (attracting) {
         showHud(false);

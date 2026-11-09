@@ -177,3 +177,15 @@ export function rankTitle(run: Run): string {
   if (run.ending === 'home-early') return 'Sector V Survivor';
   return 'Daily Passenger';
 }
+
+/** University standees along the TIU railing (SOUTH survey §1: "Keynote Speaker", "Tutorial session"). */
+export const standees = ['KEYNOTE SPEAKER · AI FOR CHAI', 'TUTORIAL SESSION · ROOM 404', 'ADMISSIONS OPEN 2026', 'TECH FEST · HACK THE BUS'];
+
+/** Parody ad boards at surveyed spots: [brand, punchline, background, text colour]. */
+export const streetAds = {
+  island: ['JATRI SATHI-ISH', 'Fair ride. Fair price. Fair chance.', '#f2c230', '#1b1b1b'],
+  st13: ['MISHTI MOBILE', 'Unlimited data, limited signal in Sector V', '#e2402c', '#ffffff'],
+  shelter: ['SHUBHO DIWALI SALE', 'Everything 50% off. Except the bus fare.', '#8e2a6b', '#ffe680'],
+  booth: ['IEM-ISH PUBLIC SCHOOL', 'Admission open. Seats: fewer than on the bus.', '#3b3f9a', '#ffffff'],
+  kiosk: ['DRIVE SLOW', 'Your family is waiting. So is the signal.', '#1f5f9a', '#ffffff'],
+} as const;

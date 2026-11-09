@@ -1,11 +1,13 @@
 // Builds the real Sector V streets from src/content/maps/sectorv.json (OpenStreetMap, ODbL):
-// textured asphalt, paver footpaths, yellow-black kerbs, lane markings, the Keshtopur canal and parks,
+// textured asphalt, paver footpaths, blue-and-white kerbs, raised medians, lane markings, the canal and parks,
 // Kolkata buildings, the flyover and the Green Line. Static, and merged into a handful of draw calls.
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import mapData from '../../content/maps/sectorv.json';
-import type { MapData, Pt } from '../../sim/mapdata';
+import type { MapData, Pt, Road } from '../../sim/mapdata';
+import { clearance, medians, medianStyle } from '../../sim/streetlife';
+import { NO_SHOPS } from '../../content/streetlife';
 import { asphalt, kerbStripes, pavers } from './textures';
 import { buildBuildings } from './buildings';
 import { buildFrontage } from './frontage';
@@ -54,25 +56,66 @@ function ribbon(p: Pt[], w: number, color: THREE.Color, heightAt: (i: number) =>
   return g;
 }
 
-/** A low vertical strip along a road edge (the kerb), textured with yellow-black stripes. */
-function kerb(p: Pt[], offset: number, heightAt: (i: number) => number) {
+/**
+ * A low vertical strip along a road edge (the kerb), textured with blue-and-white blocks. Pieces whose outside
+ * is another carriageway are left out: no kerb across a junction mouth or between a divided road's two halves.
+ */
+function kerb(p: Pt[], offset: number, heightAt: (i: number) => number, roads: Road[]) {
   const pos: number[] = [], uv: number[] = [], nor: number[] = [];
   const L = cumLen(p);
+  const side = Math.sign(offset);
   for (let i = 1; i < p.length; i++) {
     const [ax, az] = p[i - 1], [bx, bz] = p[i];
     const len = Math.hypot(bx - ax, bz - az) || 1;
-    const nx = (bz - az) / len * offset, nz = -(bx - ax) / len * offset;
+    const ux = (bx - ax) / len, uz = (bz - az) / len, nx = uz * offset, nz = -ux * offset;
     const y0 = heightAt(i - 1), y1 = heightAt(i);
-    const A = [ax + nx, az + nz], B = [bx + nx, bz + nz];
-    const u0 = L[i - 1] / 1.2, u1 = L[i] / 1.2;
-    const quad = [[A[0], y0, A[1], u0, 0], [B[0], y1, B[1], u1, 0], [B[0], y1 + 0.28, B[1], u1, 1], [A[0], y0, A[1], u0, 0], [B[0], y1 + 0.28, B[1], u1, 1], [A[0], y0 + 0.28, A[1], u0, 1]];
-    for (const q of quad) { pos.push(q[0], q[1], q[2]); uv.push(q[3], q[4]); nor.push(nx / Math.abs(offset), 0, nz / Math.abs(offset)); }
+    const n = Math.max(1, Math.ceil(len / 3));
+    for (let k = 0; k < n; k++) {
+      const t0 = (k / n) * len, t1 = ((k + 1) / n) * len;
+      const mx = ax + ux * (t0 + t1) / 2 + nx + uz * side * 0.6, mz = az + uz * (t0 + t1) / 2 + nz - ux * side * 0.6;
+      if (clearance(roads, mx, mz) < 0) continue;
+      kerbQuad(pos, uv, nor, [ax + ux * t0 + nx, az + uz * t0 + nz], [ax + ux * t1 + nx, az + uz * t1 + nz], y0, y1, (L[i - 1] + t0) / 1.2, (L[i - 1] + t1) / 1.2, [nx / Math.abs(offset), nz / Math.abs(offset)]);
+    }
   }
+  return kerbGeo(pos, uv, nor);
+}
+
+function kerbQuad(pos: number[], uv: number[], nor: number[], A: number[], B: number[], y0: number, y1: number, u0: number, u1: number, n: number[]) {
+  const quad = [[A[0], y0, A[1], u0, 0], [B[0], y1, B[1], u1, 0], [B[0], y1 + 0.28, B[1], u1, 1], [A[0], y0, A[1], u0, 0], [B[0], y1 + 0.28, B[1], u1, 1], [A[0], y0 + 0.28, A[1], u0, 1]];
+  for (const q of quad) { pos.push(q[0], q[1], q[2]); uv.push(q[3], q[4]); nor.push(n[0], 0, n[1]); }
+}
+
+function kerbGeo(pos: number[], uv: number[], nor: number[]) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   return g;
+}
+
+/** Raised medians between the halves of divided roads: kerbed sides and a grass or earth top. */
+function medianGeometry(roads: Road[]) {
+  const pos: number[] = [], uv: number[] = [], nor: number[] = [];
+  const tops: THREE.BufferGeometry[] = [];
+  medians(roads).forEach((m, i) => {
+    const { kind, width } = medianStyle(m);
+    const hw = width / 2, nx = m.dz, nz = -m.dx, h = m.len / 2 + 0.02;
+    for (const s of [1, -1]) {
+      const A = [m.x - m.dx * h + nx * hw * s, m.z - m.dz * h + nz * hw * s], B = [m.x + m.dx * h + nx * hw * s, m.z + m.dz * h + nz * hw * s];
+      kerbQuad(pos, uv, nor, A, B, 0.03, 0.03, i * m.len / 1.2, (i + 1) * m.len / 1.2, [nx * s, nz * s]);
+    }
+    const top = new THREE.PlaneGeometry(m.len + 0.04, width).toNonIndexed();
+    top.rotateX(-Math.PI / 2);
+    top.rotateY(-Math.atan2(m.dz, m.dx));
+    top.translate(m.x, 0.31, m.z);
+    top.deleteAttribute('uv');
+    const c = new THREE.Color(kind === 'pipe' || kind === 'barrier' ? 0x7d6f58 : kind === 'island' ? 0x9a958c : 0x5f7f3f);
+    const n = top.attributes.position.count, col = new Float32Array(n * 3);
+    for (let k = 0; k < n; k++) col.set([c.r, c.g, c.b], k * 3);
+    top.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    tops.push(top);
+  });
+  return { kerbs: kerbGeo(pos, uv, nor), tops };
 }
 
 function flatPoly(p: Pt[], y: number, color: THREE.Color) {
@@ -107,7 +150,7 @@ export function buildCityMap(): BuiltMap {
     if (main && !r.b) {
       const fp = ribbon(r.p, r.w + 5, pathCol, () => 0.03, 1 / 2.2);
       if (fp) paths.push(fp);
-      for (const side of [1, -1]) kerbs.push(kerb(r.p, (r.w / 2) * side, () => 0.03));
+      for (const side of [1, -1]) kerbs.push(kerb(r.p, (r.w / 2) * side, () => 0.03, map.roads));
     }
     // Lane markings: dashed white centre line on two-way roads, solid yellow edge on one-way carriageways.
     if (main && r.w >= 5) {
@@ -133,6 +176,10 @@ export function buildCityMap(): BuiltMap {
     }
   }
 
+  const med = medianGeometry(map.roads);
+  kerbs.push(med.kerbs);
+  marks.push(...med.tops);
+
   // Water and parks.
   const flats: THREE.BufferGeometry[] = [];
   for (const g of map.green ?? []) flats.push(flatPoly(g, 0.012, new THREE.Color(0x6d8f4e)));
@@ -153,7 +200,12 @@ export function buildCityMap(): BuiltMap {
     const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / L2));
     return Math.hypot(ax + dx * t - x, az + dz * t - z) < w / 2 + 9;
   });
-  const b = buildBuildings(map.buildings, streetSide);
+  // No shop signs on the campus walls and offices the surveys walked past (content/streetlife.ts NO_SHOPS).
+  const shopsOk = (x: number, z: number) => !NO_SHOPS.some(({ a, b, r }) => {
+    const dx = b[0] - a[0], dz = b[1] - a[1], t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / (dx * dx + dz * dz)));
+    return Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z) < r;
+  });
+  const b = buildBuildings(map.buildings, streetSide, shopsOk);
   const frontage = buildFrontage(b.bays);
   group.add(b.group, frontage.group);
 

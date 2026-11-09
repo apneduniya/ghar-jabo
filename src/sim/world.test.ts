@@ -7,6 +7,7 @@ import { Run } from './run';
 import { Traffic } from './traffic';
 import { BUS_REAR_DOOR } from './vehicles';
 import { World } from './world';
+import { clearance } from './streetlife';
 
 const map = mapJson as unknown as MapData;
 
@@ -164,5 +165,23 @@ describe('pedestrians', () => {
     expect(ev.some((e) => e.type === 'toast' && e.title === 'DHAKKA!')).toBe(true);
     expect(ped.stunned).toBeGreaterThan(0);
     expect(w.run.stats.bumped).toBe(1);
+  });
+});
+
+describe('street level', () => {
+  it('pedestrians start on footpaths, never on a carriageway (not the far side of a divided road)', () => {
+    const w = makeWorld();
+    for (const p of w.crowd.walkers) expect(clearance(map.roads, p.x, p.z)).toBeGreaterThan(-0.01);
+  });
+
+  it('a compound wall stops you walking through it', () => {
+    const w = makeWorld();
+    const wall = w.street.walls.find((x) => x.style === 'pastel')!;
+    const cx = (wall.ax + wall.bx) / 2, cz = (wall.az + wall.bz) / 2;
+    // Start on the street side and walk straight at the wall, into the compound.
+    w.player.x = cx + wall.nx * 1.5; w.player.z = cz + wall.nz * 1.5;
+    steps(w, 120, () => ({ ...NO_INTENT, moveX: -wall.nx, moveZ: -wall.nz }));
+    const side = (w.player.x - cx) * wall.nx + (w.player.z - cz) * wall.nz;
+    expect(side).toBeGreaterThan(0);
   });
 });

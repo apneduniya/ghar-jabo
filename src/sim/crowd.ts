@@ -4,6 +4,7 @@
 import type { MapData } from './mapdata';
 import type { BuildingGrid } from './collide';
 import type { Rng } from './rng';
+import { clearance } from './streetlife';
 
 export interface Walker {
   ax: number; az: number; bx: number; bz: number;
@@ -34,7 +35,9 @@ export class Crowd {
         for (const s of [1, -1]) {
           const off = r.w / 2 + 1.6, nx = (bz - az) / L * off * s, nz = -(bx - ax) / L * off * s;
           const seg: [number, number, number, number] = [ax + nx, az + nz, bx + nx, bz + nz];
-          if (!grid.blocked((seg[0] + seg[2]) / 2, (seg[1] + seg[3]) / 2, 0.6)) segs.push(seg);
+          // Not the inner side of a divided road (that is the other carriageway) or across a junction.
+          const onRoad = [0, 0.5, 1].some((t) => clearance(map.roads, seg[0] + (seg[2] - seg[0]) * t, seg[1] + (seg[3] - seg[1]) * t) < 0);
+          if (!onRoad && !grid.blocked((seg[0] + seg[2]) / 2, (seg[1] + seg[3]) / 2, 0.6)) segs.push(seg);
         }
       }
     }

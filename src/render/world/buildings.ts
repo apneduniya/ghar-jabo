@@ -96,7 +96,7 @@ function edges(ring: Pt[], hole: boolean, each: (ax: number, az: number, bx: num
  * `streetSide(x, z)` says whether a wall midpoint faces a main road; only those house walls get balconies,
  * awnings and signboards (the ones the player actually sees), which keeps the vertex count down.
  */
-export function buildBuildings(list: Building[], streetSide: (x: number, z: number) => boolean) {
+export function buildBuildings(list: Building[], streetSide: (x: number, z: number) => boolean, shopsOk: (x: number, z: number) => boolean = () => true) {
   const bays: Bay[] = [];
   const walls: Record<Skin, Wall> = { resi: new Wall(), old: new Wall(), office: new Wall(), clad: new Wall(), block: new Wall(), shop: new Wall() };
   const trim = new Wall(); // parapets and rooftop boxes: untextured, merged with the roofs
@@ -142,7 +142,7 @@ export function buildBuildings(list: Building[], streetSide: (x: number, z: numb
     const skin: Skin = style === 'shop' ? 'shop' : style === 'low' || k % 5 === 0 ? 'old' : 'resi';
     const tint = pick(skin);
     const shopTint = new THREE.Color(SHOP_TINTS[k % SHOP_TINTS.length]);
-    const hasShops = skin !== 'shop' && b.h > 6;
+    const hasShops = skin !== 'shop' && b.h > 6 && shopsOk(...mean(b.p));
     for (const [ring, hole] of rings) {
       let u = 0;
       edges(ring, hole, (ax, az, bx, bz, L, nx, nz) => {
