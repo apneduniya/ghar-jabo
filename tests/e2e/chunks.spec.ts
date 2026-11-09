@@ -1,4 +1,4 @@
-// The streamed world with the debug fixture (`?fixture=1`): chunks load and unload around the player, the whole
+// The real streamed world (free roam): chunks load and unload around the player, the whole
 // frame stays within the draw-call budget anywhere (including at the Sector V edge), and walking across chunk
 // borders meshes within the time slice. Frame times are only asserted on a real GPU (GJ_REAL_GPU=1, the Mac).
 import { expect, test, type Page } from '@playwright/test';
@@ -8,8 +8,8 @@ const DRAW_CALL_BUDGET = 60;
 async function boot(page: Page) {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/?fixture=1&seed=7');
-  await page.locator('.play-btn').first().click();
+  await page.goto('/?seed=7');
+  await page.locator('.play-btn.free').click();
   await page.waitForFunction(() => (window as any).gj?.debug?.streamed && (window as any).gjr?.info.render.calls > 0);
   return errors;
 }
@@ -30,7 +30,7 @@ async function teleport(page: Page, x: number, z: number) {
   }, [x, z]);
 }
 
-test('fixture world streams around the player within the draw-call budget', async ({ page }) => {
+test('the streamed world streams around the player within the draw-call budget', async ({ page }) => {
   test.setTimeout(240_000);
   const errors = await boot(page);
   const spots: [string, number, number, boolean][] = [

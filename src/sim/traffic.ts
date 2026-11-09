@@ -47,6 +47,10 @@ export interface Vehicle {
   hangers?: number;
   depotAt?: number;
   stopped?: number;
+  /** Seconds left being honked along by a bus behind (it speeds up to get out of the way). */
+  honked?: number;
+  /** The speed the honking bus wants. */
+  honkSpeed?: number;
   captain?: Captain;
   gone?: boolean;
 }
@@ -148,12 +152,18 @@ export class Traffic {
       this.busT[d] = T.bus.every * this.rng.range(0.7, 1.3);
       ps ??= this.busRoute.project(px, pz).s;
       const s = d === 0 ? Math.max(0, ps - tr.window + 20) : Math.min(this.busRoute.length, ps + tr.window - 20);
-      if (this.busRoute.project(px, pz).dist < tr.window) this.spawnBus(d === 0 ? 1 : -1, s);
+      // Never more than a few buses per direction in the window, even if they're all stuck in a jam.
+      const dir = d === 0 ? 1 : -1;
+      const buses = this.vehicles.filter((v) => v.routeDir === dir).length;
+      if (buses < T.bus.maxPerDir && this.busRoute.project(px, pz).dist < tr.window) this.spawnBus(dir, s);
     }
 
     for (const v of this.vehicles) {
-      let target = v.base * (1 - jam * tr.jamSlow[v.kind]);
+      // Beyond the Sector V square the roads open up a little (and the timed world is squeezed anyway).
+      const open = Math.abs(v.x) > 360 || Math.abs(v.z) > 360 ? tr.openRoad : 1;
+      let target = v.base * open * (1 - jam * tr.jamSlow[v.kind]);
       if (v.routeDir && this.routeStops.some((st) => Math.abs(st.s - v.s) < T.bus.stopRadius)) target = Math.min(target, T.bus.stopSlow);
+      if (v.honked && v.honked > 0) { v.honked -= dt; target = Math.max(target, v.honkSpeed ?? target); }
       if (v.stopped && v.stopped > 0) { v.stopped -= dt; target = 0; }
       if (v.captain) target = captainSpeed(v, target, Math.hypot(v.captain.tx - v.x, v.captain.tz - v.z));
       // Keep a gap to whoever is ahead in the same lane.
@@ -163,7 +173,20 @@ export class Traffic {
           const dx = o.x - v.x, dz = o.z - v.z;
           const ahead = dx * Math.cos(v.heading) + dz * Math.sin(v.heading);
           const side = Math.abs(-dx * Math.sin(v.heading) + dz * Math.cos(v.heading));
-          if (ahead > 0 && ahead < (o.len + v.len) / 2 + tr.followGap && side < (o.width + v.width) / 2) target = Math.min(target, o.speed * 0.8);
+          // Only queue behind traffic going our way: waiting on crossing or oncoming vehicles at a junction
+          // deadlocks (each waits for the other forever).
+          if (Math.cos(o.heading - v.heading) < 0.5) continue;
+          if (!(ahead > 0 && ahead < (o.len + v.len) / 2 + tr.followGap && side < (o.width + v.width) / 2)) continue;
+          // A Kolkata bus doesn't queue behind a toto: it leans on the horn and the toto gets out of the way.
+          // The honk passes up the queue: whoever is being hurried along hurries the one in front too.
+          const pushing = v.kind === 'bus' || (v.honked ?? 0) > 0;
+          if (pushing && o.kind !== 'bus' && !o.captain && !pinned.has(o.id)) {
+            const was = (o.honked ?? 0) > 0;
+            o.honked = T.bus.honkFor;
+            o.honkSpeed = Math.max(was ? (o.honkSpeed ?? 0) : 0, v.kind === 'bus' ? target : (v.honkSpeed ?? target));
+            if (ahead > (o.len + v.len) / 2 + 0.6) continue;
+          }
+          target = Math.min(target, o.speed * 0.8);
         }
       }
       v.speed += (target - v.speed) * Math.min(1, dt * 2.5);

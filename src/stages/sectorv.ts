@@ -52,6 +52,12 @@ function gateSpot(world: World) {
 }
 
 /** A vertical sky gradient as the scene background (cheaper than a sky dome). */
+const AREA_NAMES: Record<string, string> = {
+  sectorv: 'SALT LAKE SECTOR V', saltlake: 'SALT LAKE', bypass: 'EM BYPASS', chingrighata: 'CHINGRIGHATA',
+  ultadanga: 'ULTADANGA', kankurgachi: 'KANKURGACHI', phoolbagan: 'PHOOLBAGAN', beliaghata: 'BELIAGHATA',
+  narkeldanga: 'NARKELDANGA', maniktala: 'MANIKTALA', sealdah: 'SEALDAH', generic: 'KOLKATA',
+};
+
 export function sectorv(): Scene {
   const run = game.run;
   const scene = new THREE.Scene();
@@ -104,7 +110,7 @@ export function sectorv(): Scene {
   // fixture behind `?fixture=1`.
   let streamed: StreamedWorld | null = null;
   let exited = false;
-  const chunks = (world as unknown as { chunks?: ChunkSource }).chunks;
+  const chunks: ChunkSource | undefined = world.streamed?.store;
   const attach = (src: ChunkSource, driven: ConstructorParameters<typeof StreamedWorld>[3] = null) => {
     streamed = new StreamedWorld(scene, src, sectorGroup, driven);
     minimap.attachWorld(src);
@@ -117,7 +123,10 @@ export function sectorv(): Scene {
   let layer: HTMLElement;
   let actionBtn: HTMLButtonElement;
   const minimap = new Minimap(map);
-  if (chunks) attach(chunks);
+  if (chunks) {
+    attach(chunks);
+    (streamed as StreamedWorld | null)!.pump = (x, z) => world.streamed?.stream(x, z, () => true);
+  }
   else void fixtureSource().then((fx) => { if (fx && !exited) attach(fx, fx); });
   const exit = map.busPath[map.busPath.length - 1];
   let phoneBtn: HTMLButtonElement;
@@ -170,17 +179,31 @@ export function sectorv(): Scene {
     }
   }
 
+  // Where you are, for the HUD: a bus stop inside Sector V; outside it, the nearest named landmark of the streamed
+  // world, else the area (Salt Lake, Beliaghata...). Landmark positions are warped once for this mode.
+  const sw = world.streamed;
+  const marks = sw ? sw.net.landmarks.filter((l) => l.kind !== 'generic' || l.name.length < 28).map((l) => {
+    const [lx, lz] = sw.store.warp.toGame([l.x, l.z]);
+    return { x: lx, z: lz, n: l.name.toUpperCase() };
+  }) : [];
   function placeName(x: number, z: number) {
-    let best = 'PWH MORE', bd = 60;
+    const inside = Math.abs(x) <= 360 && Math.abs(z) <= 360;
+    let best = inside ? 'PWH MORE' : '', bd = inside ? 60 : 90;
     for (const s of map.stops) { const d = Math.hypot(s.p[0] - x, s.p[1] - z); if (d < bd) { bd = d; best = s.n.toUpperCase(); } }
-    return best;
+    if (inside || !sw) return best;
+    for (const m of marks) { const d = Math.hypot(m.x - x, m.z - z); if (d < bd) { bd = d; best = m.n; } }
+    if (best) return best;
+    const [rx, rz] = sw.store.warp.toReal([x, z]);
+    let area = sw.net.areas[0], ad = Infinity;
+    for (const a of sw.net.areas) { const d = Math.hypot(a.x - rx, a.z - rz); if (d < ad) { ad = d; area = a; } }
+    return AREA_NAMES[area?.kind ?? 'generic'];
   }
 
   return {
     scene, camera,
     enter() {
       resize(camera, 55, 72);
-      game.debug = { world, map, chunks: world.streamed?.store, yaw: () => yaw, setYaw: (v: number) => { yaw = v; camReady = false; }, look: (v: number) => { yaw = v; camReady = false; } };
+      game.debug = { world, map, chunks: world.streamed?.store, streamed, yaw: () => yaw, setYaw: (v: number) => { yaw = v; camReady = false; }, look: (v: number) => { yaw = v; camReady = false; } };
       layer = sceneLayer();
       if (attracting) {
         showHud(false);

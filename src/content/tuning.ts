@@ -19,12 +19,13 @@ export const T = {
     baseCount: 18,
     jamExtra: 16, // more vehicles at peak jam
     laneOffset: 0.28, // fraction of road width from the centre line to a lane (keep left)
+    openRoad: 1.3, // speed factor beyond the Sector V square
     followGap: 1.6,
     spawnEvery: [0.25, 0.6] as [number, number],
     /** Share of each kind when spawning (buses come from their route, not from here). */
     mix: { taxi: 0.3, car: 0.32, auto: 0.18, toto: 0.06, bike: 0.14 },
     speed: { taxi: [10, 13], car: [11, 14], auto: [7, 9], toto: [4.5, 6], bike: [12, 15], bus: [11, 14] } as Record<string, [number, number]>,
-    jamSlow: { taxi: 0.85, car: 0.85, auto: 0.7, toto: 0.5, bike: 0.45, bus: 0.4 } as Record<string, number>,
+    jamSlow: { taxi: 0.85, car: 0.85, auto: 0.7, toto: 0.5, bike: 0.45, bus: 0.28 } as Record<string, number>,
     hitSpeed: 3.5, // faster than this knocks you down
   },
 
@@ -41,6 +42,8 @@ export const T = {
     damping: 0.96,
     bumpEvery: [2.5, 4.5] as [number, number],
     bumpKick: 1.6,
+    honkFor: 1.5, // seconds a slow vehicle hurries along after a bus honks behind it
+    maxPerDir: 4, // buses per direction within the traffic window
     minStopGap: 70, // beyond Sector V the bus slows for one real stop per this many units of route
   },
 

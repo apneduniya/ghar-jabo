@@ -1,4 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// The real landmark models import the WebGL renderer (gfx.ts), which needs a browser. These tests cover chunk
+// meshes only; landmarks have their own tests.
+vi.mock('./landmarks', () => ({ structuresForChunk: () => null, prepareStructures: () => undefined }));
 import * as THREE from 'three';
 import { CHUNK, type Chunk, type ChunkSource } from '../../sim/gen/types';
 import { ChunkView, chunkDist, chunkSteps } from './chunks';

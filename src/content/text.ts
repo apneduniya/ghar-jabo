@@ -133,7 +133,9 @@ export function headline(run: Run): string {
     case 'home-next-day':
       return `Student leaves Sector V at 6:30 PM, reaches home on Day ${run.day}; Ma has filed a missing report`;
     case 'walked-home':
-      return 'Student runs out of money, walks to Sealdah, calls it "cardio"';
+      return run.money < 20
+        ? 'Student runs out of money, walks to Sealdah, calls it "cardio"'
+        : `Student walks all the way to Sealdah with ₹${run.money} in pocket; buses "too full", says student`;
     default:
       if (s.falls >= 2) return `Student falls off bus ${s.falls} times, reaches home anyway`;
       if (s.busHops >= 3) return `Student changes ${s.busHops} buses in one evening, calls it "a system"`;
@@ -142,7 +144,7 @@ export function headline(run: Run): string {
       if (s.footboardStops >= 3) return `Commuter hangs off footboard for ${s.footboardStops} stops, calls it "cardio"`;
       if (s.cancels >= 3) return `Student survives ${s.cancels} Rapi-Nah cancellations, captain cites "jam at Webel"`;
       if (s.missedTrains >= 2) return `Student misses ${s.missedTrains} trains, catches one out of spite`;
-      if (run.ending === 'home-early') return 'Student reaches home before 8 PM; neighbours suspect time travel';
+      if (run.ending === 'home-early') return 'Student reaches home before 9 PM; neighbours suspect time travel';
       if (run.ending === 'home-late') return 'Student reaches home; bhaat now officially thanda';
       return 'Student reaches home from Sector V; family unsure how';
   }

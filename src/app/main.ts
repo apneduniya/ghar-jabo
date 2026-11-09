@@ -118,6 +118,11 @@ document.body.appendChild(loading);
 loadAssets().then(() => {
   useMap();
   loading.remove();
+  if (new URLSearchParams(location.search).has('landmarks')) {
+    // Dev view of the streamed world's landmarks (task 020), loaded on demand: not part of the game's entry chunk.
+    void import('../render/world/landmarks/debug').then((m) => m.run());
+    return;
+  }
   game.attract = true;
   game.newRun();
   requestAnimationFrame(frame);

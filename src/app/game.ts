@@ -59,8 +59,9 @@ class Game {
     if (mode === 'walk' && r.stats.busHops === 0 && !r.stats.modesTried.length) r.ending = 'walked-home';
     else if (mode === 'rapinah') r.ending = 'rapinah-miracle';
     else if (r.day > 1) r.ending = 'home-next-day';
-    else if (r.elapsed < 90) r.ending = 'home-early';
-    else if (r.elapsed < 180) r.ending = 'home';
+    // A good bus ride from Sector V takes about 190 game minutes (task 020, src/sim/ride.test.ts).
+    else if (r.elapsed < 150) r.ending = 'home-early';
+    else if (r.elapsed < 210) r.ending = 'home';
     else r.ending = 'home-late';
     saveRecord(r);
     this.finish();

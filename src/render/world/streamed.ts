@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import type { ChunkSource } from '../../sim/gen/types';
 import { CHUNK_VIEW } from '../../content/tuning';
 import { ChunkView } from './chunks';
+import { prepareStructures } from './landmarks';
 import { chunkMaterial, type ChunkMaterial } from './chunkmat';
 import { OLD_AREAS, SQUARE } from './chunkground';
 
@@ -28,7 +29,12 @@ export class StreamedWorld {
   readonly view: ChunkView;
   private mat: ChunkMaterial;
 
+  /** Tests only: load every chunk around (x, z) now (the real store streams a slice per frame otherwise). */
+  pump: ((x: number, z: number) => void) | null = null;
+
   constructor(private scene: THREE.Scene, readonly src: ChunkSource, private sectorV: THREE.Object3D, private driven: Driven | null = null) {
+    // Warp the network for the landmark builders once, so the first landmark chunk doesn't do it mid-ride.
+    prepareStructures(src.net, src.warp);
     this.mat = chunkMaterial();
     this.view = new ChunkView(src, { material: this.mat.material, text: this.mat.text, budgetMs: CHUNK_VIEW.budgetMs });
     scene.add(this.view.group);
@@ -49,6 +55,7 @@ export class StreamedWorld {
   /** Tests and screenshots: load and mesh everything around (x, z) right now, ignoring the frame budget. */
   settle(x: number, z: number) {
     for (let i = 0; i < 200; i++) this.driven?.update(x, z);
+    this.pump?.(x, z);
     const far = areaFogFar(this.src, x, z);
     while (this.view.pending) this.view.update(x, z, far, Infinity);
     this.update(x, z);

@@ -94,7 +94,8 @@ export const GEN = {
  * generation `frameMs` of time (work is sliced, so a chunk may take a few frames); `perStep` is whole chunks per
  * call when no clock is given (tests, attract mode).
  */
-export const STREAM = { load: 300, unload: 420, perStep: 1, frameMs: 4 };
+// load must cover the farthest fog (340 inside the Sector V square), or chunks pop in at the edge of view.
+export const STREAM = { load: 400, unload: 520, perStep: 1, frameMs: 4 };
 
 /**
  * Sourced waterlogging spots for puddles (ROUTES §2.7 and §6.9: dated reports name Ultadanga/Hudco, Kankurgachi
