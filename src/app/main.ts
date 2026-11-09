@@ -111,7 +111,12 @@ addEventListener('resize', () => {
 (window as unknown as { gjr: typeof renderer }).gjr = renderer;
 (window as unknown as { gjui: unknown }).gjui = { notify, toast };
 
-// Boot straight into the real map, with the title screen floating over it.
-game.attract = true;
-game.newRun();
-requestAnimationFrame(frame);
+if (new URLSearchParams(location.search).has('landmarks')) {
+  // Dev view of the streamed world's landmarks (task 020), loaded on demand: not part of the game's entry chunk.
+  void import('../render/world/landmarks/debug').then((m) => m.run());
+} else {
+  // Boot straight into the real map, with the title screen floating over it.
+  game.attract = true;
+  game.newRun();
+  requestAnimationFrame(frame);
+}
