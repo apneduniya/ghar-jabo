@@ -190,6 +190,7 @@ export function batchSigns(root: THREE.Object3D): THREE.Mesh | null {
     const img = (mat as THREE.MeshBasicMaterial).map?.image as HTMLCanvasElement | undefined;
     if (Array.isArray(m.material) || !(mat instanceof THREE.MeshBasicMaterial) || !(img instanceof HTMLCanvasElement)) return;
     if (img.width > 1024) return; // atlases themselves (bus text) are left alone
+    if (mat.transparent) return; // light pools and other blended things aren't signs
     found.push({ mesh: m, img, side: mat.side });
   });
   if (found.length < 2) return null;
@@ -213,17 +214,23 @@ export function batchSigns(root: THREE.Object3D): THREE.Mesh | null {
     const s = slots[i];
     g.drawImage(f.img, s.x, s.y, s.w, s.h);
     const geo = (f.mesh.geometry.index ? f.mesh.geometry.toNonIndexed() : f.mesh.geometry.clone());
-    geo.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, f.mesh.matrixWorld));
     const uv = geo.attributes.uv as THREE.BufferAttribute;
     for (let k = 0; k < uv.count; k++) uv.setXY(k, (s.x + uv.getX(k) * s.w) / W, 1 - (s.y + (1 - uv.getY(k)) * s.h) / H);
     for (const name of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv'].includes(name)) geo.deleteAttribute(name);
+    // A flat sign gets a back face that reads the right way round from behind (a double-sided plane
+    // would show mirrored text there). Thick signs (boxes) already have both faces.
+    const flat = f.side === THREE.DoubleSide || f.mesh.geometry.type === 'PlaneGeometry';
+    const back = flat ? geo.clone().rotateY(Math.PI) : null;
+    const world = new THREE.Matrix4().multiplyMatrices(inv, f.mesh.matrixWorld);
+    geo.applyMatrix4(world);
     geos.push(geo);
+    if (back) { back.applyMatrix4(world); geos.push(back); }
     f.mesh.parent?.remove(f.mesh);
   });
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
-  const mesh = new THREE.Mesh(mergeGeometries(geos), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+  const mesh = new THREE.Mesh(mergeGeometries(geos), new THREE.MeshBasicMaterial({ map: tex }));
   root.add(mesh);
   return mesh;
 }

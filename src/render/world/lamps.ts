@@ -89,8 +89,9 @@ export function buildLamps(root: THREE.Object3D, map: MapData, layout: StreetLay
   });
   for (const s of layout.spots) if (s.spot.kind === 'highMast') pools.push([s.x, s.z, 14]);
 
-  const poolGeo = mergeGeometries(pools.map(([x, z, r]) => new THREE.CircleGeometry(r, 14).rotateX(-Math.PI / 2).translate(x, 0.07, z)));
-  const poolMat = fadeInAtNight(new THREE.MeshBasicMaterial({ color: 0xff9a3a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }), 0.24);
+  // Soft radial pools (bright centre fading to nothing), so they read as light on the road, not as sand.
+  const poolGeo = mergeGeometries(pools.map(([x, z, r]) => new THREE.PlaneGeometry(r * 2.2, r * 2.2).rotateX(-Math.PI / 2).translate(x, 0.07, z)));
+  const poolMat = fadeInAtNight(new THREE.MeshBasicMaterial({ map: poolTexture(), color: 0xffa040, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }), 0.55);
   root.add(new THREE.Mesh(poolGeo, poolMat));
   wires(root, map);
   return { lamps: lamps.length };
@@ -130,4 +131,20 @@ function wires(root: THREE.Object3D, map: MapData) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(wire, 3));
   root.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x1c1c1c })));
+}
+
+/** A radial falloff: warm white in the middle, gone at the edge. */
+function poolTexture() {
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = 64;
+  const g = cv.getContext('2d')!;
+  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, 'rgba(255,255,255,1)');
+  grad.addColorStop(0.35, 'rgba(255,255,255,0.55)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
 }

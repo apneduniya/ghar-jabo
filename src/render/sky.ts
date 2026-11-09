@@ -18,12 +18,12 @@ interface Key {
 const KEYS: Key[] = [
   { at: 0, top: '#0b1024', mid: '#1b1d3a', low: '#3b2e44', fog: '#231f33', hemiSky: '#6d7fc0', hemiGround: '#3a2a22', hemi: 0.9, sun: '#9fb4ff', sunI: 0.55, sunElev: 50, night: 1 },
   { at: 5 * 60 + 15, top: '#0e1430', mid: '#262447', low: '#4a3550', fog: '#2b2638', hemiSky: '#7383c2', hemiGround: '#3a2a22', hemi: 0.95, sun: '#9fb4ff', sunI: 0.55, sunElev: 40, night: 1 },
-  { at: 6 * 60, top: '#48609a', mid: '#b49ab4', low: '#f3b183', fog: '#d9a98c', hemiSky: '#c9c6e6', hemiGround: '#5c4a3c', hemi: 1.3, sun: '#ffb27a', sunI: 1.6, sunElev: 6, night: 0.35 },
-  { at: 7 * 60 + 30, top: '#6e9ad6', mid: '#b7cde2', low: '#e6dccb', fog: '#d6d6cf', hemiSky: '#d6e4ff', hemiGround: '#6a5a48', hemi: 1.55, sun: '#fff0d6', sunI: 2.6, sunElev: 30, night: 0 },
-  { at: 12 * 60, top: '#6f9fd8', mid: '#b4cde4', low: '#dfe4e2', fog: '#d4dbde', hemiSky: '#dceaff', hemiGround: '#6e5e4a', hemi: 1.6, sun: '#fff6e8', sunI: 2.9, sunElev: 70, night: 0 },
-  { at: 16 * 60 + 30, top: '#6a94cf', mid: '#bccbdc', low: '#ead8bf', fog: '#dcd2c2', hemiSky: '#d6e2ff', hemiGround: '#6a5a48', hemi: 1.55, sun: '#ffe2b8', sunI: 2.7, sunElev: 28, night: 0 },
+  { at: 6 * 60, top: '#48609a', mid: '#b49ab4', low: '#f3b183', fog: '#d9a98c', hemiSky: '#c9c6e6', hemiGround: '#a39686', hemi: 1.3, sun: '#ffb27a', sunI: 1.6, sunElev: 6, night: 0.35 },
+  { at: 7 * 60 + 30, top: '#6e9ad6', mid: '#b7cde2', low: '#e6dccb', fog: '#d6d6cf', hemiSky: '#d6e4ff', hemiGround: '#a89a8a', hemi: 1.55, sun: '#fff0d6', sunI: 2.6, sunElev: 30, night: 0 },
+  { at: 12 * 60, top: '#6f9fd8', mid: '#b4cde4', low: '#dfe4e2', fog: '#d4dbde', hemiSky: '#dceaff', hemiGround: '#ab9e8e', hemi: 1.6, sun: '#fff6e8', sunI: 2.9, sunElev: 70, night: 0 },
+  { at: 16 * 60 + 30, top: '#6a94cf', mid: '#bccbdc', low: '#ead8bf', fog: '#dcd2c2', hemiSky: '#d6e2ff', hemiGround: '#a89a8a', hemi: 1.55, sun: '#ffe2b8', sunI: 2.7, sunElev: 28, night: 0 },
   // 6:30 PM: the golden dusk the game opens on, kept as it always looked.
-  { at: 18 * 60 + 30, top: '#5f86c2', mid: '#b9a7c4', low: '#f2b27c', fog: '#e8b48a', hemiSky: '#bfd3ff', hemiGround: '#5c4a3c', hemi: 1.5, sun: '#ffc28a', sunI: 2.6, sunElev: 12, night: 0.1 },
+  { at: 18 * 60 + 30, top: '#5f86c2', mid: '#b9a7c4', low: '#f2b27c', fog: '#e8b48a', hemiSky: '#bfd3ff', hemiGround: '#a39686', hemi: 1.5, sun: '#ffc28a', sunI: 2.6, sunElev: 12, night: 0.1 },
   { at: 19 * 60 + 5, top: '#28305e', mid: '#5a4f7a', low: '#c27a6a', fog: '#6e5468', hemiSky: '#8f9ad6', hemiGround: '#43332f', hemi: 1.15, sun: '#ff9a6a', sunI: 0.9, sunElev: 2, night: 0.65 },
   { at: 19 * 60 + 45, top: '#0b1024', mid: '#1b1d3a', low: '#3b2e44', fog: '#231f33', hemiSky: '#6d7fc0', hemiGround: '#3a2a22', hemi: 0.9, sun: '#9fb4ff', sunI: 0.55, sunElev: 50, night: 1 },
 ];
