@@ -1,0 +1,2162 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-11-09T07:30:48Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 252584722,
+  "lat": 22.5679661,
+  "lon": 88.3711047,
+  "tags": {
+    "air_conditioning": "yes",
+    "internet_access": "yes",
+    "internet_access:fee": "no",
+    "name": "Sealdah",
+    "name:bn": "শিয়ালদহ",
+    "name:en": "Sealdah",
+    "name:hi": "सियालदाह",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "owner": "Indian Railways",
+    "public_transport": "station",
+    "railway": "station",
+    "ref": "SDAH",
+    "train": "yes",
+    "wheelchair": "yes",
+    "wikidata": "Q3347406",
+    "wikipedia": "en:Sealdah railway station"
+  }
+},
+{
+  "type": "node",
+  "id": 9884790401,
+  "lat": 22.5666059,
+  "lon": 88.3697815,
+  "tags": {
+    "name": "Sealdah",
+    "name:bn": "শিয়ালদহ মেট্রো স্টেশন",
+    "name:en": "Sealdah",
+    "name:hi": "सियालदाह",
+    "network": "Kolkata Metro",
+    "network:wikidata": "Q1048849",
+    "public_transport": "station",
+    "railway": "station",
+    "ref": "SDHM",
+    "station": "subway",
+    "subway": "yes",
+    "wikidata": "Q30278708",
+    "wikipedia": "en:Sealdah metro station"
+  }
+},
+{
+  "type": "node",
+  "id": 11256960241,
+  "lat": 22.5662283,
+  "lon": 88.3682016,
+  "tags": {
+    "amenity": "marketplace",
+    "check_date": "2026-03-22",
+    "name": "Kole Market"
+  }
+},
+{
+  "type": "node",
+  "id": 13291177195,
+  "lat": 22.5664138,
+  "lon": 88.3714259,
+  "tags": {
+    "name": "Sealdah",
+    "railway": "subway_entrance",
+    "ref": "C"
+  }
+},
+{
+  "type": "way",
+  "id": 51766037,
+  "bounds": {
+    "minlat": 22.5653776,
+    "minlon": 88.3693872,
+    "maxlat": 22.5656162,
+    "maxlon": 88.3699941
+  },
+  "geometry": [
+    { "lat": 22.5653776, "lon": 88.3699941 },
+    { "lat": 22.5653961, "lon": 88.3699020 },
+    { "lat": 22.5654104, "lon": 88.3698686 },
+    { "lat": 22.5656162, "lon": 88.3693872 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "layer": "1",
+    "name": "Parikshit Roy Lane",
+    "oneway": "yes",
+    "source": "Bing;Yahoo hires",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 51766048,
+  "bounds": {
+    "minlat": 22.5653776,
+    "minlon": 88.3698686,
+    "maxlat": 22.5671869,
+    "maxlon": 88.3708157
+  },
+  "geometry": [
+    { "lat": 22.5654104, "lon": 88.3698686 },
+    { "lat": 22.5654475, "lon": 88.3698803 },
+    { "lat": 22.5657369, "lon": 88.3699728 },
+    { "lat": 22.5658599, "lon": 88.3700116 },
+    { "lat": 22.5658926, "lon": 88.3700220 },
+    { "lat": 22.5659030, "lon": 88.3700203 },
+    { "lat": 22.5659862, "lon": 88.3700064 },
+    { "lat": 22.5660806, "lon": 88.3699986 },
+    { "lat": 22.5661731, "lon": 88.3699987 },
+    { "lat": 22.5662653, "lon": 88.3700064 },
+    { "lat": 22.5663554, "lon": 88.3700335 },
+    { "lat": 22.5665672, "lon": 88.3700973 },
+    { "lat": 22.5666610, "lon": 88.3701256 },
+    { "lat": 22.5667531, "lon": 88.3701614 },
+    { "lat": 22.5669586, "lon": 88.3702414 },
+    { "lat": 22.5670546, "lon": 88.3702788 },
+    { "lat": 22.5670900, "lon": 88.3703024 },
+    { "lat": 22.5671002, "lon": 88.3703122 },
+    { "lat": 22.5671211, "lon": 88.3703322 },
+    { "lat": 22.5671470, "lon": 88.3703674 },
+    { "lat": 22.5671646, "lon": 88.3704015 },
+    { "lat": 22.5671712, "lon": 88.3704206 },
+    { "lat": 22.5671773, "lon": 88.3704379 },
+    { "lat": 22.5671848, "lon": 88.3704761 },
+    { "lat": 22.5671869, "lon": 88.3705150 },
+    { "lat": 22.5671866, "lon": 88.3705176 },
+    { "lat": 22.5671815, "lon": 88.3705565 },
+    { "lat": 22.5671682, "lon": 88.3705958 },
+    { "lat": 22.5671476, "lon": 88.3706313 },
+    { "lat": 22.5671414, "lon": 88.3706395 },
+    { "lat": 22.5671182, "lon": 88.3706696 },
+    { "lat": 22.5670840, "lon": 88.3707030 },
+    { "lat": 22.5670458, "lon": 88.3707306 },
+    { "lat": 22.5670042, "lon": 88.3707519 },
+    { "lat": 22.5669451, "lon": 88.3707777 },
+    { "lat": 22.5668814, "lon": 88.3708002 },
+    { "lat": 22.5668543, "lon": 88.3708102 },
+    { "lat": 22.5668228, "lon": 88.3708157 },
+    { "lat": 22.5667917, "lon": 88.3708157 },
+    { "lat": 22.5667764, "lon": 88.3708129 },
+    { "lat": 22.5667611, "lon": 88.3708102 },
+    { "lat": 22.5667317, "lon": 88.3707994 },
+    { "lat": 22.5666838, "lon": 88.3707761 },
+    { "lat": 22.5666388, "lon": 88.3707466 },
+    { "lat": 22.5665974, "lon": 88.3707115 },
+    { "lat": 22.5665494, "lon": 88.3706603 },
+    { "lat": 22.5665077, "lon": 88.3706029 },
+    { "lat": 22.5663911, "lon": 88.3704515 },
+    { "lat": 22.5662687, "lon": 88.3703053 },
+    { "lat": 22.5658624, "lon": 88.3701634 },
+    { "lat": 22.5653776, "lon": 88.3699941 }
+  ],
+  "tags": {
+    "highway": "service",
+    "oneway": "yes",
+    "service": "driveway",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 52155406,
+  "bounds": {
+    "minlat": 22.5663341,
+    "minlon": 88.3703203,
+    "maxlat": 22.5692112,
+    "maxlon": 88.3742507
+  },
+  "geometry": [
+    { "lat": 22.5673593, "lon": 88.3712440 },
+    { "lat": 22.5672749, "lon": 88.3712927 },
+    { "lat": 22.5680989, "lon": 88.3730368 },
+    { "lat": 22.5680791, "lon": 88.3730474 },
+    { "lat": 22.5680412, "lon": 88.3730772 },
+    { "lat": 22.5682210, "lon": 88.3734675 },
+    { "lat": 22.5680838, "lon": 88.3735597 },
+    { "lat": 22.5670304, "lon": 88.3712563 },
+    { "lat": 22.5673212, "lon": 88.3711294 },
+    { "lat": 22.5672885, "lon": 88.3710516 },
+    { "lat": 22.5667019, "lon": 88.3712879 },
+    { "lat": 22.5669905, "lon": 88.3718949 },
+    { "lat": 22.5666519, "lon": 88.3720859 },
+    { "lat": 22.5666185, "lon": 88.3720130 },
+    { "lat": 22.5665908, "lon": 88.3719526 },
+    { "lat": 22.5665524, "lon": 88.3718687 },
+    { "lat": 22.5665127, "lon": 88.3717821 },
+    { "lat": 22.5664747, "lon": 88.3716993 },
+    { "lat": 22.5664394, "lon": 88.3716223 },
+    { "lat": 22.5664201, "lon": 88.3715803 },
+    { "lat": 22.5663798, "lon": 88.3714925 },
+    { "lat": 22.5663341, "lon": 88.3713928 },
+    { "lat": 22.5664324, "lon": 88.3713363 },
+    { "lat": 22.5663927, "lon": 88.3712329 },
+    { "lat": 22.5663567, "lon": 88.3711391 },
+    { "lat": 22.5672467, "lon": 88.3708047 },
+    { "lat": 22.5685234, "lon": 88.3703203 },
+    { "lat": 22.5686192, "lon": 88.3705757 },
+    { "lat": 22.5687927, "lon": 88.3704950 },
+    { "lat": 22.5689710, "lon": 88.3705541 },
+    { "lat": 22.5688472, "lon": 88.3706238 },
+    { "lat": 22.5688590, "lon": 88.3706660 },
+    { "lat": 22.5686927, "lon": 88.3707431 },
+    { "lat": 22.5692070, "lon": 88.3720402 },
+    { "lat": 22.5691525, "lon": 88.3720654 },
+    { "lat": 22.5689461, "lon": 88.3715050 },
+    { "lat": 22.5689285, "lon": 88.3715132 },
+    { "lat": 22.5689045, "lon": 88.3715245 },
+    { "lat": 22.5691120, "lon": 88.3720666 },
+    { "lat": 22.5691556, "lon": 88.3722161 },
+    { "lat": 22.5691929, "lon": 88.3723938 },
+    { "lat": 22.5692112, "lon": 88.3725180 },
+    { "lat": 22.5691594, "lon": 88.3725314 },
+    { "lat": 22.5691332, "lon": 88.3724053 },
+    { "lat": 22.5690970, "lon": 88.3722611 },
+    { "lat": 22.5690471, "lon": 88.3721117 },
+    { "lat": 22.5688378, "lon": 88.3715557 },
+    { "lat": 22.5688173, "lon": 88.3715681 },
+    { "lat": 22.5687868, "lon": 88.3715791 },
+    { "lat": 22.5687625, "lon": 88.3715910 },
+    { "lat": 22.5689942, "lon": 88.3721953 },
+    { "lat": 22.5690213, "lon": 88.3722807 },
+    { "lat": 22.5690618, "lon": 88.3724469 },
+    { "lat": 22.5690800, "lon": 88.3725357 },
+    { "lat": 22.5690234, "lon": 88.3725559 },
+    { "lat": 22.5689025, "lon": 88.3721896 },
+    { "lat": 22.5686919, "lon": 88.3716286 },
+    { "lat": 22.5686702, "lon": 88.3716372 },
+    { "lat": 22.5686538, "lon": 88.3716431 },
+    { "lat": 22.5688649, "lon": 88.3721898 },
+    { "lat": 22.5688217, "lon": 88.3722108 },
+    { "lat": 22.5682671, "lon": 88.3707841 },
+    { "lat": 22.5680216, "lon": 88.3708862 },
+    { "lat": 22.5691446, "lon": 88.3733570 },
+    { "lat": 22.5690891, "lon": 88.3733932 },
+    { "lat": 22.5679566, "lon": 88.3709124 },
+    { "lat": 22.5679277, "lon": 88.3709257 },
+    { "lat": 22.5678143, "lon": 88.3709800 },
+    { "lat": 22.5691272, "lon": 88.3737415 },
+    { "lat": 22.5690505, "lon": 88.3737821 },
+    { "lat": 22.5685483, "lon": 88.3727049 },
+    { "lat": 22.5678753, "lon": 88.3712616 },
+    { "lat": 22.5678554, "lon": 88.3712730 },
+    { "lat": 22.5678389, "lon": 88.3712831 },
+    { "lat": 22.5685151, "lon": 88.3727137 },
+    { "lat": 22.5685168, "lon": 88.3727171 },
+    { "lat": 22.5684965, "lon": 88.3727287 },
+    { "lat": 22.5684749, "lon": 88.3727410 },
+    { "lat": 22.5684474, "lon": 88.3727567 },
+    { "lat": 22.5691156, "lon": 88.3742011 },
+    { "lat": 22.5690708, "lon": 88.3742507 },
+    { "lat": 22.5683861, "lon": 88.3728065 },
+    { "lat": 22.5683528, "lon": 88.3728077 },
+    { "lat": 22.5681363, "lon": 88.3723531 },
+    { "lat": 22.5680704, "lon": 88.3723872 },
+    { "lat": 22.5677479, "lon": 88.3717028 },
+    { "lat": 22.5677916, "lon": 88.3716790 },
+    { "lat": 22.5675444, "lon": 88.3711440 },
+    { "lat": 22.5674247, "lon": 88.3712086 },
+    { "lat": 22.5673593, "lon": 88.3712440 }
+  ],
+  "tags": {
+    "addr:city": "Kolkata",
+    "building": "train_station",
+    "name": "Sealdah",
+    "name:bn": "শিয়ালদহ",
+    "name:en": "Sealdah"
+  }
+},
+{
+  "type": "way",
+  "id": 102690989,
+  "bounds": {
+    "minlat": 22.5665672,
+    "minlon": 88.3649392,
+    "maxlat": 22.5681782,
+    "maxlon": 88.3700973
+  },
+  "geometry": [
+    { "lat": 22.5681782, "lon": 88.3649392 },
+    { "lat": 22.5679891, "lon": 88.3656169 },
+    { "lat": 22.5679347, "lon": 88.3658119 },
+    { "lat": 22.5678741, "lon": 88.3660067 },
+    { "lat": 22.5677319, "lon": 88.3664827 },
+    { "lat": 22.5677158, "lon": 88.3665499 },
+    { "lat": 22.5676185, "lon": 88.3668324 },
+    { "lat": 22.5675389, "lon": 88.3670890 },
+    { "lat": 22.5674844, "lon": 88.3672645 },
+    { "lat": 22.5674701, "lon": 88.3673107 },
+    { "lat": 22.5674552, "lon": 88.3673588 },
+    { "lat": 22.5674202, "lon": 88.3674803 },
+    { "lat": 22.5673534, "lon": 88.3676818 },
+    { "lat": 22.5670368, "lon": 88.3686408 },
+    { "lat": 22.5668596, "lon": 88.3691373 },
+    { "lat": 22.5667759, "lon": 88.3694119 },
+    { "lat": 22.5665672, "lon": 88.3700973 }
+  ],
+  "tags": {
+    "highway": "tertiary",
+    "maxspeed": "40",
+    "name": "Bepin Behari Ganguly Street",
+    "name:etymology:wikidata": "Q4915440"
+  }
+},
+{
+  "type": "way",
+  "id": 103594696,
+  "bounds": {
+    "minlat": 22.5687573,
+    "minlon": 88.3688712,
+    "maxlat": 22.5688884,
+    "maxlon": 88.3699529
+  },
+  "geometry": [
+    { "lat": 22.5687573, "lon": 88.3699529 },
+    { "lat": 22.5687607, "lon": 88.3698309 },
+    { "lat": 22.5688218, "lon": 88.3694668 },
+    { "lat": 22.5688316, "lon": 88.3693840 },
+    { "lat": 22.5688470, "lon": 88.3692545 },
+    { "lat": 22.5688716, "lon": 88.3690465 },
+    { "lat": 22.5688884, "lon": 88.3688712 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 103594700,
+  "bounds": {
+    "minlat": 22.5670368,
+    "minlon": 88.3686408,
+    "maxlat": 22.5707174,
+    "maxlon": 88.3690154
+  },
+  "geometry": [
+    { "lat": 22.5707174, "lon": 88.3688796 },
+    { "lat": 22.5701521, "lon": 88.3688667 },
+    { "lat": 22.5698103, "lon": 88.3688748 },
+    { "lat": 22.5695465, "lon": 88.3688800 },
+    { "lat": 22.5691585, "lon": 88.3688708 },
+    { "lat": 22.5688884, "lon": 88.3688712 },
+    { "lat": 22.5685248, "lon": 88.3688558 },
+    { "lat": 22.5683325, "lon": 88.3688832 },
+    { "lat": 22.5682887, "lon": 88.3688894 },
+    { "lat": 22.5682444, "lon": 88.3688957 },
+    { "lat": 22.5679493, "lon": 88.3689338 },
+    { "lat": 22.5676551, "lon": 88.3689440 },
+    { "lat": 22.5674673, "lon": 88.3690154 },
+    { "lat": 22.5673912, "lon": 88.3689876 },
+    { "lat": 22.5673169, "lon": 88.3689246 },
+    { "lat": 22.5670368, "lon": 88.3686408 }
+  ],
+  "tags": {
+    "highway": "residential",
+    "name": "Baithakkhana Road"
+  }
+},
+{
+  "type": "way",
+  "id": 103594703,
+  "bounds": {
+    "minlat": 22.5683717,
+    "minlon": 88.3675139,
+    "maxlat": 22.5685135,
+    "maxlon": 88.3684114
+  },
+  "geometry": [
+    { "lat": 22.5683717, "lon": 88.3684114 },
+    { "lat": 22.5685135, "lon": 88.3675139 }
+  ],
+  "tags": {
+    "highway": "living_street"
+  }
+},
+{
+  "type": "way",
+  "id": 103625251,
+  "bounds": {
+    "minlat": 22.5700392,
+    "minlon": 88.3701864,
+    "maxlat": 22.5703997,
+    "maxlon": 88.3703452
+  },
+  "geometry": [
+    { "lat": 22.5700392, "lon": 88.3701864 },
+    { "lat": 22.5703997, "lon": 88.3703452 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 103625252,
+  "bounds": {
+    "minlat": 22.5694803,
+    "minlon": 88.3697475,
+    "maxlat": 22.5700755,
+    "maxlon": 88.3706424
+  },
+  "geometry": [
+    { "lat": 22.5694803, "lon": 88.3697475 },
+    { "lat": 22.5696065, "lon": 88.3698248 },
+    { "lat": 22.5696257, "lon": 88.3698365 },
+    { "lat": 22.5696829, "lon": 88.3698715 },
+    { "lat": 22.5696797, "lon": 88.3698938 },
+    { "lat": 22.5698910, "lon": 88.3700127 },
+    { "lat": 22.5700755, "lon": 88.3700925 },
+    { "lat": 22.5700392, "lon": 88.3701864 },
+    { "lat": 22.5698613, "lon": 88.3706424 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 103625257,
+  "bounds": {
+    "minlat": 22.5693554,
+    "minlon": 88.3698248,
+    "maxlat": 22.5696065,
+    "maxlon": 88.3704060
+  },
+  "geometry": [
+    { "lat": 22.5696065, "lon": 88.3698248 },
+    { "lat": 22.5695522, "lon": 88.3699359 },
+    { "lat": 22.5695119, "lon": 88.3700196 },
+    { "lat": 22.5693554, "lon": 88.3704060 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 103625260,
+  "bounds": {
+    "minlat": 22.5701840,
+    "minlon": 88.3694923,
+    "maxlat": 22.5705257,
+    "maxlon": 88.3708626
+  },
+  "geometry": [
+    { "lat": 22.5705257, "lon": 88.3694923 },
+    { "lat": 22.5704912, "lon": 88.3699615 },
+    { "lat": 22.5704864, "lon": 88.3700273 },
+    { "lat": 22.5704197, "lon": 88.3702821 },
+    { "lat": 22.5703997, "lon": 88.3703452 },
+    { "lat": 22.5702101, "lon": 88.3708228 },
+    { "lat": 22.5701840, "lon": 88.3708626 }
+  ],
+  "tags": {
+    "highway": "residential",
+    "name": "Nahindra Nath Mitra Row"
+  }
+},
+{
+  "type": "way",
+  "id": 105741930,
+  "bounds": {
+    "minlat": 22.5695746,
+    "minlon": 88.3716173,
+    "maxlat": 22.5700663,
+    "maxlon": 88.3723657
+  },
+  "geometry": [
+    { "lat": 22.5700663, "lon": 88.3716173 },
+    { "lat": 22.5699698, "lon": 88.3718670 },
+    { "lat": 22.5698477, "lon": 88.3721143 },
+    { "lat": 22.5698322, "lon": 88.3721458 },
+    { "lat": 22.5697133, "lon": 88.3722424 },
+    { "lat": 22.5695746, "lon": 88.3723657 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 105741933,
+  "bounds": {
+    "minlat": 22.5693120,
+    "minlon": 88.3723336,
+    "maxlat": 22.5697318,
+    "maxlon": 88.3735100
+  },
+  "geometry": [
+    { "lat": 22.5693120, "lon": 88.3723336 },
+    { "lat": 22.5695746, "lon": 88.3723657 },
+    { "lat": 22.5696489, "lon": 88.3725106 },
+    { "lat": 22.5696760, "lon": 88.3729516 },
+    { "lat": 22.5697318, "lon": 88.3735100 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 105833278,
+  "bounds": {
+    "minlat": 22.5667759,
+    "minlon": 88.3694119,
+    "maxlat": 22.5707965,
+    "maxlon": 88.3713428
+  },
+  "geometry": [
+    { "lat": 22.5707965, "lon": 88.3713428 },
+    { "lat": 22.5677907, "lon": 88.3698621 },
+    { "lat": 22.5667759, "lon": 88.3694119 }
+  ],
+  "tags": {
+    "highway": "pedestrian"
+  }
+},
+{
+  "type": "way",
+  "id": 105833309,
+  "bounds": {
+    "minlat": 22.5646571,
+    "minlon": 88.3712460,
+    "maxlat": 22.5655561,
+    "maxlon": 88.3717192
+  },
+  "geometry": [
+    { "lat": 22.5646571, "lon": 88.3715958 },
+    { "lat": 22.5647697, "lon": 88.3716419 },
+    { "lat": 22.5649149, "lon": 88.3717048 },
+    { "lat": 22.5649786, "lon": 88.3717192 },
+    { "lat": 22.5650011, "lon": 88.3717020 },
+    { "lat": 22.5650172, "lon": 88.3716648 },
+    { "lat": 22.5650965, "lon": 88.3713920 },
+    { "lat": 22.5651175, "lon": 88.3712903 },
+    { "lat": 22.5651488, "lon": 88.3712607 },
+    { "lat": 22.5651930, "lon": 88.3712460 },
+    { "lat": 22.5652362, "lon": 88.3712597 },
+    { "lat": 22.5655561, "lon": 88.3713916 }
+  ],
+  "tags": {
+    "access": "private",
+    "highway": "service",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 105833315,
+  "bounds": {
+    "minlat": 22.5650939,
+    "minlon": 88.3683906,
+    "maxlat": 22.5687531,
+    "maxlon": 88.3700553
+  },
+  "geometry": [
+    { "lat": 22.5650939, "lon": 88.3684391 },
+    { "lat": 22.5651156, "lon": 88.3683906 },
+    { "lat": 22.5654080, "lon": 88.3685079 },
+    { "lat": 22.5655732, "lon": 88.3685676 },
+    { "lat": 22.5661161, "lon": 88.3688260 },
+    { "lat": 22.5661466, "lon": 88.3688405 },
+    { "lat": 22.5665545, "lon": 88.3690202 },
+    { "lat": 22.5668596, "lon": 88.3691373 },
+    { "lat": 22.5677212, "lon": 88.3695409 },
+    { "lat": 22.5678686, "lon": 88.3696141 },
+    { "lat": 22.5685684, "lon": 88.3699617 },
+    { "lat": 22.5685937, "lon": 88.3699733 },
+    { "lat": 22.5686317, "lon": 88.3699916 },
+    { "lat": 22.5686565, "lon": 88.3700046 },
+    { "lat": 22.5687531, "lon": 88.3700553 }
+  ],
+  "tags": {
+    "highway": "pedestrian"
+  }
+},
+{
+  "type": "way",
+  "id": 105833316,
+  "bounds": {
+    "minlat": 22.5658624,
+    "minlon": 88.3688709,
+    "maxlat": 22.5685761,
+    "maxlon": 88.3701484
+  },
+  "geometry": [
+    { "lat": 22.5685761, "lon": 88.3701484 },
+    { "lat": 22.5672592, "lon": 88.3695029 },
+    { "lat": 22.5672264, "lon": 88.3694882 },
+    { "lat": 22.5663208, "lon": 88.3690810 },
+    { "lat": 22.5658624, "lon": 88.3688709 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "bridge": "viaduct",
+    "bridge:name": "Sealdah Flyover",
+    "highway": "primary",
+    "layer": "1",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes",
+    "ref": "SH1",
+    "source": "Yahoo hires"
+  }
+},
+{
+  "type": "way",
+  "id": 113611885,
+  "bounds": {
+    "minlat": 22.5670633,
+    "minlon": 88.3720440,
+    "maxlat": 22.5679748,
+    "maxlon": 88.3736638
+  },
+  "geometry": [
+    { "lat": 22.5672515, "lon": 88.3720440 },
+    { "lat": 22.5670633, "lon": 88.3721459 },
+    { "lat": 22.5678113, "lon": 88.3736638 },
+    { "lat": 22.5679748, "lon": 88.3735511 },
+    { "lat": 22.5672515, "lon": 88.3720440 }
+  ],
+  "tags": {
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 205078947,
+  "bounds": {
+    "minlat": 22.5686565,
+    "minlon": 88.3688796,
+    "maxlat": 22.5707174,
+    "maxlon": 88.3700046
+  },
+  "geometry": [
+    { "lat": 22.5686565, "lon": 88.3700046 },
+    { "lat": 22.5687573, "lon": 88.3699529 },
+    { "lat": 22.5695572, "lon": 88.3695100 },
+    { "lat": 22.5699364, "lon": 88.3693072 },
+    { "lat": 22.5707174, "lon": 88.3688796 }
+  ],
+  "tags": {
+    "highway": "pedestrian",
+    "oneway": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 205078949,
+  "bounds": {
+    "minlat": 22.5688213,
+    "minlon": 88.3691199,
+    "maxlat": 22.5706230,
+    "maxlon": 88.3701356
+  },
+  "geometry": [
+    { "lat": 22.5688213, "lon": 88.3701356 },
+    { "lat": 22.5693492, "lon": 88.3698201 },
+    { "lat": 22.5694803, "lon": 88.3697475 },
+    { "lat": 22.5698141, "lon": 88.3695611 },
+    { "lat": 22.5700721, "lon": 88.3694198 },
+    { "lat": 22.5702730, "lon": 88.3693104 },
+    { "lat": 22.5706230, "lon": 88.3691199 }
+  ],
+  "tags": {
+    "bicycle": "yes",
+    "foot": "yes",
+    "highway": "pedestrian",
+    "motor_vehicle": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 205078950,
+  "bounds": {
+    "minlat": 22.5685761,
+    "minlon": 88.3701034,
+    "maxlat": 22.5686587,
+    "maxlon": 88.3701484
+  },
+  "geometry": [
+    { "lat": 22.5685761, "lon": 88.3701484 },
+    { "lat": 22.5686587, "lon": 88.3701034 }
+  ],
+  "tags": {
+    "alt_name": "Mahatma Gandhi Road",
+    "bridge": "viaduct",
+    "bridge:name": "Sealdah Flyover",
+    "highway": "primary",
+    "layer": "1",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q1001",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 211860850,
+  "bounds": {
+    "minlat": 22.5685248,
+    "minlon": 88.3655657,
+    "maxlat": 22.5695196,
+    "maxlon": 88.3688558
+  },
+  "geometry": [
+    { "lat": 22.5685248, "lon": 88.3688558 },
+    { "lat": 22.5685482, "lon": 88.3685355 },
+    { "lat": 22.5689536, "lon": 88.3684778 },
+    { "lat": 22.5690390, "lon": 88.3680293 },
+    { "lat": 22.5691334, "lon": 88.3676425 },
+    { "lat": 22.5692235, "lon": 88.3672557 },
+    { "lat": 22.5692497, "lon": 88.3671591 },
+    { "lat": 22.5692973, "lon": 88.3669584 },
+    { "lat": 22.5693429, "lon": 88.3667678 },
+    { "lat": 22.5694506, "lon": 88.3661884 },
+    { "lat": 22.5694490, "lon": 88.3661607 },
+    { "lat": 22.5695196, "lon": 88.3655657 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 260231243,
+  "bounds": {
+    "minlat": 22.5644701,
+    "minlon": 88.3699941,
+    "maxlat": 22.5653776,
+    "maxlon": 88.3718882
+  },
+  "geometry": [
+    { "lat": 22.5653776, "lon": 88.3699941 },
+    { "lat": 22.5653335, "lon": 88.3700924 },
+    { "lat": 22.5652881, "lon": 88.3701979 },
+    { "lat": 22.5651429, "lon": 88.3705080 },
+    { "lat": 22.5647474, "lon": 88.3714003 },
+    { "lat": 22.5646571, "lon": 88.3715958 },
+    { "lat": 22.5645771, "lon": 88.3717399 },
+    { "lat": 22.5644701, "lon": 88.3718882 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lane_markings": "no",
+    "maxspeed": "40",
+    "name": "Parikshit Roy Lane",
+    "source": "Bing;Yahoo hires",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 383577208,
+  "bounds": {
+    "minlat": 22.5641240,
+    "minlon": 88.3714925,
+    "maxlat": 22.5664201,
+    "maxlon": 88.3728639
+  },
+  "geometry": [
+    { "lat": 22.5664201, "lon": 88.3715803 },
+    { "lat": 22.5663798, "lon": 88.3714925 },
+    { "lat": 22.5647591, "lon": 88.3723910 },
+    { "lat": 22.5644857, "lon": 88.3725691 },
+    { "lat": 22.5641240, "lon": 88.3728342 },
+    { "lat": 22.5641423, "lon": 88.3728639 },
+    { "lat": 22.5643840, "lon": 88.3727139 },
+    { "lat": 22.5663933, "lon": 88.3715963 },
+    { "lat": 22.5664201, "lon": 88.3715803 }
+  ],
+  "tags": {
+    "area": "yes",
+    "bench": "yes",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Platform No. 15 & Platform No. 16",
+    "network": "Indian Railways",
+    "note": "Yes, there are two platforms numbered 16 here.",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "15;16",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "designated"
+  }
+},
+{
+  "type": "way",
+  "id": 535333511,
+  "bounds": {
+    "minlat": 22.5669979,
+    "minlon": 88.3718229,
+    "maxlat": 22.5671766,
+    "maxlon": 88.3719967
+  },
+  "geometry": [
+    { "lat": 22.5669979, "lon": 88.3719102 },
+    { "lat": 22.5671465, "lon": 88.3718229 },
+    { "lat": 22.5671766, "lon": 88.3718831 },
+    { "lat": 22.5670959, "lon": 88.3719305 },
+    { "lat": 22.5671091, "lon": 88.3719569 },
+    { "lat": 22.5670412, "lon": 88.3719967 },
+    { "lat": 22.5669979, "lon": 88.3719102 }
+  ],
+  "tags": {
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 693289706,
+  "bounds": {
+    "minlat": 22.5671002,
+    "minlon": 88.3700838,
+    "maxlat": 22.5677775,
+    "maxlon": 88.3704206
+  },
+  "geometry": [
+    { "lat": 22.5671002, "lon": 88.3703122 },
+    { "lat": 22.5672548, "lon": 88.3702491 },
+    { "lat": 22.5675995, "lon": 88.3701086 },
+    { "lat": 22.5676603, "lon": 88.3700838 },
+    { "lat": 22.5677683, "lon": 88.3701364 },
+    { "lat": 22.5677775, "lon": 88.3701658 },
+    { "lat": 22.5671712, "lon": 88.3704206 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "parking_aisle"
+  }
+},
+{
+  "type": "way",
+  "id": 697098357,
+  "bounds": {
+    "minlat": 22.5675866,
+    "minlon": 88.3689338,
+    "maxlat": 22.5679493,
+    "maxlon": 88.3694751
+  },
+  "geometry": [
+    { "lat": 22.5679493, "lon": 88.3689338 },
+    { "lat": 22.5679156, "lon": 88.3694472 },
+    { "lat": 22.5679137, "lon": 88.3694751 },
+    { "lat": 22.5675866, "lon": 88.3693628 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 705661038,
+  "bounds": {
+    "minlat": 22.5672552,
+    "minlon": 88.3719549,
+    "maxlat": 22.5697817,
+    "maxlon": 88.3776885
+  },
+  "geometry": [
+    { "lat": 22.5697817, "lon": 88.3776885 },
+    { "lat": 22.5696960, "lon": 88.3775243 },
+    { "lat": 22.5696104, "lon": 88.3773601 },
+    { "lat": 22.5693900, "lon": 88.3770208 },
+    { "lat": 22.5692637, "lon": 88.3765689 },
+    { "lat": 22.5691553, "lon": 88.3763891 },
+    { "lat": 22.5691077, "lon": 88.3763100 },
+    { "lat": 22.5689194, "lon": 88.3759788 },
+    { "lat": 22.5688897, "lon": 88.3758205 },
+    { "lat": 22.5687015, "lon": 88.3750105 },
+    { "lat": 22.5685120, "lon": 88.3746041 },
+    { "lat": 22.5680042, "lon": 88.3735460 },
+    { "lat": 22.5673838, "lon": 88.3722089 },
+    { "lat": 22.5672893, "lon": 88.3719833 },
+    { "lat": 22.5672552, "lon": 88.3719549 }
+  ],
+  "tags": {
+    "access": "private",
+    "highway": "service"
+  }
+},
+{
+  "type": "way",
+  "id": 755877765,
+  "bounds": {
+    "minlat": 22.5684214,
+    "minlon": 88.3708184,
+    "maxlat": 22.5689408,
+    "maxlon": 88.3721563
+  },
+  "geometry": [
+    { "lat": 22.5684214, "lon": 88.3708184 },
+    { "lat": 22.5689408, "lon": 88.3721563 }
+  ],
+  "tags": {
+    "bench": "yes",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Railway Platform",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "3;4",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 755877766,
+  "bounds": {
+    "minlat": 22.5685643,
+    "minlon": 88.3707402,
+    "maxlat": 22.5690822,
+    "maxlon": 88.3720721
+  },
+  "geometry": [
+    { "lat": 22.5685643, "lon": 88.3707402 },
+    { "lat": 22.5690822, "lon": 88.3720721 }
+  ],
+  "tags": {
+    "bench": "no",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Railway Platform",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "1;2",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 755877767,
+  "bounds": {
+    "minlat": 22.5686445,
+    "minlon": 88.3707024,
+    "maxlat": 22.5691671,
+    "maxlon": 88.3720335
+  },
+  "geometry": [
+    { "lat": 22.5686445, "lon": 88.3707024 },
+    { "lat": 22.5691671, "lon": 88.3720335 }
+  ],
+  "tags": {
+    "bench": "no",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Railway Platform",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "1",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 755877768,
+  "bounds": {
+    "minlat": 22.5683327,
+    "minlon": 88.3708648,
+    "maxlat": 22.5688600,
+    "maxlon": 88.3721976
+  },
+  "geometry": [
+    { "lat": 22.5683327, "lon": 88.3708648 },
+    { "lat": 22.5688600, "lon": 88.3721976 }
+  ],
+  "tags": {
+    "bench": "yes",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Railway Platform",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "5",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 755934733,
+  "bounds": {
+    "minlat": 22.5673417,
+    "minlon": 88.3711721,
+    "maxlat": 22.5696618,
+    "maxlon": 88.3760460
+  },
+  "geometry": [
+    { "lat": 22.5696008, "lon": 88.3760460 },
+    { "lat": 22.5696618, "lon": 88.3760039 },
+    { "lat": 22.5674061, "lon": 88.3711721 },
+    { "lat": 22.5673417, "lon": 88.3712074 },
+    { "lat": 22.5696008, "lon": 88.3760460 }
+  ],
+  "tags": {
+    "bench": "yes",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Sealdah 12-13",
+    "name:en": "Sealdah",
+    "name:hi": "सियालदाह",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "12;13",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 995139901,
+  "bounds": {
+    "minlat": 22.5682754,
+    "minlon": 88.3691526,
+    "maxlat": 22.5688470,
+    "maxlon": 88.3692545
+  },
+  "geometry": [
+    { "lat": 22.5682754, "lon": 88.3691526 },
+    { "lat": 22.5685131, "lon": 88.3691848 },
+    { "lat": 22.5685577, "lon": 88.3692116 },
+    { "lat": 22.5686319, "lon": 88.3692224 },
+    { "lat": 22.5688470, "lon": 88.3692545 }
+  ],
+  "tags": {
+    "highway": "residential",
+    "source": "maxar"
+  }
+},
+{
+  "type": "way",
+  "id": 1124385976,
+  "bounds": {
+    "minlat": 22.5687797,
+    "minlon": 88.3700972,
+    "maxlat": 22.5702101,
+    "maxlon": 88.3708228
+  },
+  "geometry": [
+    { "lat": 22.5687797, "lon": 88.3700972 },
+    { "lat": 22.5688213, "lon": 88.3701356 },
+    { "lat": 22.5693554, "lon": 88.3704060 },
+    { "lat": 22.5698613, "lon": 88.3706424 },
+    { "lat": 22.5702101, "lon": 88.3708228 }
+  ],
+  "tags": {
+    "highway": "pedestrian"
+  }
+},
+{
+  "type": "way",
+  "id": 1124385977,
+  "bounds": {
+    "minlat": 22.5687531,
+    "minlon": 88.3700553,
+    "maxlat": 22.5687797,
+    "maxlon": 88.3700972
+  },
+  "geometry": [
+    { "lat": 22.5687531, "lon": 88.3700553 },
+    { "lat": 22.5687797, "lon": 88.3700972 }
+  ],
+  "tags": {
+    "highway": "pedestrian",
+    "layer": "-1",
+    "tunnel": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1126633515,
+  "bounds": {
+    "minlat": 22.5686726,
+    "minlon": 88.3701989,
+    "maxlat": 22.5698266,
+    "maxlon": 88.3707607
+  },
+  "geometry": [
+    { "lat": 22.5698266, "lon": 88.3707607 },
+    { "lat": 22.5693476, "lon": 88.3705253 },
+    { "lat": 22.5686726, "lon": 88.3701989 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "bridge": "viaduct",
+    "bridge:name": "Sealdah Flyover",
+    "highway": "primary",
+    "layer": "1",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes",
+    "ref": "SH1",
+    "source": "Yahoo hires"
+  }
+},
+{
+  "type": "way",
+  "id": 1126703028,
+  "bounds": {
+    "minlat": 22.5686587,
+    "minlon": 88.3693072,
+    "maxlat": 22.5699364,
+    "maxlon": 88.3701034
+  },
+  "geometry": [
+    { "lat": 22.5686587, "lon": 88.3701034 },
+    { "lat": 22.5699364, "lon": 88.3693072 }
+  ],
+  "tags": {
+    "alt_name": "Mahatma Gandhi Road",
+    "bridge": "viaduct",
+    "bridge:name": "Sealdah Flyover",
+    "highway": "primary",
+    "layer": "1",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q1001",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1126703029,
+  "bounds": {
+    "minlat": 22.5686587,
+    "minlon": 88.3701034,
+    "maxlat": 22.5698221,
+    "maxlon": 88.3706759
+  },
+  "geometry": [
+    { "lat": 22.5686587, "lon": 88.3701034 },
+    { "lat": 22.5687567, "lon": 88.3701488 },
+    { "lat": 22.5698221, "lon": 88.3706759 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "bridge": "yes",
+    "highway": "primary",
+    "layer": "1",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1126703030,
+  "bounds": {
+    "minlat": 22.5686726,
+    "minlon": 88.3693993,
+    "maxlat": 22.5700377,
+    "maxlon": 88.3701989
+  },
+  "geometry": [
+    { "lat": 22.5700377, "lon": 88.3693993 },
+    { "lat": 22.5700193, "lon": 88.3694101 },
+    { "lat": 22.5687567, "lon": 88.3701488 },
+    { "lat": 22.5686726, "lon": 88.3701989 }
+  ],
+  "tags": {
+    "alt_name": "Mahatma Gandhi Road",
+    "bridge": "viaduct",
+    "bridge:name": "Sealdah Flyover",
+    "highway": "primary",
+    "layer": "1",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q1001",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1126703031,
+  "bounds": {
+    "minlat": 22.5701840,
+    "minlon": 88.3708626,
+    "maxlat": 22.5708009,
+    "maxlon": 88.3711248
+  },
+  "geometry": [
+    { "lat": 22.5701840, "lon": 88.3708626 },
+    { "lat": 22.5708009, "lon": 88.3711248 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "maxspeed": "40",
+    "name": "Acharya Jagadish Chandra Bose Road",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1126703034,
+  "bounds": {
+    "minlat": 22.5658905,
+    "minlon": 88.3687844,
+    "maxlat": 22.5686587,
+    "maxlon": 88.3701034
+  },
+  "geometry": [
+    { "lat": 22.5658905, "lon": 88.3687844 },
+    { "lat": 22.5661763, "lon": 88.3689100 },
+    { "lat": 22.5673850, "lon": 88.3694717 },
+    { "lat": 22.5686587, "lon": 88.3701034 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "bridge": "yes",
+    "highway": "primary",
+    "layer": "1",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1128136252,
+  "bounds": {
+    "minlat": 22.5685761,
+    "minlon": 88.3701484,
+    "maxlat": 22.5686726,
+    "maxlon": 88.3701989
+  },
+  "geometry": [
+    { "lat": 22.5686726, "lon": 88.3701989 },
+    { "lat": 22.5685761, "lon": 88.3701484 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "bridge": "viaduct",
+    "bridge:name": "Sealdah Flyover",
+    "highway": "primary",
+    "layer": "1",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes",
+    "ref": "SH1",
+    "source": "Yahoo hires"
+  }
+},
+{
+  "type": "way",
+  "id": 1178221148,
+  "bounds": {
+    "minlat": 22.5696760,
+    "minlon": 88.3729516,
+    "maxlat": 22.5700286,
+    "maxlon": 88.3730594
+  },
+  "geometry": [
+    { "lat": 22.5700286, "lon": 88.3730594 },
+    { "lat": 22.5696760, "lon": 88.3729516 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 1178248679,
+  "bounds": {
+    "minlat": 22.5695148,
+    "minlon": 88.3719521,
+    "maxlat": 22.5698477,
+    "maxlon": 88.3721143
+  },
+  "geometry": [
+    { "lat": 22.5698477, "lon": 88.3721143 },
+    { "lat": 22.5695148, "lon": 88.3719521 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 1178251559,
+  "bounds": {
+    "minlat": 22.5695465,
+    "minlon": 88.3688800,
+    "maxlat": 22.5695572,
+    "maxlon": 88.3695100
+  },
+  "geometry": [
+    { "lat": 22.5695465, "lon": 88.3688800 },
+    { "lat": 22.5695572, "lon": 88.3695100 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 1178290042,
+  "bounds": {
+    "minlat": 22.5682754,
+    "minlon": 88.3688894,
+    "maxlat": 22.5682887,
+    "maxlon": 88.3691526
+  },
+  "geometry": [
+    { "lat": 22.5682754, "lon": 88.3691526 },
+    { "lat": 22.5682887, "lon": 88.3688894 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 1178290043,
+  "bounds": {
+    "minlat": 22.5679156,
+    "minlon": 88.3691526,
+    "maxlat": 22.5682754,
+    "maxlon": 88.3694851
+  },
+  "geometry": [
+    { "lat": 22.5682754, "lon": 88.3691526 },
+    { "lat": 22.5682252, "lon": 88.3694851 },
+    { "lat": 22.5679156, "lon": 88.3694472 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 1178291548,
+  "bounds": {
+    "minlat": 22.5659391,
+    "minlon": 88.3719549,
+    "maxlat": 22.5672552,
+    "maxlon": 88.3728899
+  },
+  "geometry": [
+    { "lat": 22.5672552, "lon": 88.3719549 },
+    { "lat": 22.5672089, "lon": 88.3719568 },
+    { "lat": 22.5660096, "lon": 88.3726132 },
+    { "lat": 22.5659691, "lon": 88.3726369 },
+    { "lat": 22.5659391, "lon": 88.3726927 },
+    { "lat": 22.5660231, "lon": 88.3728899 }
+  ],
+  "tags": {
+    "access": "private",
+    "highway": "service"
+  }
+},
+{
+  "type": "way",
+  "id": 1201622063,
+  "bounds": {
+    "minlat": 22.5698221,
+    "minlon": 88.3706759,
+    "maxlat": 22.5700387,
+    "maxlon": 88.3707876
+  },
+  "geometry": [
+    { "lat": 22.5698221, "lon": 88.3706759 },
+    { "lat": 22.5700387, "lon": 88.3707876 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "embankment": "yes",
+    "highway": "primary",
+    "layer": "1",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1201622064,
+  "bounds": {
+    "minlat": 22.5698266,
+    "minlon": 88.3707607,
+    "maxlat": 22.5699931,
+    "maxlon": 88.3708376
+  },
+  "geometry": [
+    { "lat": 22.5699931, "lon": 88.3708376 },
+    { "lat": 22.5698266, "lon": 88.3707607 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "bridge:name": "Sealdah Flyover",
+    "embankment": "yes",
+    "highway": "primary",
+    "layer": "1",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes",
+    "ref": "SH1",
+    "source": "Yahoo hires"
+  }
+},
+{
+  "type": "way",
+  "id": 1222685962,
+  "bounds": {
+    "minlat": 22.5696829,
+    "minlon": 88.3695611,
+    "maxlat": 22.5698141,
+    "maxlon": 88.3698715
+  },
+  "geometry": [
+    { "lat": 22.5698141, "lon": 88.3695611 },
+    { "lat": 22.5697127, "lon": 88.3698282 },
+    { "lat": 22.5696829, "lon": 88.3698715 }
+  ],
+  "tags": {
+    "highway": "service"
+  }
+},
+{
+  "type": "way",
+  "id": 1251109563,
+  "bounds": {
+    "minlat": 22.5701358,
+    "minlon": 88.3709035,
+    "maxlat": 22.5707735,
+    "maxlon": 88.3711986
+  },
+  "geometry": [
+    { "lat": 22.5707735, "lon": 88.3711986 },
+    { "lat": 22.5701358, "lon": 88.3709035 }
+  ],
+  "tags": {
+    "highway": "primary",
+    "maxspeed": "40",
+    "name": "Acharya Prafulla Chandra Road",
+    "name:etymology:wikidata": "Q3351086",
+    "oneway": "yes",
+    "ref": "SH1",
+    "source": "Yahoo hires"
+  }
+},
+{
+  "type": "way",
+  "id": 1309220232,
+  "bounds": {
+    "minlat": 22.5678686,
+    "minlon": 88.3694751,
+    "maxlat": 22.5679137,
+    "maxlon": 88.3696141
+  },
+  "geometry": [
+    { "lat": 22.5679137, "lon": 88.3694751 },
+    { "lat": 22.5678686, "lon": 88.3696141 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 1309220233,
+  "bounds": {
+    "minlat": 22.5688316,
+    "minlon": 88.3693840,
+    "maxlat": 22.5692920,
+    "maxlon": 88.3694803
+  },
+  "geometry": [
+    { "lat": 22.5692920, "lon": 88.3694803 },
+    { "lat": 22.5690569, "lon": 88.3694438 },
+    { "lat": 22.5688316, "lon": 88.3693840 }
+  ],
+  "tags": {
+    "highway": "residential"
+  }
+},
+{
+  "type": "way",
+  "id": 1388708415,
+  "bounds": {
+    "minlat": 22.5654319,
+    "minlon": 88.3694102,
+    "maxlat": 22.5656520,
+    "maxlon": 88.3699161
+  },
+  "geometry": [
+    { "lat": 22.5656520, "lon": 88.3694102 },
+    { "lat": 22.5654475, "lon": 88.3698803 },
+    { "lat": 22.5654319, "lon": 88.3699161 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "layer": "1",
+    "name": "Parikshit Roy Lane",
+    "oneway": "yes",
+    "source": "Bing;Yahoo hires",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1408487835,
+  "bounds": {
+    "minlat": 22.5653776,
+    "minlon": 88.3699161,
+    "maxlat": 22.5654319,
+    "maxlon": 88.3699941
+  },
+  "geometry": [
+    { "lat": 22.5654319, "lon": 88.3699161 },
+    { "lat": 22.5653776, "lon": 88.3699941 }
+  ],
+  "tags": {
+    "highway": "secondary",
+    "lane_markings": "no",
+    "maxspeed": "40",
+    "name": "Parikshit Roy Lane",
+    "oneway": "yes",
+    "source": "Bing;Yahoo hires",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1448681274,
+  "bounds": {
+    "minlat": 22.5672454,
+    "minlon": 88.3712959,
+    "maxlat": 22.5680888,
+    "maxlon": 88.3730450
+  },
+  "geometry": [
+    { "lat": 22.5672716, "lon": 88.3712959 },
+    { "lat": 22.5680888, "lon": 88.3730305 },
+    { "lat": 22.5680625, "lon": 88.3730450 },
+    { "lat": 22.5672454, "lon": 88.3713103 },
+    { "lat": 22.5672716, "lon": 88.3712959 }
+  ],
+  "tags": {
+    "name": "Sealdah 14",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "14",
+    "train": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1448681275,
+  "bounds": {
+    "minlat": 22.5640832,
+    "minlon": 88.3719526,
+    "maxlat": 22.5666185,
+    "maxlon": 88.3732959
+  },
+  "geometry": [
+    { "lat": 22.5646868, "lon": 88.3730130 },
+    { "lat": 22.5644621, "lon": 88.3731219 },
+    { "lat": 22.5642530, "lon": 88.3732125 },
+    { "lat": 22.5640832, "lon": 88.3732705 },
+    { "lat": 22.5640949, "lon": 88.3732959 },
+    { "lat": 22.5641524, "lon": 88.3732860 },
+    { "lat": 22.5643249, "lon": 88.3732408 },
+    { "lat": 22.5644804, "lon": 88.3731785 },
+    { "lat": 22.5646920, "lon": 88.3730823 },
+    { "lat": 22.5666185, "lon": 88.3720130 },
+    { "lat": 22.5665908, "lon": 88.3719526 },
+    { "lat": 22.5646868, "lon": 88.3730130 }
+  ],
+  "tags": {
+    "area": "yes",
+    "bench": "yes",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Platform No. 20 & Platform No. 21",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "20;21",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "designated"
+  }
+},
+{
+  "type": "way",
+  "id": 1448681276,
+  "bounds": {
+    "minlat": 22.5639463,
+    "minlon": 88.3716223,
+    "maxlat": 22.5664747,
+    "maxlon": 88.3730959
+  },
+  "geometry": [
+    { "lat": 22.5664394, "lon": 88.3716223 },
+    { "lat": 22.5642534, "lon": 88.3728483 },
+    { "lat": 22.5641018, "lon": 88.3729403 },
+    { "lat": 22.5639463, "lon": 88.3730535 },
+    { "lat": 22.5639699, "lon": 88.3730959 },
+    { "lat": 22.5664747, "lon": 88.3716993 },
+    { "lat": 22.5664394, "lon": 88.3716223 }
+  ],
+  "tags": {
+    "area": "yes",
+    "bench": "yes",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Platform No. 16 & Platform No. 17",
+    "network": "Indian Railways",
+    "note": "Yes, there are two platforms numbered 16 here.",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "16;17",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "designated"
+  }
+},
+{
+  "type": "way",
+  "id": 1448681277,
+  "bounds": {
+    "minlat": 22.5640113,
+    "minlon": 88.3717821,
+    "maxlat": 22.5665524,
+    "maxlon": 88.3732125
+  },
+  "geometry": [
+    { "lat": 22.5665127, "lon": 88.3717821 },
+    { "lat": 22.5640113, "lon": 88.3731714 },
+    { "lat": 22.5640322, "lon": 88.3732125 },
+    { "lat": 22.5642191, "lon": 88.3731375 },
+    { "lat": 22.5644372, "lon": 88.3730384 },
+    { "lat": 22.5646606, "lon": 88.3729253 },
+    { "lat": 22.5665524, "lon": 88.3718687 },
+    { "lat": 22.5665127, "lon": 88.3717821 }
+  ],
+  "tags": {
+    "area": "yes",
+    "bench": "yes",
+    "bin": "yes",
+    "departures_board": "yes",
+    "lit": "yes",
+    "name": "Platform No. 18 & Platform No. 19",
+    "network": "Indian Railways",
+    "operator": "Eastern Railway",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "18;19",
+    "shelter": "yes",
+    "train": "yes",
+    "wheelchair": "designated"
+  }
+},
+{
+  "type": "way",
+  "id": 1448681278,
+  "bounds": {
+    "minlat": 22.5674754,
+    "minlon": 88.3711291,
+    "maxlat": 22.5683253,
+    "maxlon": 88.3728915
+  },
+  "geometry": [
+    { "lat": 22.5675016, "lon": 88.3711291 },
+    { "lat": 22.5683253, "lon": 88.3728770 },
+    { "lat": 22.5682990, "lon": 88.3728915 },
+    { "lat": 22.5674754, "lon": 88.3711435 },
+    { "lat": 22.5675016, "lon": 88.3711291 }
+  ],
+  "tags": {
+    "name": "Sealdah 11",
+    "public_transport": "platform",
+    "railway": "platform",
+    "ref": "11",
+    "train": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1448681279,
+  "bounds": {
+    "minlat": 22.5673593,
+    "minlon": 88.3712086,
+    "maxlat": 22.5695310,
+    "maxlon": 88.3757868
+  },
+  "geometry": [
+    { "lat": 22.5674247, "lon": 88.3712086 },
+    { "lat": 22.5682089, "lon": 88.3728906 },
+    { "lat": 22.5695310, "lon": 88.3757265 },
+    { "lat": 22.5694651, "lon": 88.3757868 },
+    { "lat": 22.5681390, "lon": 88.3729293 },
+    { "lat": 22.5673593, "lon": 88.3712440 },
+    { "lat": 22.5674247, "lon": 88.3712086 }
+  ],
+  "tags": {
+    "addr:city": "Kolkata",
+    "amenity": "shelter",
+    "building": "roof",
+    "name": "Sealdah (শিয়ালদহ)",
+    "roof:material": "metal",
+    "roof:shape": "butterfly",
+    "shelter_type": "public_transport"
+  }
+},
+{
+  "type": "way",
+  "id": 1452323648,
+  "bounds": {
+    "minlat": 22.5700387,
+    "minlon": 88.3707876,
+    "maxlat": 22.5701840,
+    "maxlon": 88.3708626
+  },
+  "geometry": [
+    { "lat": 22.5700387, "lon": 88.3707876 },
+    { "lat": 22.5701840, "lon": 88.3708626 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "highway": "primary",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1452323649,
+  "bounds": {
+    "minlat": 22.5699931,
+    "minlon": 88.3708376,
+    "maxlat": 22.5701358,
+    "maxlon": 88.3709035
+  },
+  "geometry": [
+    { "lat": 22.5701358, "lon": 88.3709035 },
+    { "lat": 22.5699931, "lon": 88.3708376 }
+  ],
+  "tags": {
+    "alt_name": "Acharya Jagadish Chandra Bose Road",
+    "bridge:name": "Sealdah Flyover",
+    "highway": "primary",
+    "maxspeed": "40",
+    "name": "Vidyapati Flyover",
+    "name:etymology:wikidata": "Q314267",
+    "oneway": "yes",
+    "ref": "SH1",
+    "source": "Yahoo hires"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655276,
+  "bounds": {
+    "minlat": 22.5655046,
+    "minlon": 88.3703514,
+    "maxlat": 22.5657891,
+    "maxlon": 88.3706545
+  },
+  "geometry": [
+    { "lat": 22.5657891, "lon": 88.3704180 },
+    { "lat": 22.5655919, "lon": 88.3703514 },
+    { "lat": 22.5655046, "lon": 88.3706545 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "driveway"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655278,
+  "bounds": {
+    "minlat": 22.5657273,
+    "minlon": 88.3703644,
+    "maxlat": 22.5659762,
+    "maxlon": 88.3706902
+  },
+  "geometry": [
+    { "lat": 22.5658045, "lon": 88.3703644 },
+    { "lat": 22.5659762, "lon": 88.3704220 },
+    { "lat": 22.5659356, "lon": 88.3705641 },
+    { "lat": 22.5658995, "lon": 88.3706902 },
+    { "lat": 22.5657273, "lon": 88.3706325 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "driveway"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655279,
+  "bounds": {
+    "minlat": 22.5656522,
+    "minlon": 88.3701634,
+    "maxlat": 22.5658624,
+    "maxlon": 88.3708931
+  },
+  "geometry": [
+    { "lat": 22.5658624, "lon": 88.3701634 },
+    { "lat": 22.5658045, "lon": 88.3703644 },
+    { "lat": 22.5657891, "lon": 88.3704180 },
+    { "lat": 22.5657273, "lon": 88.3706325 },
+    { "lat": 22.5656522, "lon": 88.3708931 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "driveway"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655280,
+  "bounds": {
+    "minlat": 22.5663158,
+    "minlon": 88.3701575,
+    "maxlat": 22.5669140,
+    "maxlon": 88.3703813
+  },
+  "geometry": [
+    { "lat": 22.5669140, "lon": 88.3703813 },
+    { "lat": 22.5667076, "lon": 88.3703041 },
+    { "lat": 22.5663158, "lon": 88.3701575 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "driveway",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655281,
+  "bounds": {
+    "minlat": 22.5668814,
+    "minlon": 88.3702788,
+    "maxlat": 22.5670546,
+    "maxlon": 88.3708002
+  },
+  "geometry": [
+    { "lat": 22.5670546, "lon": 88.3702788 },
+    { "lat": 22.5668814, "lon": 88.3708002 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "driveway",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655282,
+  "bounds": {
+    "minlat": 22.5667764,
+    "minlon": 88.3702414,
+    "maxlat": 22.5669586,
+    "maxlon": 88.3708129
+  },
+  "geometry": [
+    { "lat": 22.5669586, "lon": 88.3702414 },
+    { "lat": 22.5669140, "lon": 88.3703813 },
+    { "lat": 22.5667764, "lon": 88.3708129 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "driveway",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655283,
+  "bounds": {
+    "minlat": 22.5662687,
+    "minlon": 88.3700335,
+    "maxlat": 22.5663554,
+    "maxlon": 88.3703053
+  },
+  "geometry": [
+    { "lat": 22.5662687, "lon": 88.3703053 },
+    { "lat": 22.5663158, "lon": 88.3701575 },
+    { "lat": 22.5663554, "lon": 88.3700335 }
+  ],
+  "tags": {
+    "highway": "service",
+    "oneway": "yes",
+    "service": "driveway",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1453655287,
+  "bounds": {
+    "minlat": 22.5671414,
+    "minlon": 88.3702826,
+    "maxlat": 22.5678791,
+    "maxlon": 88.3706395
+  },
+  "geometry": [
+    { "lat": 22.5671866, "lon": 88.3705176 },
+    { "lat": 22.5678126, "lon": 88.3702874 },
+    { "lat": 22.5678289, "lon": 88.3702826 },
+    { "lat": 22.5678457, "lon": 88.3702844 },
+    { "lat": 22.5678609, "lon": 88.3702924 },
+    { "lat": 22.5678725, "lon": 88.3703058 },
+    { "lat": 22.5678791, "lon": 88.3703227 },
+    { "lat": 22.5678789, "lon": 88.3703454 },
+    { "lat": 22.5678697, "lon": 88.3703658 },
+    { "lat": 22.5678532, "lon": 88.3703798 },
+    { "lat": 22.5671414, "lon": 88.3706395 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "parking_aisle"
+  }
+},
+{
+  "type": "way",
+  "id": 1453657656,
+  "bounds": {
+    "minlat": 22.5662687,
+    "minlon": 88.3701614,
+    "maxlat": 22.5667531,
+    "maxlon": 88.3704568
+  },
+  "geometry": [
+    { "lat": 22.5667531, "lon": 88.3701614 },
+    { "lat": 22.5667076, "lon": 88.3703041 },
+    { "lat": 22.5666588, "lon": 88.3704568 },
+    { "lat": 22.5662687, "lon": 88.3703053 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "driveway",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 1453657657,
+  "bounds": {
+    "minlat": 22.5657369,
+    "minlon": 88.3696887,
+    "maxlat": 22.5659367,
+    "maxlon": 88.3700116
+  },
+  "geometry": [
+    { "lat": 22.5657369, "lon": 88.3699728 },
+    { "lat": 22.5657506, "lon": 88.3699220 },
+    { "lat": 22.5658138, "lon": 88.3696887 },
+    { "lat": 22.5659367, "lon": 88.3697277 },
+    { "lat": 22.5658736, "lon": 88.3699607 },
+    { "lat": 22.5658599, "lon": 88.3700116 }
+  ],
+  "tags": {
+    "access": "private",
+    "highway": "service",
+    "service": "driveway"
+  }
+},
+{
+  "type": "way",
+  "id": 1453657660,
+  "bounds": {
+    "minlat": 22.5672548,
+    "minlon": 88.3699693,
+    "maxlat": 22.5675995,
+    "maxlon": 88.3702491
+  },
+  "geometry": [
+    { "lat": 22.5672548, "lon": 88.3702491 },
+    { "lat": 22.5674432, "lon": 88.3699693 },
+    { "lat": 22.5675995, "lon": 88.3701086 }
+  ],
+  "tags": {
+    "highway": "service",
+    "service": "parking_aisle"
+  }
+},
+{
+  "type": "way",
+  "id": 1453657661,
+  "bounds": {
+    "minlat": 22.5661913,
+    "minlon": 88.3698809,
+    "maxlat": 22.5682215,
+    "maxlon": 88.3710563
+  },
+  "geometry": [
+    { "lat": 22.5670623, "lon": 88.3701852 },
+    { "lat": 22.5665195, "lon": 88.3699752 },
+    { "lat": 22.5662543, "lon": 88.3701112 },
+    { "lat": 22.5661913, "lon": 88.3703022 },
+    { "lat": 22.5662660, "lon": 88.3703311 },
+    { "lat": 22.5663147, "lon": 88.3704423 },
+    { "lat": 22.5663991, "lon": 88.3705506 },
+    { "lat": 22.5662989, "lon": 88.3708705 },
+    { "lat": 22.5665434, "lon": 88.3709602 },
+    { "lat": 22.5665611, "lon": 88.3710563 },
+    { "lat": 22.5673544, "lon": 88.3707553 },
+    { "lat": 22.5673414, "lon": 88.3707150 },
+    { "lat": 22.5677198, "lon": 88.3705715 },
+    { "lat": 22.5677292, "lon": 88.3706003 },
+    { "lat": 22.5681145, "lon": 88.3704541 },
+    { "lat": 22.5680960, "lon": 88.3703969 },
+    { "lat": 22.5682215, "lon": 88.3703492 },
+    { "lat": 22.5678943, "lon": 88.3701787 },
+    { "lat": 22.5677697, "lon": 88.3700627 },
+    { "lat": 22.5674208, "lon": 88.3698809 },
+    { "lat": 22.5672117, "lon": 88.3702147 },
+    { "lat": 22.5670623, "lon": 88.3701852 }
+  ],
+  "tags": {
+    "access": "yes",
+    "amenity": "parking",
+    "fee": "yes",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 1536126096,
+  "bounds": {
+    "minlat": 22.5674020,
+    "minlon": 88.3701517,
+    "maxlat": 22.5678692,
+    "maxlon": 88.3703971
+  },
+  "geometry": [
+    { "lat": 22.5678450, "lon": 88.3701517 },
+    { "lat": 22.5678692, "lon": 88.3702246 },
+    { "lat": 22.5674262, "lon": 88.3703971 },
+    { "lat": 22.5674020, "lon": 88.3703242 },
+    { "lat": 22.5678450, "lon": 88.3701517 }
+  ],
+  "tags": {
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1536126097,
+  "bounds": {
+    "minlat": 22.5674235,
+    "minlon": 88.3702337,
+    "maxlat": 22.5679345,
+    "maxlon": 88.3705170
+  },
+  "geometry": [
+    { "lat": 22.5679049, "lon": 88.3702337 },
+    { "lat": 22.5679345, "lon": 88.3703175 },
+    { "lat": 22.5674531, "lon": 88.3705170 },
+    { "lat": 22.5674235, "lon": 88.3704332 },
+    { "lat": 22.5679049, "lon": 88.3702337 }
+  ],
+  "tags": {
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1536126101,
+  "bounds": {
+    "minlat": 22.5666083,
+    "minlon": 88.3702108,
+    "maxlat": 22.5671047,
+    "maxlon": 88.3707811
+  },
+  "geometry": [
+    { "lat": 22.5668906, "lon": 88.3702904 },
+    { "lat": 22.5668693, "lon": 88.3702602 },
+    { "lat": 22.5668423, "lon": 88.3702361 },
+    { "lat": 22.5668109, "lon": 88.3702193 },
+    { "lat": 22.5667768, "lon": 88.3702108 },
+    { "lat": 22.5667417, "lon": 88.3702109 },
+    { "lat": 22.5667077, "lon": 88.3702197 },
+    { "lat": 22.5666764, "lon": 88.3702368 },
+    { "lat": 22.5666499, "lon": 88.3702606 },
+    { "lat": 22.5666291, "lon": 88.3702902 },
+    { "lat": 22.5666150, "lon": 88.3703242 },
+    { "lat": 22.5666083, "lon": 88.3703607 },
+    { "lat": 22.5666093, "lon": 88.3703980 },
+    { "lat": 22.5666180, "lon": 88.3704340 },
+    { "lat": 22.5666340, "lon": 88.3704670 },
+    { "lat": 22.5666668, "lon": 88.3705094 },
+    { "lat": 22.5667107, "lon": 88.3705276 },
+    { "lat": 22.5666452, "lon": 88.3707647 },
+    { "lat": 22.5666935, "lon": 88.3707763 },
+    { "lat": 22.5667428, "lon": 88.3707811 },
+    { "lat": 22.5667922, "lon": 88.3707789 },
+    { "lat": 22.5668410, "lon": 88.3707699 },
+    { "lat": 22.5668907, "lon": 88.3707531 },
+    { "lat": 22.5669378, "lon": 88.3707291 },
+    { "lat": 22.5669814, "lon": 88.3706985 },
+    { "lat": 22.5670208, "lon": 88.3706617 },
+    { "lat": 22.5670536, "lon": 88.3706223 },
+    { "lat": 22.5670818, "lon": 88.3705788 },
+    { "lat": 22.5671047, "lon": 88.3705319 },
+    { "lat": 22.5670704, "lon": 88.3705137 },
+    { "lat": 22.5670904, "lon": 88.3704133 },
+    { "lat": 22.5670576, "lon": 88.3704099 },
+    { "lat": 22.5670560, "lon": 88.3703233 },
+    { "lat": 22.5670048, "lon": 88.3703259 },
+    { "lat": 22.5669857, "lon": 88.3702437 },
+    { "lat": 22.5668906, "lon": 88.3702904 }
+  ],
+  "tags": {
+    "building": "yes"
+  }
+}
+
+  ]
+}

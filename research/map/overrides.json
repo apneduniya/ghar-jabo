@@ -16,9 +16,9 @@
       "src": "SOUTH.md §1: TIU main block, grey 2-storey podium, white-and-glass tower of 10-12 floors, rounded glass drum on the north end (sv01_tiugate_h288, sv01b_tiugate_fov60_h300). OSM w134101262 (building=college, 66x91 m) is the only footprint on the west side of Street 2 between 22.5756 and 22.5762; it lines up with the white building on sat275_a_tiu_pwc."
     },
     "new:pwc-more-sw-tower": {
-      "lv": 21, "t": "office", "colour": "#e7b59c",
-      "ll": [[22.5765386, 88.4288461], [22.5767015, 88.4289317], [22.5768299, 88.4286534], [22.5766671, 88.4285678]],
-      "src": "SOUTH.md §1/§3: new peach-and-glass tower of about 20-22 floors on the SW corner of PwC More, missing from OSM and from the (older) satellite, which still shows a vacant plot. Footprint: a 32x20 m slab parallel to Street 13, in the north part of that vacant plot on sat275_a_tiu_pwc (registered to OSM roads), west of Street 2 behind the blue hoarding, south of the west arm of Street 13, east of the service road at x=-40. Slab orientation from sv03_pwcmore_h296 (long face toward Street 13) and sv02_st2mid_h288 (seen end-on from Street 2). Exact plate size is a guess (+-5 m)."
+      "lv": 21, "t": "office", "colour": "#d3a08b",
+      "ll": [[22.5771918, 88.4275677], [22.5770389, 88.4278878], [22.576886, 88.4282079], [22.5768914, 88.4282798], [22.5769276, 88.4285328], [22.5766653, 88.4284355], [22.5766653, 88.4282701], [22.5766599, 88.4281222], [22.5768372, 88.4278109], [22.5770145, 88.4274996]],
+      "src": "CONFIRM.md §3/§4: this is Ecocentre (Ambuja Neotia, EM-4), one 21-storey slab (B+G+20 per the developer and JLL; the rooftop hotel/sky bar is on floors 19-21), pink-brown spandrels and blue glass, 'ECOCENTRE' on the podium (confirm/g13c_h219) and the hotel name on the crown (confirm/cnt_wipro). The 'new peach tower on the SW corner' in SOUTH.md and the 'brown/pink tower' plus 'AltAir/Capella tower' in NORTH.md are all this one building: the bearing from sv02_st2mid_h288 points at it, not at the corner plot, which is still vacant behind the blue hoarding (matches the satellite). Footprint = the old new:altair + new:capella + new:ecocentre traces merged (2,590 m2; the developer's typical floor is ~2,970 m2). The key name is kept because src/sim/mapdata.test.ts refers to it; a rename is the lead's call."
     },
     "134101085": {
       "lv": 3, "t": "block", "colour": "#f3f2ec", "label": "PWH",
@@ -59,8 +59,12 @@
       "src": "SOUTH.md §4 (360-400 m): the dhaba block, 5-storey tan concrete with horizontal sun-shade bands (sv108_st13_h027, sv109_st13_h027). OSM w986997139 is under the dhaba pin on sat275_c_st13east and is the nearest building to the street there."
     },
     "238287187": {
-      "lv": 20, "t": "office", "colour": "#b3aea6",
-      "src": "SOUTH.md §4 (440-470 m): grey stone-and-glass tower of about 18-20 floors with the coffee chain at the kerb (sv110_st13_h027, sv111_st13_h027). OSM w238287187 is under the coffee pin on sat275_c_st13east."
+      "lv": 15, "t": "office", "colour": "#b3aea6",
+      "src": "SOUTH.md §4 (440-470 m), CONFIRM.md §5: grey stone-and-glass tower with the coffee chain at the kerb (sv110_st13_h027, sv111_st13_h027). It is Saltee Tech Park, plot DN-18: the coffee shop's listed address is the ground floor of DN-18 and Google's pin (22.57518, 88.43325) is 10 units from this footprint. Floors corrected from the street estimate of 18-20 to 15 (B+G+14 per JLL and CityInfo; ~650 m2 floor plate, which matches this 556 m2 footprint)."
+    },
+    "986997138": {
+      "lv": 15, "t": "block", "colour": "#cfc7b9",
+      "src": "CONFIRM.md §5: Primarc Tower (DN-36), the grey-beige tower with a dark curved glass bay standing behind the white 3-4 storey P.N. Mukherjee building at ~340 m on the north side (confirm/pri_h27). Google's pin (22.57569, 88.43265) lies between this footprint and the dhaba block w986997139; this one is set back from the road, as the tower is. 15 floors per two listings (registered offices up to the 10th floor); roughly consistent with the view (+-2)."
     },
     "238287188": {
       "lv": 8, "t": "block", "colour": "#f1efe9",
@@ -73,7 +77,7 @@
     "new:college-more-ne-tower": {
       "lv": 20, "t": "office", "colour": "#8fbcbc",
       "ll": [[22.5749284, 88.4342922], [22.5748234, 88.4345354], [22.5746968, 88.434477], [22.5748017, 88.4342338]],
-      "src": "SOUTH.md §5: a tall blue-green glass tower of about 20 floors on the NE corner of College More (sv20_collegemore_h027, right edge). No OSM footprint there and the satellite is older. Placed 28x18 m in the NE quadrant clear of Street 18, Street 13 and the corner service roads; position is the least certain of all entries (+-15 m)."
+      "src": "SOUTH.md §5, CONFIRM.md §5: a tall glass tower of about 20 floors seen NE of College More (sv20_collegemore_h027, confirm/cm_h45). The corner itself is the WBSEDCL Mahishbathan 33/11 kV substation (pale-green 4-storey office with a telecom mast, confirm/cmst18_h120; Google pin 22.57494, 88.43425 at this footprint's west corner), and the tower stands just behind it: a tower crane is still beside it in Jan 2026 and the satellite predates it, so it is newly built. Triangulating confirm/cm_h45 and cmst18_h120 puts it about 12 units north of this footprint, inside the stated +-15 m. Name unknown."
     },
     "134101300": {
       "lv": 7, "t": "college", "colour": "#a9d0d6",
@@ -90,46 +94,40 @@
     "new:pwc-more-se-post": {
       "lv": 2, "t": "block", "colour": "#3d6fae",
       "ll": [[22.5765205, 88.4293111], [22.5764572, 88.4294512], [22.5763758, 88.4294084], [22.5764391, 88.4292683]],
-      "src": "SOUTH.md §3: small blue 2-storey building with a black-and-white chequerboard band on the SE corner of PwC More (sv03_pwcmore_h116, sv101_st13_h207). Not in OSM; placed on the corner behind the footpath. Name unknown (police/traffic-guard post?)."
-    },
-    "new:ecocentre": {
-      "lv": 8, "t": "office", "hs": "guess",
-      "ll": [[22.5768914, 88.4282798], [22.5769276, 88.4285328], [22.5766653, 88.4284355], [22.5766653, 88.4282701]],
-      "src": "Missing from OSM. Footprint traced on sat275_a_tiu_pwc under the 'Ambuja Neotia EcoCentre' pin (atrium-grid roof), south of the west arm of Street 13 and west of the service road at x=-40 (SOUTH.md calls it NW; registered against OSM roads it is SW of the junction, behind the new peach tower; d3_pwc_h270 agrees). Floors NOT counted: 8 is a placeholder until the north survey sees it."
-    },
-    "new:altair": {
-      "lv": 13, "t": "office", "colour": "#b88a7c",
-      "ll": [[22.5770389, 88.4278878], [22.576886, 88.4282079], [22.5766599, 88.4281222], [22.5768372, 88.4278109]],
-      "src": "NORTH.md §1 (~50-90 m from PwC More, west side): a 12-14 floor glass tower with brown/pink spandrels close to the road behind palms and car parking (s13_01_h309, s13_02_h309). OSM has no footprint on the west side of Street 13 between the PwC corner tower and x=-100; the only candidate is the long slab traced on sat275_a_tiu_pwc under the 'AltAir - Capella' pin (was one 'new:altair' entry, 8 floors as a placeholder). Its east half is this tower: bearing from s13_01 to its east end is ~255 deg, at the left edge of the h309 view. Split at the midpoints of the long sides; the split line itself is a guess."
-    },
-    "new:capella": {
-      "lv": 11, "t": "office", "colour": "#c4927f",
-      "ll": [[22.5771918, 88.4275677], [22.5770389, 88.4278878], [22.5768372, 88.4278109], [22.5770145, 88.4274996]],
-      "src": "NORTH.md §1 (~180 m from PwC More, west side): AltAir Capella-type brown-glass office tower of about 10-12 floors with salmon spandrels, royal palms and surface parking in front (g2_h219). It is the west half of the slab under the 'AltAir - Capella' pin (see new:altair): the bearing from g2 to its west end is ~200 deg, the tower at the left of g2_h219."
+      "src": "SOUTH.md §3, CONFIRM.md §4: small 2-storey building on the SE corner of PwC More, blue-and-white chequered ground floor (police livery) under a blue-and-white glazed upper floor, a Nabadiganta Traffic Guard bus board and Bidhannagar traffic barricades beside it (confirm/pw_h150, confirm/pw_h160_zoom2). No name board is readable; most likely the police post that OSM tags as 'Sector - V Police Station' about 60 m east. Not in OSM; placed on the corner behind the footpath."
     },
     "193478726": {
-      "lv": 7, "t": "college", "colour": "#eef0f2",
-      "src": "NORTH.md §1 (~180 m, east side): IIHM Global Campus, white, about 6-8 floors, behind the lunch-hotel shed (g2_h39, g2_h129; courtyard g1_*). OSM w193478726 is the nearest east-side footprint to the g2 pano (~19 units, 38 m) and fronts Street 13. Note OSM's 'Hotel Monotel' node sits in the neighbouring footprint w193478723, not here. Name left off (no real brand on screen)."
+      "lv": 10, "t": "block", "colour": "#d9c4a2",
+      "src": "CONFIRM.md §3: the 4-star business hotel at ~205 m on the NE side (name and 'Luxury Business Hotel' on the forecourt wall, confirm/g13c_h39; Google's pin for it, 22.57802, 88.42767, falls inside this footprint). Sandstone-clad tower with one vertical glass strip and a dark granite portal, about 10 floors (confirm/cnt_monotel, cnt_monotel2; +-1). NORTH.md had this footprint as IIHM: IIHM is the white block 25 m further SE (new:iihm). Name left off (real brand)."
+    },
+    "new:iihm": {
+      "lv": 4, "t": "college", "colour": "#f2f3f4",
+      "ll": [[22.5774596, 88.4283927], [22.5776857, 88.4280911], [22.5778612, 88.4282448], [22.5776351, 88.4285464]],
+      "src": "CONFIRM.md §3: IIHM Global Campus at ~140-160 m on the NE side of Street 13: white 4-storey block (ground + 3 and a rooftop structure) with a glazed entrance, flags and the campus name on a low wall (confirm/g13a_h39, cnt_iihm, g13b_h39). Not in OSM. 40x25 m rectangle parallel to the road, centred on the building seen straight ahead from the g13a pano and 7 m from Google's pin (22.57757, 88.42811); the roof on confirm/q_s13_sat19 agrees to +-8 m. NORTH.md's '6-8 floors' came from a 2022 courtyard photosphere; from the road it is 4."
+    },
+    "193478723": {
+      "lv": 4, "t": "block", "colour": "#efece4",
+      "src": "CONFIRM.md §3: white 4-storey block at ~230 m on the NE side with a paan/snack stall against its wall (confirm/g13d_h39, right half; bearing from the g13d pano ~56 deg). OSM's 'Hotel Monotel' node sits in this footprint, but the hotel itself is w193478726 next door."
     },
     "158642186": {
-      "lv": 14, "t": "block", "colour": "#efe6d2",
-      "src": "NORTH.md §1 (~320 m, east side): cream/white tower of about 14+ floors with a rounded drum-shaped base behind a black iron railing, tea stall and kiosks on the footpath (s13_07_h39, wm_1_*). OSM w158642186 is the footprint straight ahead in s13_07_h39 (bearing ~42 deg, 16 units) and its outline is a curved crescent, i.e. the drum. NORTH.md guessed Hotel Monotel; OSM puts that node elsewhere, so the identity is unverified."
+      "lv": 12, "t": "block", "colour": "#efe6d2",
+      "src": "NORTH.md §1, CONFIRM.md §3 (~300-320 m, NE side): cream tower with red spandrel bands and a rounded glass drum at its NW end (confirm/drum_h60 from the NW, col_h39 and cnt_drum from the SE: both bearings land in this crescent-shaped OSM footprint). About 12 floors over a 1-2 storey base (+-1), not 14+. It is NOT the hotel NORTH.md guessed (that is w193478726). Wipro Kolkata Gate 4 is at its SE corner (gate pillar marked '4' in confirm/col_h80), so it is probably part of the Wipro campus; no name sign seen."
     },
     "158019906": {
-      "lv": 12, "t": "office", "colour": "#b8574a",
-      "src": "NORTH.md §2: the SE corner of Wipro More, a blue glass curtain wall with a red-framed residential section of about 12+ floors (s13_08_h39 right edge, s13_08_h129 left). OSM w158019906 is the next footprint east of w158642186 towards the flyover, at bearing ~87 deg from s13_08, which matches both views. Red tint for the red-balcony section; the blue glass half isn't modelled."
+      "lv": 10, "t": "office", "colour": "#b8574a",
+      "src": "NORTH.md §2, CONFIRM.md §3: SE corner of Wipro More, a tower with a rounded blue-glass corner, red-framed balcony bays and the Wipro logo on its crown (confirm/wmse_h100, cnt_wipro; also seen from 3rd Ave in confirm/wa1_h90). About 10 floors (8 balcony levels over a 2-storey base), not 12+. OSM w158019906 at bearing ~100 deg from the s13_08 pano. Red tint for the balcony section; the blue glass corner isn't modelled."
     },
     "362948042": {
       "lv": 6, "t": "block", "colour": "#a8553e",
-      "src": "NORTH.md §1 (~320 m, west side) and §2 SW corner: red-brick-and-cream 5-6 storey block with a crowned parapet in a walled compound with big trees (s13_07_h219; Google label suggests a Ministry of Defence training centre, unverified). OSM w362948042 is the nearest west-side footprint to s13_07 (32 units) on the SW corner of Wipro More."
+      "src": "NORTH.md §1/§2, CONFIRM.md §3: red-brick-and-cream block with a crowned parapet in a walled compound with big trees on the SW side near Wipro More (s13_07_h219, confirm/rtc_h219 right edge at bearing ~257 deg). Confirmed as the Regional Training Centre, Ministry of Defence: Google's place (22.57799, 88.42714) is in the same compound and its gate photo shows a 'Govt of India, Ministry of Defence' pillar with this red-and-cream building behind. Floors still partly hidden by trees (5-6)."
     },
     "193479375": {
-      "lv": 15, "t": "resi", "colour": "#d9a99a",
-      "src": "NORTH.md §1 (~280 m): tall pinkish-beige slab towers of about 14-16 floors further SW of Street 13 (s13_06_*). Matched by position: OSM w193479375 is the largest west-side footprint between Street 13 and the TIU plot, south-west of s13_06. Floors are a count from a distance; which slab is which is low confidence."
+      "lv": 4, "t": "block", "hs": "guess",
+      "src": "CONFIRM.md §3: NORTH.md's 'pinkish-beige slab towers of 14-16 floors' were Ecocentre (new:pwc-more-sw-tower) seen from 280 m. Nothing tall stands on this footprint: from the g13d pano (49 units away) a 15-storey tower would rise 36 deg above the horizon at bearing ~198 deg, and confirm/cnt_eco shows only trees and sky there. Google labels this site as an IT company's office; floors not counted, 4 is a placeholder for a low block."
     },
     "362948053": {
-      "lv": 14, "t": "resi", "colour": "#d4a395",
-      "src": "NORTH.md §1 (~280 m): the second pinkish-beige slab tower SW of Street 13 (s13_06_*). OSM w362948053 is the west-side footprint between w193479375 and the road, closest to s13_06. Low confidence (seen at distance only)."
+      "lv": 4, "t": "block", "colour": "#c9a77f",
+      "src": "CONFIRM.md §3: not a 14-floor slab (see 193479375). The footprint at bearing ~237 deg from the g13d pano holds a tan 3-4 storey block with balconies behind the compound wall (confirm/g13d_h219, right edge), inside or beside the Ministry of Defence training-centre compound."
     },
     "535333500": {
       "drop": true,
