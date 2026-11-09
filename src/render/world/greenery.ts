@@ -12,7 +12,7 @@ interface Tree { x: number; z: number; s: number; kind: 'rain' | 'round' | PalmK
 const h01 = (x: number, z: number, k = 0) => (Math.abs(Math.sin(x * 12.9898 + z * 78.233 + k * 37.719) * 43758.5453) % 1);
 
 /** A lumpy canopy: a few squashed icosahedra merged, so the silhouette isn't one ball. */
-function canopy(lumps: [number, number, number, number][]) {
+export function canopy(lumps: [number, number, number, number][]) {
   return mergeGeometries(lumps.map(([x, y, z, r]) => {
     const g = new THREE.IcosahedronGeometry(r, 0).toNonIndexed();
     g.scale(1, 0.62, 1);

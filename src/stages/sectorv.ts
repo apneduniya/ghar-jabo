@@ -11,6 +11,8 @@ import { Actors } from '../render/actors';
 import { buildCityMap, map } from '../render/world/citymap';
 import { buildProps } from '../render/world/props';
 import { Walkers } from '../render/world/walkers';
+import { fixtureSource, StreamedWorld } from '../render/world/streamed';
+import type { ChunkSource } from '../sim/gen/types';
 import { Minimap } from '../ui/minimap';
 import { showTitle } from '../ui/title';
 import { unlockAudio } from '../audio/audio';
@@ -60,7 +62,10 @@ export function sectorv(): Scene {
   const camera = new THREE.PerspectiveCamera(55, 1, 0.5, 600);
   const shake = new Shake();
   const built = buildCityMap();
-  scene.add(built.group);
+  // Everything that belongs to the real map, so it can be hidden as a whole far out in the streamed world.
+  const sectorGroup = new THREE.Group();
+  scene.add(sectorGroup);
+  sectorGroup.add(built.group);
   const actors = new Actors(scene);
 
   // The sim, starting at the college gate.
@@ -93,7 +98,18 @@ export function sectorv(): Scene {
   // Static geometry in one draw call, every static board (landmarks, shops, billboards) in one more.
   bake(dressing);
   batchSigns(dressing);
-  scene.add(dressing);
+  sectorGroup.add(dressing);
+
+  // The streamed world beyond the map (task 020): builder G's ChunkStore when the sim has one, else the debug
+  // fixture behind `?fixture=1`.
+  let streamed: StreamedWorld | null = null;
+  let exited = false;
+  const chunks = (world as unknown as { chunks?: ChunkSource }).chunks;
+  const attach = (src: ChunkSource, driven: ConstructorParameters<typeof StreamedWorld>[3] = null) => {
+    streamed = new StreamedWorld(scene, src, sectorGroup, driven);
+    minimap.attachWorld(src);
+    game.debug.streamed = streamed;
+  };
 
   // What is overhead (a flyover deck or a station), so the camera can stay underneath it.
   const overhead = roofs(map.roads);
@@ -101,6 +117,8 @@ export function sectorv(): Scene {
   let layer: HTMLElement;
   let actionBtn: HTMLButtonElement;
   const minimap = new Minimap(map);
+  if (chunks) attach(chunks);
+  else void fixtureSource().then((fx) => { if (fx && !exited) attach(fx, fx); });
   const exit = map.busPath[map.busPath.length - 1];
   let phoneBtn: HTMLButtonElement;
   let balanceUi: HTMLElement | null = null;
@@ -196,12 +214,15 @@ export function sectorv(): Scene {
         camera.position.set(Math.cos(orbit) * 75, 36, Math.sin(orbit) * 75);
         camera.lookAt(0, 4, 0);
         built.cull(0, 0);
+        streamed?.update(0, 0);
         playerObj.position.set(world.player.x, 0, world.player.z);
         return;
       }
       playUpdate(dt);
     },
     exit() {
+      exited = true;
+      streamed?.dispose();
       ambience.stop();
       enableStick(false);
       layer.remove();
@@ -296,6 +317,7 @@ export function sectorv(): Scene {
       shake.apply(camera, dt);
       actors.billboard(camera);
       built.cull(camera.position.x, camera.position.z);
+      streamed?.update(p.x, p.z);
       minimap.draw({ x: p.x, z: p.z, yaw, vehicles: world.traffic.vehicles, captainId: world.captainId, metro: world.metroEntrance, exit: { x: exit[0], z: exit[1] } }, performance.now());
 
       const place = placeName(p.x, p.z);

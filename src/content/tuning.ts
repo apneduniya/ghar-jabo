@@ -65,3 +65,17 @@ export const T = {
 export const FLOOR_U = 2.4;
 /** Ground-floor shop height: a little taller than an upper floor. */
 export const SHOP_U = 3.0;
+
+/** Streamed-world rendering (render/world/chunks.ts, task 020). */
+export const CHUNK_VIEW = {
+  /** Meshing time per frame, ms: chunks are built a slice at a time, nearest first. */
+  budgetMs: 4,
+  /** Fog far (units) inside Sector V and per area beyond it; chunks past the fog are hidden. */
+  fogFar: { sectorv: 340, saltlake: 290, old: 230, generic: 260 },
+  /** Fog near as a share of fog far. */
+  fogNear: 0.36,
+  /** Over this many units outside the Sector V square, the fog has fully become the area's. */
+  fogBlend: 200,
+  /** Hide the whole Sector V map beyond this distance from its origin. */
+  hideSectorV: 600,
+};
