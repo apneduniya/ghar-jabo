@@ -146,3 +146,15 @@ export interface Chunk {
   /** Extra collision rings beyond building footprints (walls, dead-end barriers, water edges). */
   blockers: Pt[][];
 }
+
+/**
+ * What the renderer sees of the streamed world: the loaded chunks and load/unload notifications.
+ * Implemented by ChunkStore (src/sim/gen/stream.ts); renderers subscribe and never mutate.
+ */
+export interface ChunkSource {
+  readonly net: WorldNet;
+  readonly warp: Warp;
+  loaded(): Iterable<Chunk>;
+  onLoad(cb: (c: Chunk) => void): void;
+  onUnload(cb: (c: Chunk) => void): void;
+}
