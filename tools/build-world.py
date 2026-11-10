@@ -469,6 +469,20 @@ for q in pts:
     if all(math.dist(q, [b['x'], b['z']]) > 200 for b in areas if b['kind'] == 'bypass'):
         areas.append({'kind': 'bypass', 'x': round(q[0], 1), 'z': round(q[1], 1), 'r': 70})
 
+# Ultadanga's suburban station is "Bidhan Nagar Road" (research/routes/GAPS.md §2): the real pin, a station model
+# laid along the tracks (OSM rails near it bear about 12 degrees east of north), clear of generated buildings.
+for lm in landmarks:
+    if lm['id'] == 'bidhannagar-road':
+        sx, sz = g(22.59145, 88.39081)
+        lm.update({'kind': 'rail-station', 'name': 'Bidhan Nagar Road', 'x': round(sx, 1), 'z': round(sz, 1),
+                   'heading': round(math.atan2(-math.cos(math.radians(12)), math.sin(math.radians(12))), 2), 'r': 50})
+# Nothing else stands in the station's footprint: OSM's "Bidhannagar Road" bus-stand point, a club name board and a
+# mislabelled "Sealdah Beliaghata flyover" point (no flyover road is near; the real Ultadanga flyover is ~400 m east)
+# would otherwise be drawn across the platforms.
+st = next((l for l in landmarks if l['kind'] == 'rail-station'), None)
+if st:
+    landmarks[:] = [l for l in landmarks if l is st or l['kind'] == 'police-kiosk' or math.dist([l['x'], l['z']], [st['x'], st['z']]) > st['r'] + 5]
+
 stops = []
 for e in load('osm-landmarks.json')['elements']:
     t = e.get('tags', {})

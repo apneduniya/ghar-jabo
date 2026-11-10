@@ -31,7 +31,7 @@ export interface NetRoad {
 }
 
 export type LandmarkKind =
-  | 'sealdah-station' | 'metro-station' | 'metro-portal' | 'bus-terminus' | 'clock-tower' | 'stadium-gate'
+  | 'sealdah-station' | 'rail-station' | 'metro-station' | 'metro-portal' | 'bus-terminus' | 'clock-tower' | 'stadium-gate'
   | 'traffic-island' | 'statue' | 'kolkata-sign' | 'flyover' | 'canal-bridge' | 'rail-underbridge'
   | 'mall' | 'market' | 'hospital' | 'police-kiosk' | 'billboards' | 'generic';
 

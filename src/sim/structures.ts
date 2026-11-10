@@ -48,6 +48,18 @@ export const FLY = {
 export interface FlyStep { s: Step; y: number; pier: boolean }
 
 /** Every drawn piece of a deck (above grade) and whether a column stands under it. */
+/**
+ * The tin sheeting under the NE-bound deck for one step: its centre, or null where there's none. It closes off the
+ * space beside the service road (fly_03), so it never stands on a carriageway: on the halved map the deck edge
+ * overhangs the Bypass in places, and the sheeting was drawn across the traffic lanes there.
+ */
+export function tinAt(deck: Deck, s: Step, y: number, roads: Road[]): { x: number; z: number } | null {
+  if (!deck.ne || y <= FLY.tin.y) return null;
+  const o = deck.w / 2 - FLY.tin.inset, x = s.x + s.dz * o, z = s.z - s.dx * o;
+  for (const k of [-0.5, 0, 0.5]) if (onCarriageway(roads, x + s.dx * s.len * k, z + s.dz * s.len * k, 0.3)) return null;
+  return { x, z };
+}
+
 export function flyoverSteps(deck: Deck, roads: Road[]): FlyStep[] {
   const out: FlyStep[] = [];
   let nextPier = 0;
@@ -96,10 +108,8 @@ function flyoverSolids(decks: Deck[], roads: Road[], out: Acc) {
       const r = FLY.pier.r, half = r * FLY.pier.stretch - r;
       out.add(boxAlong([s.x - nx * half, s.z - nz * half], [s.x + nx * half, s.z + nz * half], 0, r));
     }
-    if (deck.ne && y > FLY.tin.y) {
-      const o = deck.w / 2 - FLY.tin.inset;
-      out.wide('tin sheeting', box(s.x + nx * o, s.z + nz * o, s.dx, s.dz, s.len + 0.02, 0.06));
-    }
+    const tin = tinAt(deck, s, y, roads);
+    if (tin) out.add(box(tin.x, tin.z, s.dx, s.dz, s.len + 0.02, 0.06));
   }
 }
 

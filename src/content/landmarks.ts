@@ -27,6 +27,14 @@ export const LM = {
 export const LM_TEXT = {
   sealdahNorth: 'SEALDAH (NORTH)',
   sealdahRoof: 'SEALDAH · শিয়ালদহ',
+  // Bidhan Nagar Road (Ultadanga) suburban station: the classic yellow station board, in three scripts.
+  railBoard: 'BIDHAN NAGAR ROAD',
+  railBoardBn: 'বিধাননগর রোড',
+  railBoardHi: 'बिधाननगर रोड',
+  railCounter: 'BOOKING · RESERVATION',
+  // City Centre (Salt Lake): parody store signs on the mauve band (GAPS.md §1).
+  ccStores: ['BAZAAR BOX', 'BURGER RAJA', 'CHILLI-ISH', 'PHONE-O-RAMA'],
+  ccName: 'CITY CENTRE',
   sealdahNorthBn: 'শিয়ালদহ (উত্তর)',
   sealdahNorthHi: 'सियालदह (उत्तर)',
   sealdahMain: 'Sealdah Main · শিয়ালদহ মেইন',

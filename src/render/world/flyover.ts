@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { sign } from '../gfx';
 import { northSigns } from '../../content/text';
 import { nearest, type Deck } from '../../sim/elevated';
-import { FLY, flyoverSteps } from '../../sim/structures';
+import { FLY, flyoverSteps, tinAt } from '../../sim/structures';
 import type { Road } from '../../sim/mapdata';
 import { type Parts, type Step, type V3 } from './northkit';
 
@@ -42,7 +42,8 @@ export function buildFlyover(parts: Parts, posters: THREE.BufferGeometry[], deck
       }
       if (hasPier) pier(parts, posters, s, deck.w, y);
       // Blue tin sheeting closes off the space under the NE-bound deck along the service road (fly_03).
-      if (deck.ne && y > FLY.tin.y) parts.box(s.len + 0.02, FLY.tin.h, 0.06, s.x + nx * (half - FLY.tin.inset), 0, s.z + nz * (half - FLY.tin.inset), s.rot, C.tin);
+      const tin = tinAt(deck, s, y, roads);
+      if (tin) parts.box(s.len + 0.02, FLY.tin.h, 0.06, tin.x, 0, tin.z, s.rot, C.tin);
       if (!deck.ne && y > 4 && (!gantry || st < gantry.d)) gantry = { s, y, d: st };
     }
     if (gantry) signs.push(...gantrySign(parts, gantry.s, gantry.y, half));
