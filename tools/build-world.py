@@ -184,12 +184,22 @@ for w, cs in used.items():
     roads.append(r)
 
 # The walk tails into the Sealdah forecourt (pedestrian ways, plus the synthetic OSM gap), as lanes.
+# From the north (APC Rd), the real ground route is the stall-lined pedestrian strip on the station side of
+# Vidyapati Setu, then Sealdah Station Rd's drop-off loop into the forecourt (research/routes/GAPS.md §3,
+# OSM w105833278 + Google photo path). It replaces OSM's synthetic gap link and the under-deck walk.
+SEALDAH_NORTH_WALK = [
+    [-2987.0, 340.4], [-2981.2, 342.8], [-2987.4, 356.2], [-2993.5, 369.5], [-2999.6, 382.9], [-3005.7, 396.2],
+    [-3011.8, 409.6], [-3017.9, 422.9], [-3024.1, 436.2], [-3030.2, 449.6], [-3036.2, 462.9], [-3042.3, 476.3],
+    [-3048.5, 489.6], [-3054.6, 503.0], [-3043.3, 510.3], [-3035.4, 526.7], [-3028.6, 543.2], [-3034.8, 549.9],
+]
 tails = {}
 for c in corr['corridors']:
     poly = c['polyline']
     walk = [s for s in c['segments'] if s['mode'] != 'drive']
     if not walk: continue
     pts = [poly[i]['game'] for i in range(walk[0]['from_i'], walk[-1]['to_i'] + 1)]
+    if math.dist(pts[0], SEALDAH_NORTH_WALK[0]) < 60:  # arriving from the north along APC Rd
+        pts = SEALDAH_NORTH_WALK
     key = tuple(map(tuple, pts))
     tails.setdefault(key, set()).add(c['id'])
 for key, cs in tails.items():

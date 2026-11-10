@@ -11,6 +11,8 @@ export interface Edge {
   len: number;
   width: number;
   dx: number; dz: number; // unit direction
+  /** Smallest distance from the centre line to a lane: wider where piers stand in the middle of the road. */
+  minLane?: number;
 }
 
 export const TRAFFIC_ROADS = new Set(['primary', 'secondary', 'tertiary', 'primary_link', 'secondary_link', 'tertiary_link']);
@@ -23,20 +25,22 @@ export class RoadGraph {
   private index = new Map<string, number>();
 
   /** `extra`: more roads in game coords (the streamed world's net roads), joined to the map where ends coincide. */
-  constructor(map: MapData, extra: { p: Pt[]; w: number; oneway: boolean }[] = []) {
+  constructor(map: MapData, extra: { p: Pt[]; w: number; oneway: boolean; minLane?: (a: Pt, b: Pt) => number }[] = []) {
     for (const r of map.roads) {
       if (!TRAFFIC_ROADS.has(r.k) || r.b) continue; // the flyover deck stays empty for now
       this.addLine(r.p, r.w, !!r.o);
     }
-    for (const r of extra) this.addLine(r.p, r.w, r.oneway);
+    for (const r of extra) this.addLine(r.p, r.w, r.oneway, r.minLane);
   }
 
-  private addLine(p: Pt[], w: number, oneway: boolean) {
+  private addLine(p: Pt[], w: number, oneway: boolean, minLane?: (a: Pt, b: Pt) => number) {
     for (let i = 1; i < p.length; i++) {
       const a = this.node(p[i - 1]), b = this.node(p[i]);
       if (a === b) continue;
-      this.add(a, b, w);
-      if (!oneway) this.add(b, a, w);
+      const ml = minLane?.(p[i - 1], p[i]) || undefined;
+      const e1 = this.add(a, b, w);
+      if (e1 && ml) e1.minLane = ml;
+      if (!oneway) { const e2 = this.add(b, a, w); if (e2 && ml) e2.minLane = ml; }
     }
   }
 
@@ -47,13 +51,14 @@ export class RoadGraph {
     return i;
   }
 
-  private add(from: number, to: number, width: number) {
+  private add(from: number, to: number, width: number): Edge | undefined {
     const [ax, az] = this.nodes[from], [bx, bz] = this.nodes[to];
     const len = Math.hypot(bx - ax, bz - az);
-    if (len < 0.01) return;
+    if (len < 0.01) return undefined;
     const e: Edge = { id: this.edges.length, from, to, ax, az, bx, bz, len, width, dx: (bx - ax) / len, dz: (bz - az) / len };
     this.edges.push(e);
     this.out[from].push(e.id);
+    return e;
   }
 
   /** Next edge after `e`: prefers going straight, never U-turns unless it's a dead end. */
@@ -68,7 +73,7 @@ export class RoadGraph {
 
   /** World position at distance s along e, shifted to the left lane. */
   at(e: Edge, s: number, laneFrac: number): { x: number; z: number; heading: number } {
-    const off = e.width * laneFrac;
+    const off = Math.max(e.width * laneFrac, e.minLane ?? 0);
     // Left of travel with x east and z south is (dz, -dx).
     return { x: e.ax + e.dx * s + e.dz * off, z: e.az + e.dz * s - e.dx * off, heading: Math.atan2(e.dz, e.dx) };
   }

@@ -105,7 +105,9 @@ export class ChunkStore implements ChunkSource {
   private add(chunk: Chunk) {
     this.queue = this.queue.filter((c) => c.cx !== chunk.cx || c.cz !== chunk.cz);
     const rings = [...chunk.buildings.map((b) => b.p), ...chunk.blockers];
-    const bridges = chunk.roads.filter((r) => r.bridge === 'canal' || r.bridge === 'flyover').map((r) => ({ b: 1, w: r.w, p: r.p }));
+    // Water is crossed on bridges. A real corridor road over water is always on one, even where OSM didn't flag the
+    // short bridge way (Narkeldanga Main Road over the Beliaghata canal cut free roam's walk to Sealdah).
+    const bridges = chunk.roads.filter((r) => r.real || r.bridge === 'canal' || r.bridge === 'flyover').map((r) => ({ b: 1, w: r.w, p: r.p }));
     const structs = new SolidGrid(chunkSolids(this.net, this.warp, chunk.cx, chunk.cz));
     this.chunks.set(chunkKey(chunk.cx, chunk.cz), { chunk, solid: new BuildingGrid(rings), water: new WaterMask(chunk.water ?? [], bridges), structs });
     this.stats.generated++;

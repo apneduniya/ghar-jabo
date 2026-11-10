@@ -5,7 +5,10 @@ import { STREAM } from '../content/worldgen';
 import { busRoute } from './gen/busroute';
 import { warped, type WarpedNet } from './gen/net';
 import { ChunkStore } from './gen/stream';
-import type { PlayMode, WorldNet } from './gen/types';
+import type { PlayMode, Pt, WorldNet } from './gen/types';
+import { allSolids } from './gen/solids';
+import type { Solid } from './solids';
+import { T } from '../content/tuning';
 import type { MapData } from './mapdata';
 
 export class Streamed {
@@ -27,8 +30,34 @@ export class Streamed {
   }
 
   /** Net roads for the traffic graph (game coords). */
+  /**
+   * Corridor roads for the traffic graph. Where a round pier (metro viaduct, flyover column) stands near a road's
+   * centre line, that segment's lanes move out just far enough for a bus to pass it on either side, like the real
+   * median under the Green Line. Piers near the kerb can't be fixed this way (see structureConflicts).
+   */
   graphRoads() {
-    return this.wn.roads.map((r) => ({ p: r.p, w: r.road.w, oneway: r.road.oneway }));
+    const piers = new Map<string, Solid[]>(), C = 16;
+    for (const s of allSolids(this.net, this.store.warp)) {
+      if (s.hl || s.hw || s.r <= 0) continue; // round piers only; walls and boxes aren't in the middle of a road
+      const k = `${Math.floor(s.x / C)},${Math.floor(s.z / C)}`;
+      (piers.get(k) ?? piers.set(k, []).get(k)!).push(s);
+    }
+    const clear = T.traffic.pierClear;
+    const minLane = (a: Pt, b: Pt) => {
+      const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz) || 1;
+      let need = 0;
+      const x0 = Math.floor((Math.min(a[0], b[0]) - 4) / C), x1 = Math.floor((Math.max(a[0], b[0]) + 4) / C);
+      const z0 = Math.floor((Math.min(a[1], b[1]) - 4) / C), z1 = Math.floor((Math.max(a[1], b[1]) + 4) / C);
+      for (let cx = x0; cx <= x1; cx++) for (let cz = z0; cz <= z1; cz++) for (const s of piers.get(`${cx},${cz}`) ?? []) {
+        // Along the segment, plus a pier's reach past either end (a bus beside it straddles the joint).
+        const along = ((s.x - a[0]) * dx + (s.z - a[1]) * dz) / L;
+        if (along < -(s.r + clear) || along > L + s.r + clear) continue;
+        const side = Math.abs((s.x - a[0]) * dz - (s.z - a[1]) * dx) / L;
+        if (side < T.traffic.medianPier) need = Math.max(need, side + s.r + clear);
+      }
+      return need;
+    };
+    return this.wn.roads.map((r) => ({ p: r.p, w: r.road.w, oneway: r.road.oneway, minLane }));
   }
 
   route(map: MapData) { return busRoute(map, this.wn); }
