@@ -119,6 +119,20 @@ export function building(w: number, h: number, d: number, color: number, windows
 }
 
 /** A flat signboard with text drawn on a canvas texture. */
+/**
+ * Set the largest font (from `start` down to `min`) at which `text` fits in `maxW` pixels, and return the size.
+ * Text width scales with font size, so one measurement (plus a correction for rounding) does it; shrinking a step
+ * at a time and re-measuring cost up to 70 ms per landmark chunk (task 020).
+ */
+export function fitFont(g: CanvasRenderingContext2D, text: string, maxW: number, start: number, min: number, font: (px: number) => string) {
+  g.font = font(start);
+  const w = g.measureText(text).width;
+  let size = w > maxW ? Math.max(min, Math.floor(start * maxW / w)) : start;
+  g.font = font(size);
+  if (size > min && g.measureText(text).width > maxW) { size = Math.max(min, size - 1); g.font = font(size); }
+  return size;
+}
+
 export function sign(text: string, w: number, h: number, bg = '#1f5f3a', fg = '#ffffff'): THREE.Mesh {
   const cv = document.createElement('canvas');
   cv.width = 512;
@@ -127,9 +141,7 @@ export function sign(text: string, w: number, h: number, bg = '#1f5f3a', fg = '#
   g.fillStyle = bg;
   g.fillRect(0, 0, cv.width, cv.height);
   g.fillStyle = fg;
-  let size = cv.height * 0.6;
-  g.font = `bold ${size}px system-ui, sans-serif`;
-  while (g.measureText(text).width > cv.width * 0.9 && size > 10) { size -= 2; g.font = `bold ${size}px system-ui, sans-serif`; }
+  fitFont(g, text, cv.width * 0.9, cv.height * 0.6, 10, (n) => `bold ${n}px system-ui, sans-serif`);
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.fillText(text, cv.width / 2, cv.height / 2);

@@ -3,6 +3,7 @@
 // a white strip at the bottom of the sign atlas, so they share the signs' material.
 
 import * as THREE from 'three';
+import { fitFont } from '../gfx';
 import { FLOOR_U, SHOP_U } from '../../content/tuning';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Bay } from './buildings';
@@ -30,9 +31,7 @@ function signAtlas() {
     g.fillStyle = bg; g.fillRect(x, y, 256, 128);
     g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 6; g.strokeRect(x + 3, y + 3, 250, 122);
     g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
-    let size = 46;
-    g.font = `bold ${size}px system-ui, "Noto Sans Bengali", sans-serif`;
-    while (g.measureText(text).width > 230 && size > 14) { size -= 2; g.font = `bold ${size}px system-ui, "Noto Sans Bengali", sans-serif`; }
+    fitFont(g, text, 230, 46, 14, (n) => `bold ${n}px system-ui, "Noto Sans Bengali", sans-serif`);
     g.fillText(text, x + 128, y + 66);
   });
   const t = new THREE.CanvasTexture(cv);

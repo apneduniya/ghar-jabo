@@ -3,7 +3,7 @@
 // gateways and the parody shop signs. Boxes are baked with the dressing; boards go into the sign atlas.
 
 import * as THREE from 'three';
-import { box, sign } from '../gfx';
+import { box, sign, fitFont } from '../gfx';
 import { auto, person, toto } from '../models';
 import { FOOTPATH, PWC_BUILDING, SIGNS, STANDEE_AT, STREETS } from '../../content/streetlife';
 import { standees, streetAds } from '../../content/text';
@@ -20,9 +20,7 @@ export function adBoard(title: string, line: string, bg: string, fg: string, w =
   const g = cv.getContext('2d')!;
   g.fillStyle = bg; g.fillRect(0, 0, 512, 256);
   g.fillStyle = fg; g.textAlign = 'center';
-  let size = 84;
-  g.font = `bold ${size}px system-ui, sans-serif`;
-  while (g.measureText(title).width > 480 && size > 30) { size -= 4; g.font = `bold ${size}px system-ui, sans-serif`; }
+  fitFont(g, title, 480, 84, 30, (n) => `bold ${n}px system-ui, sans-serif`);
   g.fillText(title, 256, 120);
   g.font = '30px system-ui, sans-serif';
   g.fillText(line, 256, 190, 490);

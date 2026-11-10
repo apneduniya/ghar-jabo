@@ -2,7 +2,7 @@
 // so a full street of traffic stays inside the draw-call budget. Every model faces +x; left is -z.
 
 import * as THREE from 'three';
-import { bake, box, C, mat } from './gfx';
+import { bake, box, C, mat, fitFont } from './gfx';
 import { BUS_FRONT_DOOR, BUS_LEN, BUS_REAR_DOOR, BUS_WIDTH } from '../sim/vehicles';
 
 /** Deterministic pick from a variant number, so the same vehicle always looks the same. */
@@ -164,10 +164,7 @@ function busTextAtlas(board: string, slogan: string, back: string, bg: string, f
   const row = (text: string, y: number, rowBg: string, rowFg: string) => {
     g.fillStyle = rowBg; g.fillRect(0, y, 512, 64);
     g.fillStyle = rowFg;
-    let size = 40;
-    const font = (n: number) => `bold ${n}px system-ui, "Noto Sans Bengali", sans-serif`;
-    g.font = font(size);
-    while (g.measureText(text).width > 480 && size > 10) { size -= 2; g.font = font(size); }
+    fitFont(g, text, 480, 40, 10, (n) => `bold ${n}px system-ui, "Noto Sans Bengali", sans-serif`);
     g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillText(text, 256, y + 32);
   };

@@ -75,6 +75,8 @@ export const SHOP_U = 3.0;
 export const CHUNK_VIEW = {
   /** Meshing time per frame, ms: chunks are built a slice at a time, nearest first. */
   budgetMs: 4,
+  /** Adaptive draw distance: shrink when a frame passes `high` draw calls, grow back under `low` (budget 60). */
+  adapt: { high: 50, low: 42, down: 0.06, up: 0.003, min: 0.55 },
   /** Fog far (units) inside Sector V and per area beyond it; chunks past the fog are hidden. */
   fogFar: { sectorv: 340, saltlake: 290, old: 230, generic: 260 },
   /** Fog near as a share of fog far. */

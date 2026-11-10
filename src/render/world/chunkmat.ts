@@ -4,7 +4,7 @@
 // lit windows, lamps, stall tube lights and signs light up after dark at no extra draw calls.
 
 import * as THREE from 'three';
-import { nightUniform } from '../gfx';
+import { nightUniform, fitFont } from '../gfx';
 import { asphalt, facadeBlock, facadeClad, facadeOffice, facadeOld, facadeResidential, facadeShop, kerbStripes, pavers } from './textures';
 import { ATLAS_H, ATLAS_W, RECT_COUNT, SIGN_COUNT, TEXT_COLS, TEXT_H, TEXT_ROWS, TEXT_W, TextSlots, Tile, rectUniform, tileRects } from './chunkatlas';
 import { streetAds } from '../../content/text';
@@ -41,10 +41,7 @@ function drawBoard(g: CanvasRenderingContext2D, x: number, y: number, w: number,
   g.fillStyle = bg; g.fillRect(x, y, w, h);
   g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 5; g.strokeRect(x + 3, y + 3, w - 6, h - 6);
   g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
-  let size = line ? h * 0.36 : h * 0.42;
-  const font = (s: number) => `bold ${s}px system-ui, "Noto Sans Bengali", sans-serif`;
-  g.font = font(size);
-  while (g.measureText(title).width > w * 0.9 && size > 9) { size -= 1; g.font = font(size); }
+  fitFont(g, title, w * 0.9, line ? h * 0.36 : h * 0.42, 9, (s) => `bold ${s}px system-ui, "Noto Sans Bengali", sans-serif`);
   g.fillText(title, x + w / 2, y + (line ? h * 0.38 : h * 0.54));
   if (line) { g.font = `${Math.round(h * 0.15)}px system-ui, sans-serif`; g.fillText(line, x + w / 2, y + h * 0.75, w * 0.92); }
 }
