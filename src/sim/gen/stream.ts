@@ -4,12 +4,15 @@
 
 import { STREAM } from '../../content/worldgen';
 import { BuildingGrid, WaterMask } from '../collide';
+import { SolidGrid } from '../solids';
+import { chunkSolids } from './solids';
 import { chunkJob, chunkKey, insideSquare, onBand } from './chunks';
 import { HALF } from './clip';
 import { CHUNK, type Chunk, type ChunkSource, type PlayMode, type Pt, type Warp, type WorldNet } from './types';
 import { makeWarp } from './warp';
 
-interface Loaded { chunk: Chunk; solid: BuildingGrid; water: WaterMask }
+/** A loaded chunk with its collision: buildings and blockers, water (bridges excepted), structure footprints. */
+interface Loaded { chunk: Chunk; solid: BuildingGrid; water: WaterMask; structs: SolidGrid }
 
 export interface StoreOpts { load: number; unload: number; perStep: number }
 
@@ -103,7 +106,8 @@ export class ChunkStore implements ChunkSource {
     this.queue = this.queue.filter((c) => c.cx !== chunk.cx || c.cz !== chunk.cz);
     const rings = [...chunk.buildings.map((b) => b.p), ...chunk.blockers];
     const bridges = chunk.roads.filter((r) => r.bridge === 'canal' || r.bridge === 'flyover').map((r) => ({ b: 1, w: r.w, p: r.p }));
-    this.chunks.set(chunkKey(chunk.cx, chunk.cz), { chunk, solid: new BuildingGrid(rings), water: new WaterMask(chunk.water ?? [], bridges) });
+    const structs = new SolidGrid(chunkSolids(this.net, this.warp, chunk.cx, chunk.cz));
+    this.chunks.set(chunkKey(chunk.cx, chunk.cz), { chunk, solid: new BuildingGrid(rings), water: new WaterMask(chunk.water ?? [], bridges), structs });
     this.stats.generated++;
     for (const cb of this.loadCbs) cb(chunk);
   }
@@ -122,15 +126,15 @@ export class ChunkStore implements ChunkSource {
   }
 
   /**
-   * True if a body of radius `pad` can't stand at (x, z) in the streamed world: a building, wall, dead end or water
-   * (bridges excepted), and in timed mode anywhere off the road band. Inside the Sector V square this is always
+   * True if a body of radius `pad` can't stand at (x, z) in the streamed world: a building, wall, dead end, water
+   * (bridges excepted) or a structure (pier, low ramp, station tower, parapet, abutment), and in timed mode anywhere off the road band. Inside the Sector V square this is always
    * false (the real map answers there). Unloaded ground is open.
    */
   blocked(x: number, z: number, pad: number): boolean {
     if (Math.abs(x) <= HALF && Math.abs(z) <= HALF) return false;
     const near = this.around(x, z, 24);
     if (!near.length) return false;
-    for (const l of near) if (l.solid.blocked(x, z, pad) || l.water.blocked(x, z, pad)) return true;
+    for (const l of near) if (l.solid.blocked(x, z, pad) || l.structs.blocked(x, z, pad) || l.water.blocked(x, z, pad)) return true;
     if (this.mode === 'timed') {
       if (Math.abs(x) <= HALF + 12 && Math.abs(z) <= HALF + 12) return false; // the seam: real map buildings decide
       const s = this.net.sealdah, [sx, sz] = this.warp.toGame([s.x, s.z]);

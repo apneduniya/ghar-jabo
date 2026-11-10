@@ -6,21 +6,10 @@ import * as THREE from 'three';
 import { sign as makeSign } from '../../gfx';
 import type { AreaKind, NetRoad, Pt, Warp, WorldNet } from '../../../sim/gen/types';
 import { Soup, type V3 } from './soup';
-import { type Line, nearestOn, prepLine } from './clip';
+import type { Line } from './clip';
+import { areaNear, nearestRoad, netLines, type RoadHit } from '../../../sim/gen/layout';
 
-const memos = new WeakMap<WorldNet, WeakMap<Warp, Map<string, unknown>>>();
-
-/** Per (net, warp) cache: warping the network once, not once per chunk. */
-export function memo<T>(net: WorldNet, warp: Warp, key: string, fn: () => T): T {
-  let byWarp = memos.get(net);
-  if (!byWarp) memos.set(net, (byWarp = new WeakMap()));
-  let m = byWarp.get(warp);
-  if (!m) byWarp.set(warp, (m = new Map()));
-  if (!m.has(key)) m.set(key, fn());
-  return m.get(key) as T;
-}
-
-export interface RoadHit { r: NetRoad; d: number; x: number; z: number; dx: number; dz: number; w: number }
+export { memo, type RoadHit } from '../../../sim/gen/layout';
 
 export class Ctx {
   readonly parts = new Soup();
@@ -28,34 +17,13 @@ export class Ctx {
   constructor(readonly net: WorldNet, readonly warp: Warp, readonly cx: number, readonly cz: number) {}
 
   /** Every network road, warped into game space. */
-  roads(): { r: NetRoad; l: Line }[] {
-    return memo(this.net, this.warp, 'roads', () => this.net.roads.map((r) => ({ r, l: prepLine(r.p, this.warp, 16) })));
-  }
+  roads(): { r: NetRoad; l: Line }[] { return netLines(this.net, this.warp); }
 
   /** The nearest road (optionally filtered) to a game point, with its direction there. */
-  nearestRoad(x: number, z: number, ok: (r: NetRoad) => boolean = (r) => r.bridge !== 'flyover'): RoadHit | null {
-    let best: RoadHit | null = null;
-    for (const { r, l } of this.roads()) {
-      if (!ok(r)) continue;
-      const n = nearestOn(l, x, z);
-      if (best && n.d >= best.d) continue;
-      const i = Math.max(1, l.d.findIndex((d) => d >= n.s));
-      const a = l.p[i - 1], b = l.p[Math.min(i, l.p.length - 1)], L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
-      best = { r, d: n.d, x: n.x, z: n.z, dx: (b[0] - a[0]) / L, dz: (b[1] - a[1]) / L, w: r.w };
-    }
-    return best;
-  }
+  nearestRoad(x: number, z: number, ok?: (r: NetRoad) => boolean): RoadHit | null { return nearestRoad(this.net, this.warp, x, z, ok); }
 
   /** Street character at a game point (nearest area centre in real coordinates). */
-  area(x: number, z: number): AreaKind {
-    const [rx, rz] = this.warp.toReal([x, z]);
-    let best: AreaKind = 'generic', bd = Infinity;
-    for (const a of this.net.areas) {
-      const d = Math.hypot(a.x - rx, a.z - rz) / (a.r || 1);
-      if (d < bd) { bd = d; best = a.kind; }
-    }
-    return bd < 2.5 ? best : 'generic';
-  }
+  area(x: number, z: number): AreaKind { return areaNear(this.net, this.warp, x, z); }
 
   frame(x: number, z: number, h: number) { return new Frame(this, x, z, h); }
 

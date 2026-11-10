@@ -6,15 +6,15 @@
 import * as THREE from 'three';
 import { sign } from '../gfx';
 import { northSigns } from '../../content/text';
-import { deckY, nearest, onCarriageway, type Deck } from '../../sim/elevated';
+import { nearest, type Deck } from '../../sim/elevated';
+import { FLY, flyoverSteps } from '../../sim/structures';
 import type { Road } from '../../sim/mapdata';
-import { type Parts, type Step, type V3, walk } from './northkit';
+import { type Parts, type Step, type V3 } from './northkit';
 
 const C = {
   slab: 0xa9a59e, pier: 0xc4bdb2, blue: 0x2f5fa8, white: 0xeeeeea, rail: 0x6f7378, black: 0x1d1d1d,
   yellow: 0xf2c230, panelA: 0x8197a0, panelB: 0x6d838b, joint: 0x48545a, tin: 0x2c6fc0,
 };
-const PIER_STEP = 18;
 
 /** Adds both decks to `parts` (posters on the columns to `posters`); returns the gantry sign for batching. */
 export function buildFlyover(parts: Parts, posters: THREE.BufferGeometry[], decks: Deck[], roads: Road[]): THREE.Object3D[] {
@@ -23,10 +23,8 @@ export function buildFlyover(parts: Parts, posters: THREE.BufferGeometry[], deck
   const nearSt13 = (x: number, z: number) => Math.min(...st13.map((r) => nearest(r.p, x, z).d));
   for (const deck of decks) {
     const half = deck.w / 2;
-    let nextPier = 0, gantry: { s: Step; y: number; d: number } | null = null;
-    for (const s of walk(deck.p, 2.5)) {
-      const y = deckY(deck, s.dist);
-      if (y < 0.15) continue; // at grade it is just road
+    let gantry: { s: Step; y: number; d: number } | null = null;
+    for (const { s, y, pier: hasPier } of flyoverSteps(deck, roads)) {
       const nx = s.dz, nz = -s.dx; // left of travel
       const st = nearSt13(s.x, s.z);
       const band = Math.floor(s.dist / 3.2) % 2 ? C.blue : C.white;
@@ -40,14 +38,11 @@ export function buildFlyover(parts: Parts, posters: THREE.BufferGeometry[], deck
         parts.box(s.len + 0.02, 0.8, 0.35, s.x + nx * b, y - 0.05, s.z + nz * b, s.rot, band);
         parts.box(s.len + 0.02, 0.07, 0.07, s.x + nx * b, y + 1.15, s.z + nz * b, s.rot, C.rail);
         parts.box(0.07, 0.4, 0.07, s.x + nx * b, y + 0.75, s.z + nz * b, s.rot, C.rail);
-        if (y < 3.4) retaining(parts, s, side, half, y - 0.95);
+        if (y < FLY.retain) retaining(parts, s, side, half, y - 0.95);
       }
-      if (y >= 3.4 && s.dist >= nextPier && !onCarriageway(roads, s.x, s.z, 0.6)) {
-        nextPier = s.dist + PIER_STEP;
-        pier(parts, posters, s, deck.w, y);
-      }
+      if (hasPier) pier(parts, posters, s, deck.w, y);
       // Blue tin sheeting closes off the space under the NE-bound deck along the service road (fly_03).
-      if (deck.ne && y > 2.6) parts.box(s.len + 0.02, 1.9, 0.06, s.x + nx * (half - 0.4), 0, s.z + nz * (half - 0.4), s.rot, C.tin);
+      if (deck.ne && y > FLY.tin.y) parts.box(s.len + 0.02, FLY.tin.h, 0.06, s.x + nx * (half - FLY.tin.inset), 0, s.z + nz * (half - FLY.tin.inset), s.rot, C.tin);
       if (!deck.ne && y > 4 && (!gantry || st < gantry.d)) gantry = { s, y, d: st };
     }
     if (gantry) signs.push(...gantrySign(parts, gantry.s, gantry.y, half));
@@ -88,7 +83,7 @@ function retaining(parts: Parts, s: Step, side: number, half: number, top: numbe
 function pier(parts: Parts, posters: THREE.BufferGeometry[], s: Step, w: number, y: number) {
   parts.box(1.8, 1.0, w * 0.82, s.x, y - 1.9, s.z, s.rot, C.pier);
   parts.box(1.5, 0.5, w * 0.42, s.x, y - 2.4, s.z, s.rot, C.pier);
-  parts.cyl(0.72, y - 2.4, s.x, 0, s.z, C.pier, 1.7, s.rot);
+  parts.cyl(FLY.pier.r, y - 2.4, s.x, 0, s.z, C.pier, FLY.pier.stretch, s.rot);
   for (const face of [0, Math.PI]) {
     const pg = new THREE.PlaneGeometry(1.1, 1.9);
     pg.rotateY(s.rot + face + Math.PI / 2);

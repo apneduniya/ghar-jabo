@@ -1,0 +1,226 @@
+// What of the elevated north stands on the ground in Sector V, shared by the renderer (src/render/world/flyover.ts,
+// viaduct.ts, stations.ts) and the walking rules (World.solids): the flyover's columns, its ramps on retaining walls
+// and the tin sheeting under the NE-bound deck; the Green and Orange Line columns; the station piers, walls, the
+// name tower and the stair towers. The underside of the decks and stations stays open. Pure: no three.js.
+
+import { north as N } from '../content/sectorv';
+import { canalAt, canalOf } from './canal';
+import { at, type Box, deckY, type Deck, flyoverDecks, inBox, local, nearest, onCarriageway, orangeLine, type Pier, pierSpots, stations } from './elevated';
+import type { MapData, Pt, Road } from './mapdata';
+import { box, boxAlong, circle, ON_ROAD, type Solid } from './solids';
+
+export interface Step { x: number; z: number; rot: number; len: number; dist: number; dx: number; dz: number; i: number }
+
+/** Box rotation for a direction (dx, dz) in the ground plane: the box's length runs along it. */
+export const heading = (dx: number, dz: number) => -Math.atan2(dz, dx);
+
+/** Walk a polyline in steps of about `step`, giving each step's centre, heading, length and distance along. */
+export function* walk(p: Pt[], step: number): Generator<Step> {
+  let dist = 0, i = 0;
+  for (let k = 1; k < p.length; k++) {
+    const [ax, az] = p[k - 1], [bx, bz] = p[k];
+    const L = Math.hypot(bx - ax, bz - az);
+    if (L < 1e-6) continue;
+    const n = Math.max(1, Math.round(L / step)), len = L / n;
+    for (let j = 0; j < n; j++) {
+      const t = (j + 0.5) / n;
+      yield { x: ax + (bx - ax) * t, z: az + (bz - az) * t, rot: heading(bx - ax, bz - az), len, dist: dist + len * (j + 0.5), dx: (bx - ax) / L, dz: (bz - az) / L, i: i++ };
+    }
+    dist += L;
+  }
+}
+
+// --- The Nabadiganta flyover.
+
+export const FLY = {
+  step: 2.5,
+  /** Below this the deck is just road at grade. */
+  grade: 0.15,
+  /** Below this deck height the ramp stands on retaining walls (the underside is under ~2.4): solid. */
+  retain: 3.4,
+  pierStep: 18,
+  /** The oval column: `r` along the deck, r * stretch across it. */
+  pier: { r: 0.72, stretch: 1.7 },
+  /** Tin sheeting under the NE-bound deck, where the deck is higher than this, `inset` in from its edge. */
+  tin: { y: 2.6, inset: 0.4, h: 1.9 },
+};
+
+export interface FlyStep { s: Step; y: number; pier: boolean }
+
+/** Every drawn piece of a deck (above grade) and whether a column stands under it. */
+export function flyoverSteps(deck: Deck, roads: Road[]): FlyStep[] {
+  const out: FlyStep[] = [];
+  let nextPier = 0;
+  for (const s of walk(deck.p, FLY.step)) {
+    const y = deckY(deck, s.dist);
+    if (y < FLY.grade) continue;
+    const pier = y >= FLY.retain && s.dist >= nextPier && !onCarriageway(roads, s.x, s.z, 0.6);
+    if (pier) nextPier = s.dist + FLY.pierStep;
+    out.push({ s, y, pier });
+  }
+  return out;
+}
+
+/**
+ * Collects the solids. A wide piece (a ramp, the tin, a station wall) that stands on an at-grade carriageway would
+ * cut that road off, so it's left out of the collision and reported instead: that's the data (or the drawing)
+ * putting a structure on a road, to be fixed at the source. Columns are placed off the carriageways already.
+ */
+export interface Conflict { kind: string; x: number; z: number; road: string; /** how far into the carriageway */ depth: number }
+class Acc {
+  readonly solids: Solid[] = [];
+  readonly conflicts: Conflict[] = [];
+  constructor(private roads: Road[]) {}
+  add(s: Solid) { this.solids.push(s); }
+  wide(kind: string, s: Solid) {
+    let depth = 0, road = '';
+    for (const a of [-1, 0, 1]) for (const c of [-1, 0, 1]) {
+      const x = s.x + s.ux * s.hl * a - s.uz * s.hw * c, z = s.z + s.uz * s.hl * a + s.ux * s.hw * c;
+      if (!onCarriageway(this.roads, x, z)) continue;
+      for (const q of this.roads) {
+        if (q.b) continue;
+        const d = q.w / 2 - nearest(q.p, x, z).d;
+        if (d > depth) { depth = d; road = q.n || q.k; }
+      }
+    }
+    if (depth > ON_ROAD) this.conflicts.push({ kind, x: s.x, z: s.z, road, depth });
+    else this.solids.push(s);
+  }
+}
+
+function flyoverSolids(decks: Deck[], roads: Road[], out: Acc) {
+  for (const deck of decks) for (const { s, y, pier } of flyoverSteps(deck, roads)) {
+    const nx = s.dz, nz = -s.dx;
+    if (y < FLY.retain) out.wide('flyover ramp', box(s.x, s.z, s.dx, s.dz, s.len + 0.02, deck.w)); // the ramp and its walls
+    if (pier) {
+      const r = FLY.pier.r, half = r * FLY.pier.stretch - r;
+      out.add(boxAlong([s.x - nx * half, s.z - nz * half], [s.x + nx * half, s.z + nz * half], 0, r));
+    }
+    if (deck.ne && y > FLY.tin.y) {
+      const o = deck.w / 2 - FLY.tin.inset;
+      out.wide('tin sheeting', box(s.x + nx * o, s.z + nz * o, s.dx, s.dz, s.len + 0.02, 0.06));
+    }
+  }
+}
+
+// --- Metro viaducts.
+
+export interface ViaductStyle { y: number; w: number; pierR: number; skip?: (x: number, z: number) => boolean }
+
+/** The two viaducts' looks and the stretches inside a station (no deck or piers of their own there). */
+export function viaducts() {
+  const { sv, it } = stations();
+  return {
+    green: { y: N.viaductY, w: 7, pierR: 0.9, skip: (x: number, z: number) => inBox(sv, x, z, -1) } as ViaductStyle,
+    orange: { y: N.orangeY, w: 6.4, pierR: 1.05, skip: (x: number, z: number) => inBox(it, x, z, -1) } as ViaductStyle,
+  };
+}
+
+export const orangePiers = (line: Pt[], roads: Road[]) => pierSpots(line, N.orangePierStep, roads, -1);
+
+/** Column radius at ground: a column set aside (onto a median or footpath) is a little thicker. */
+export const columnR = (p: Pier, v: ViaductStyle) => (Math.hypot(p.cx - p.x, p.cz - p.z) > 0.5 ? v.pierR * 1.15 : v.pierR);
+
+function viaductSolids(piers: Pier[], v: ViaductStyle, out: Acc) {
+  for (const p of piers) if (!v.skip?.(p.x, p.z)) out.add(circle(p.cx, p.cz, columnR(p, v)));
+}
+
+// --- Stations: ground-level footprints in each station's frame (s along, t across, as sim/elevated.ts Box).
+
+export interface LocalRect { s0: number; s1: number; t0: number; t1: number }
+const rect = (s0: number, s1: number, t0: number, t1: number): LocalRect => ({ s0, s1, t0, t1 });
+
+/** Sector V station's piers: on dry ground or in the canal, never on a carriageway (s, t of each centre). */
+export function svPiers(b: Box, roads: Road[]): Pt[] {
+  const out: Pt[] = [];
+  for (const t of [2, 9.5, 15.5]) for (let s = -b.half + 4; s <= b.half - 3; s += 10) {
+    const [x, z] = at(b, s, t);
+    if (!onCarriageway(roads, x, z, 0.5)) out.push([s, t]);
+  }
+  return out;
+}
+export const SV_PIER_HALF = 0.6;
+
+/** Sector V station's walls and towers at ground level. */
+export function svGround(b: Box) {
+  const [gs, gt] = local(b, N.gateB[0], N.gateB[1]);
+  const cars: LocalRect[] = [];
+  for (let s = -16; s <= 20; s += 6) cars.push(rect(s - 0.85, s + 0.85, 13.3, 16.6));
+  return {
+    /** The low wall in front of the parking, and the parked cars behind it. */
+    parkWall: rect(-20, 25, 12.6, 12.8), cars,
+    /** The mural wall on the service road. */
+    mural: rect(-33, -14, 4.15, 4.45),
+    /** The yellow name tower at the west end. */
+    tower: rect(-b.half - 2, -b.half + 2, 0.5, 4.5),
+    /** The stair tower at Gate B on Chavipatty Rd (its entrance is the face with the sign, on +t). */
+    gateB: rect(gs - 3, gs + 3, gt - 1.5, gt + 2.2), gateBAt: [gs, gt] as Pt,
+  };
+}
+
+/** IT Centre's pier rows: the south row on the footpath, the north row in the median, each only off the road. */
+export function itPiers(b: Box, roads: Road[]) {
+  const out: { s: number; south: boolean; mid: boolean }[] = [];
+  for (let s = -b.half + 3; s <= b.half - 2; s += 11) {
+    const south = at(b, s, b.n0 + 0.9), mid = at(b, s, b.n1 - 0.8);
+    out.push({ s, south: !onCarriageway(roads, south[0], south[1], 0.4), mid: !onCarriageway(roads, mid[0], mid[1], -1.2) });
+  }
+  return out;
+}
+export const itPierRects = (b: Box, s: number) => ({ south: rect(s - 0.65, s + 0.65, b.n0 + 0.25, b.n0 + 1.55), mid: rect(s - 0.55, s + 0.55, b.n1 - 1.35, b.n1 - 0.25) });
+
+/** IT Centre's street stair on the north side: the first dry spot off the carriageways north of the NE end. */
+export function itStair(b: Box, roads: Road[], free: (x: number, z: number) => boolean): { s: number; t: number } | null {
+  const s = b.half - 6;
+  for (let t = b.n1 + 1; t < b.n1 + 16; t += 0.5) {
+    const [x, z] = at(b, s, t + 1.5);
+    if (onCarriageway(roads, x, z, 1.8) || !free(x, z)) continue;
+    return { s, t };
+  }
+  return null;
+}
+export const itStairRect = (st: { s: number; t: number }) => rect(st.s - 2.5, st.s + 2.5, st.t, st.t + 3);
+
+/** Dry ground for the stair: off the canal channel (and its bank). */
+export function dryOf(map: MapData) {
+  const line = canalOf(map).line;
+  return (x: number, z: number) => !line || (() => { const c = canalAt(line, x, z); return c.d > c.hw + 1; })();
+}
+
+function toSolid(b: Box, r: LocalRect): Solid {
+  const [x, z] = at(b, (r.s0 + r.s1) / 2, (r.t0 + r.t1) / 2);
+  return box(x, z, b.u[0], b.u[1], r.s1 - r.s0, r.t1 - r.t0);
+}
+
+function stationSolids(map: MapData, out: Acc) {
+  const { sv, it } = stations();
+  for (const [s, t] of svPiers(sv, map.roads)) out.add(toSolid(sv, rect(s - SV_PIER_HALF, s + SV_PIER_HALF, t - SV_PIER_HALF, t + SV_PIER_HALF)));
+  const g = svGround(sv);
+  for (const r of [g.parkWall, ...g.cars, g.mural, g.tower, g.gateB]) out.wide('station wall', toSolid(sv, r));
+  for (const p of itPiers(it, map.roads)) {
+    const r = itPierRects(it, p.s);
+    if (p.south) out.add(toSolid(it, r.south));
+    if (p.mid) out.add(toSolid(it, r.mid));
+  }
+  const st = itStair(it, map.roads, dryOf(map));
+  if (st) out.wide('station stair', toSolid(it, itStairRect(st)));
+}
+
+/** Everything of the elevated north that stands on the ground, as solids, and what the data put on a road. */
+const cache = new WeakMap<MapData, { solids: Solid[]; conflicts: Conflict[] }>();
+export function elevatedLayout(map: MapData) {
+  let c = cache.get(map);
+  if (c) return c;
+  const out = new Acc(map.roads);
+  const { it } = stations();
+  const v = viaducts();
+  flyoverSolids(flyoverDecks(map.roads), map.roads, out);
+  viaductSolids(canalOf(map).piers, v.green, out);
+  const orange = orangeLine(map.roads, it);
+  viaductSolids(orangePiers(orange, map.roads), v.orange, out);
+  stationSolids(map, out);
+  c = { solids: out.solids, conflicts: out.conflicts };
+  cache.set(map, c);
+  return c;
+}
+export const elevatedSolids = (map: MapData) => elevatedLayout(map).solids;

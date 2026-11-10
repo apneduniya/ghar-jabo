@@ -9,83 +9,37 @@
 
 import type { NetRoad, Pt } from '../../../sim/gen/types';
 import { LM } from '../../../content/landmarks';
-import { type Line, intervals, marks, pieces, prepLine, sample } from './clip';
-import { type Ctx, memo } from './ctx';
+import { DECK_MIN_Y, DECK_PIECE, DECK_PIER, DECK_PIER_PHASE, DECK_PIER_Y, type NetDeck, deckHalf, flyoverNear as netFlyoverNear, netDeckY, netDecks } from '../../../sim/gen/layout';
+import { intervals, marks, pieces, sample } from './clip';
+import type { Ctx } from './ctx';
 
 const C = {
   slab: 0xa9a59e, top: 0x45424a, pier: 0xc4bdb2, blue: 0x2f5fa8, white: 0xeeeeea, post: 0xd2cdc4, rail: 0x6f7378,
   red: 0xc8322b, tram: 0x8b8f94, lamp: 0x5c6066, light: 0xfff2c8, kerbB: 0x2f5fa8, kerbW: 0xf1efe8, grille: 0x3c4a55,
 };
 
-type Style = 'diamond' | 'panel' | 'band';
-interface Deck { r: NetRoad; l: Line; style: Style; Y: number; dS: number; dE: number; tram: boolean }
-
-const isFlyover = (r: NetRoad) => r.bridge === 'flyover';
-const key = (p: Pt) => `${Math.round(p[0])},${Math.round(p[1])}`;
-
-/** Flyover ways warped, styled, with each end's graph distance to the nearest free end (for the ramps). */
-function decks(ctx: Ctx): Deck[] {
-  return memo(ctx.net, ctx.warp, 'decks', () => {
-    const roads = ctx.net.roads.filter(isFlyover);
-    const lines = roads.map((r) => prepLine(r.p, ctx.warp));
-    const nodes = new Map<string, { deg: number; d: number; edges: { to: string; w: number }[] }>();
-    const node = (k: string) => { let n = nodes.get(k); if (!n) nodes.set(k, (n = { deg: 0, d: Infinity, edges: [] })); return n; };
-    roads.forEach((r, i) => {
-      const a = key(r.p[0]), b = key(r.p[r.p.length - 1]), w = lines[i].len;
-      node(a).deg++; node(b).deg++;
-      node(a).edges.push({ to: b, w }); node(b).edges.push({ to: a, w });
-    });
-    // Dijkstra (small graph): distance from every node to the nearest free end.
-    const open = [...nodes.entries()].filter(([, n]) => n.deg === 1).map(([k]) => k);
-    for (const k of open) nodes.get(k)!.d = 0;
-    while (open.length) {
-      open.sort((a, b) => nodes.get(b)!.d - nodes.get(a)!.d);
-      const k = open.pop()!, n = nodes.get(k)!;
-      for (const e of n.edges) {
-        const m = nodes.get(e.to)!;
-        if (n.d + e.w < m.d) { m.d = n.d + e.w; open.push(e.to); }
-      }
-    }
-    return roads.map((r, i) => {
-      const [rx, rz] = r.p[0], style = styleOf(ctx, r, rx, rz);
-      const Y = style === 'diamond' ? LM.flyoverY.ultadanga : style === 'panel' ? LM.flyoverY.sealdah : LM.flyoverY.other;
-      const dS = nodes.get(key(r.p[0]))!.d, dE = nodes.get(key(r.p[r.p.length - 1]))!.d;
-      return { r, l: lines[i], style, Y, dS: Number.isFinite(dS) ? dS : LM.flyoverRamp, dE: Number.isFinite(dE) ? dE : LM.flyoverRamp, tram: !!r.tram || style === 'panel' && /vidyapati/i.test(r.name ?? '') };
-    });
-  });
-}
-
-function styleOf(ctx: Ctx, r: NetRoad, rx: number, rz: number): Style {
-  const n = r.name ?? '';
-  if (/ultadanga/i.test(n)) return 'diamond';
-  if (/vidyapati|sealdah|parikshit/i.test(n)) return 'panel';
-  const [gx, gz] = ctx.warp.toGame([rx, rz]);
-  const a = ctx.area(gx, gz);
-  return a === 'ultadanga' ? 'diamond' : a === 'sealdah' ? 'panel' : 'band';
-}
-
-const deckY = (d: Deck, s: number) => d.Y * Math.min(1, (d.dS + s) / LM.flyoverRamp, (d.dE + d.l.len - s) / LM.flyoverRamp);
+type Deck = NetDeck;
+const decks = (ctx: Ctx) => netDecks(ctx.net, ctx.warp);
+const deckY = netDeckY;
 
 /** True if any flyover deck passes within `r` of a game point (landmark models use it to avoid doubles). */
-export function flyoverNear(ctx: Ctx, x: number, z: number, r: number) {
-  return decks(ctx).some((d) => d.l.p.some((p) => Math.hypot(p[0] - x, p[1] - z) < r));
-}
+export const flyoverNear = (ctx: Ctx, x: number, z: number, r: number) => netFlyoverNear(ctx.net, ctx.warp, x, z, r);
 
 export function buildDecks(ctx: Ctx) {
   for (const d of decks(ctx)) {
-    const half = d.r.w / 2 + 0.6;
-    for (const [a, b] of pieces(intervals(d.l, ctx.cx, ctx.cz), 2.5)) {
+    const half = deckHalf(d);
+    for (const [a, b] of pieces(intervals(d.l, ctx.cx, ctx.cz), DECK_PIECE)) {
       const y = deckY(d, (a + b) / 2);
-      if (y < 0.4) continue;
+      if (y < DECK_MIN_Y) continue;
       const p = sample(d.l, a), q = sample(d.l, b), k = Math.floor((a + b) / 5);
       deckPiece(ctx, d, p, q, y, half, k);
     }
-    for (const s of marks(d.l, ctx.cx, ctx.cz, LM.flyoverPierStep, 6)) {
+    for (const s of marks(d.l, ctx.cx, ctx.cz, LM.flyoverPierStep, DECK_PIER_PHASE)) {
       const y = deckY(d, s);
-      if (y < 3) continue;
+      if (y < DECK_PIER_Y) continue;
       const q = sample(d.l, s), rot = -Math.atan2(q.dz, q.dx);
       ctx.parts.box(1.6, 0.8, half * 1.7, q.x, y - 1.7, q.z, rot, C.pier);
-      ctx.parts.cyl(0.7, y - 1.7, q.x, 0, q.z, C.pier, 1.6, rot + Math.PI / 2, 10);
+      ctx.parts.cyl(DECK_PIER.r, y - 1.7, q.x, 0, q.z, C.pier, DECK_PIER.stretch, rot + Math.PI / 2, 10);
     }
     if (d.style !== 'band') for (const s of marks(d.l, ctx.cx, ctx.cz, 30, 11)) {
       const y = deckY(d, s);

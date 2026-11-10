@@ -10,7 +10,8 @@ import * as THREE from 'three';
 import { sign } from '../gfx';
 import { north as N } from '../../content/sectorv';
 import { northSigns } from '../../content/text';
-import { at, type Box, local, onCarriageway, stations } from '../../sim/elevated';
+import { at, type Box, local, stations } from '../../sim/elevated';
+import { itPierRects, itPiers, itStair, itStairRect, type LocalRect, SV_PIER_HALF, svGround, svPiers } from '../../sim/structures';
 import type { Pt, Road } from '../../sim/mapdata';
 import { heading, type Parts, type V3 } from './northkit';
 
@@ -27,6 +28,8 @@ function lb(parts: Parts, b: Box, s0: number, s1: number, t0: number, t1: number
   const [x, z] = at(b, (s0 + s1) / 2, (t0 + t1) / 2);
   parts.box(s1 - s0, y1 - y0, t1 - t0, x, y0, z, heading(b.u[0], b.u[1]), color, glow);
 }
+/** A ground footprint from the shared layout (sim/structures.ts), y0..y1. */
+const rb = (parts: Parts, b: Box, r: LocalRect, y0: number, y1: number, color: number) => lb(parts, b, r.s0, r.s1, r.t0, r.t1, y0, y1, color);
 const p3 = (b: Box, s: number, t: number, y: number): V3 => { const [x, z] = at(b, s, t); return [x, y, z]; };
 
 /** A sign on a station face: at (s, t, y), facing along (fs, ft) in the station frame. */
@@ -48,10 +51,7 @@ export function buildStations(parts: Parts, roads: Road[], free: (x: number, z: 
 function sectorV(parts: Parts, b: Box, roads: Road[]) {
   const h = b.half, n0 = b.n0, n1 = b.n1, signs: THREE.Object3D[] = [];
   // Piers on dry ground or in the canal, never on a carriageway; the box overhangs the service road.
-  for (const t of [2, 9.5, 15.5]) for (let s = -h + 4; s <= h - 3; s += 10) {
-    const [x, z] = at(b, s, t);
-    if (!onCarriageway(roads, x, z, 0.5)) lb(parts, b, s - 0.6, s + 0.6, t - 0.6, t + 0.6, 0, U, C.pier);
-  }
+  for (const [s, t] of svPiers(b, roads)) lb(parts, b, s - SV_PIER_HALF, s + SV_PIER_HALF, t - SV_PIER_HALF, t + SV_PIER_HALF, 0, U, C.pier);
   // Concourse: the main body over the road and strip, a white wing across the canal to Chavipatty Rd.
   lb(parts, b, -h, h, n0, 7.7, U, U + 0.6, C.underside);
   lb(parts, b, -10, 22, 7.7, n1 - 1, U, U + 0.6, C.underside);
@@ -82,12 +82,13 @@ function sectorV(parts: Parts, b: Box, roads: Road[]) {
   for (const t of [t0, t1]) lb(parts, b, -h - 0.5, h + 0.5, t - 0.15, t + 0.15, ROOF - 0.4, ROOF + 0.1, C.roof);
 
   // Ground level: parking behind low walls on the Chavipatty side, a mural on the service-road wall.
-  lb(parts, b, -20, 25, 12.6, 12.8, 0, 0.8, C.wall);
-  for (let s = -16, i = 0; s <= 20; s += 6, i++) {
-    lb(parts, b, s - 0.85, s + 0.85, 13.3, 16.6, 0.3, 1.1, [0xe8e8e8, 0xb83a32, 0x3b4b63, 0xc9c9c9, 0x6b6b6b, 0xe8e8e8, 0x2e6fae][i % 7]);
-    lb(parts, b, s - 0.75, s + 0.75, 14.0, 16.0, 1.1, 1.65, 0x2a3440);
-  }
-  lb(parts, b, -33, -14, 4.15, 4.45, 0, 3.6, 0xb7a58e);
+  const g = svGround(b);
+  rb(parts, b, g.parkWall, 0, 0.8, C.wall);
+  g.cars.forEach((c, i) => {
+    rb(parts, b, c, 0.3, 1.1, [0xe8e8e8, 0xb83a32, 0x3b4b63, 0xc9c9c9, 0x6b6b6b, 0xe8e8e8, 0x2e6fae][i % 7]);
+    lb(parts, b, c.s0 + 0.1, c.s1 - 0.1, 14.0, 16.0, 1.1, 1.65, 0x2a3440);
+  });
+  rb(parts, b, g.mural, 0, 3.6, 0xb7a58e);
   for (let s = -33; s < -14; s += 0.8) for (let y = 0; y < 3.6; y += 0.6) {
     const c = MURAL[((Math.floor(y * 1.3 + 1.6 * Math.sin(s * 0.22) + 7)) % MURAL.length + MURAL.length) % MURAL.length];
     parts.quad(p3(b, s, 4.12, y), p3(b, s + 0.8, 4.12, y), p3(b, s + 0.8, 4.12, y + 0.6), p3(b, s, 4.12, y + 0.6), c, 0, false);
@@ -98,13 +99,13 @@ function sectorV(parts: Parts, b: Box, roads: Road[]) {
   lb(parts, b, g0 + 0.1, g1 - 0.1, gt0 - 0.1, gt0 + 0.1, 6.6, 7.8, C.glass, 0.9);
   signs.push(board(b, `${northSigns.bank} · ${northSigns.sectorV}`, 6.6, 0.95, g0 - 0.06, (gt0 + n0) / 2, 8.5, -1, 0, '#f3e6cf', '#b0322a'));
   // The yellow name tower at the west end, by the service road (st2_h235).
-  lb(parts, b, -h - 2, -h + 2, 0.5, 4.5, 0, 16, C.yellow);
+  rb(parts, b, g.tower, 0, 16, C.yellow);
   signs.push(board(b, northSigns.bank, 3.6, 0.7, -h, 0.44, 13.8, 0, -1, '#f6d24a', '#b0322a'));
   signs.push(board(b, northSigns.sectorVBn, 3.8, 0.95, -h, 0.44, 11.6, 0, -1, '#f6d24a', '#2a2a2a'));
   signs.push(board(b, northSigns.sectorVBn, 3.8, 0.95, -h - 2.06, 2.5, 11.6, -1, 0, '#f6d24a', '#2a2a2a'));
   // Stair tower at Gate B on Chavipatty Rd, with the bilingual name (c4_h60).
-  const [gs, gt] = local(b, N.gateB[0], N.gateB[1]);
-  lb(parts, b, gs - 3, gs + 3, gt - 1.5, gt + 2.2, 0, 11.2, C.tower);
+  const [gs, gt] = g.gateBAt;
+  rb(parts, b, g.gateB, 0, 11.2, C.tower);
   lb(parts, b, gs - 3.2, gs + 3.2, gt - 1.7, gt + 2.4, 11.2, 11.6, C.beigeDark);
   signs.push(board(b, northSigns.sectorVBn, 5.4, 0.9, gs, gt + 2.26, 9.4, 0, 1, '#efe6d4', '#2b2b2b'));
   return signs;
@@ -113,10 +114,10 @@ function sectorV(parts: Parts, b: Box, roads: Road[]) {
 function itCentre(parts: Parts, b: Box, roads: Road[], free: (x: number, z: number) => boolean) {
   const h = b.half, n0 = b.n0, n1 = b.n1, signs: THREE.Object3D[] = [];
   // Piers either side of the SW-bound carriageway: the south row on the footpath, the north row in the median.
-  for (let s = -h + 3; s <= h - 2; s += 11) {
-    const south = at(b, s, n0 + 0.9), mid = at(b, s, n1 - 0.8);
-    if (!onCarriageway(roads, south[0], south[1], 0.4)) lb(parts, b, s - 0.65, s + 0.65, n0 + 0.25, n0 + 1.55, 0, 8, C.beige);
-    if (!onCarriageway(roads, mid[0], mid[1], -1.2)) lb(parts, b, s - 0.55, s + 0.55, n1 - 1.35, n1 - 0.25, 0, 8, C.beige);
+  for (const p of itPiers(b, roads)) {
+    const s = p.s, r = itPierRects(b, s);
+    if (p.south) rb(parts, b, r.south, 0, 8, C.beige);
+    if (p.mid) rb(parts, b, r.mid, 0, 8, C.beige);
     lb(parts, b, s - 0.7, s + 0.7, n0, n1, 6.8, 8, C.beigeDark);
   }
   lb(parts, b, -h, h, n0, n1, 8, 13.4, C.beige);
@@ -132,15 +133,13 @@ function itCentre(parts: Parts, b: Box, roads: Road[], free: (x: number, z: numb
     signs.push(board(b, '◉', 1.3, 1.3, e * (h + 0.07), tm + e * 6.4, 11.3, e, 0, '#e4d6bc', '#c0392b'));
   }
   // Street stair on the north side (st4_h235): the first dry spot off the carriageways north of the NE end.
-  const s = h - 6;
-  for (let t = n1 + 1; t < n1 + 16; t += 0.5) {
-    const [x, z] = at(b, s, t + 1.5);
-    if (onCarriageway(roads, x, z, 1.8) || !free(x, z)) continue;
-    lb(parts, b, s - 2.5, s + 2.5, t, t + 3, 0, 8.6, C.beige);
+  const st = itStair(b, roads, free);
+  if (st) {
+    const { s, t } = st;
+    rb(parts, b, itStairRect(st), 0, 8.6, C.beige);
     lb(parts, b, s - 2.55, s + 2.55, t - 0.05, t + 3.05, 7.2, 7.8, C.orange);
     lb(parts, b, s - 1.2, s + 1.2, n1, t, 7.6, 8.6, C.beige);
     signs.push(board(b, 'METRO · IT CENTRE', 4.2, 0.6, s, t + 3.08, 6.6, 0, 1, '#d9622b', '#ffffff'));
-    break;
   }
   return signs;
 }

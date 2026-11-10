@@ -15,18 +15,13 @@ import { inSectorV, owns } from './clip';
 import { Ctx } from './ctx';
 import { buildMetro, metroPrep, portal } from './metro';
 import { buildDecks, buildMedians, flyoverNear } from './decks';
-import { buildCrossing, canalBridge, railUnder } from './bridges';
+import { buildBridge } from './bridges';
+import { crossingSite, landmarkBridge, warpHeading } from '../../../sim/gen/layout';
 import { glassEntrance } from './stations';
 import { sealdah } from './sealdah';
 import { billboards, kolkataSign, policeKiosk, statue, trafficIsland } from './junctions';
 import { busTerminus, clockTower, hospital, mall, market, nameBoard, stadiumGate } from './places';
 import { fallbackFlyover } from './fallback';
-
-/** A real heading carried through the warp at a real point (the warp bends directions a little). */
-function warpHeading(warp: Warp, x: number, z: number, h: number) {
-  const [ax, az] = warp.toGame([x, z]), [bx, bz] = warp.toGame([x + Math.cos(h) * 4, z + Math.sin(h) * 4]);
-  return Math.atan2(bz - az, bx - ax);
-}
 
 /** Static structures for one chunk, or null if there are none. Positions in game (warped) coords. */
 export function structuresForChunk(chunk: Chunk, net: WorldNet, warp: Warp): THREE.Object3D | null {
@@ -39,7 +34,7 @@ export function structuresForChunk(chunk: Chunk, net: WorldNet, warp: Warp): THR
     if (!owns(ctx.cx, ctx.cz, x, z) || inSectorV(x, z)) continue;
     // A road bridge that is part of a flyover deck already has the deck's parapets (decks.ts).
     if (c.over && flyoverNear(ctx, x, z, 8)) continue;
-    buildCrossing(ctx, c, x, z, warpHeading(warp, c.x, c.z, c.heading));
+    buildBridge(ctx, crossingSite(net, warp, c, x, z));
   }
   for (const lm of net.landmarks) {
     const [x, z] = warp.toGame([lm.x, lm.z]);
@@ -99,13 +94,8 @@ function landmark(ctx: Ctx, lm: Landmark, x: number, z: number) {
     }
     case 'canal-bridge':
     case 'rail-underbridge': {
-      const kind = lm.kind === 'canal-bridge' ? 'canal' : 'rail';
-      const has = net.crossings.some((c) => c.kind === kind && (() => { const [cx, cz] = warp.toGame([c.x, c.z]); return Math.hypot(cx - x, cz - z) < 40; })());
-      if (has) return;
-      // Stand-alone: frame along the road (the landmark faces it, so the road runs across its heading).
-      const g = ctx.frame(x, z, f.h + Math.PI / 2);
-      if (kind === 'canal') canalBridge(g, 14, 7, ctx.area(x, z) !== 'saltlake', true);
-      else railUnder(g, 9, 7);
+      const site = landmarkBridge(net, warp, lm, x, z);
+      if (site) buildBridge(ctx, site);
       return;
     }
     case 'generic':

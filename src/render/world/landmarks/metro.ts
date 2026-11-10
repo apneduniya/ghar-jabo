@@ -3,59 +3,17 @@
 // Bypass, then the ramp after Salt Lake Stadium down to grade into a walled cut and the tunnel portal.
 // Underground stretches draw nothing but the street entrances of their stations.
 
-import type { MetroLine } from '../../../sim/gen/types';
 import { LM } from '../../../content/landmarks';
-import { type Line, intervals, marks, owns, inSectorV, pieces, prepLine, sample } from './clip';
-import { type Ctx, memo } from './ctx';
+import { METRO_PIER_MIN_Y, METRO_PIER_R, STATION_MIN_Y, metroLayout, portalHalf, stationOver } from '../../../sim/gen/layout';
+import { intervals, marks, owns, inSectorV, pieces, sample } from './clip';
+import type { Ctx } from './ctx';
 import { elevatedStation, undergroundEntrance, pierLook } from './stations';
 
 const C = { deck: 0xc9c2b8, soffit: 0x8d8a85, rib: 0x6f6c68, pier: 0xbfb8ad, blue: 0x2f5fa8, white: 0xeeeeea, rail: 0x7a7f84, wall: 0xb4ada2, bed: 0x6b6259, dark: 0x0d0f12, grass: 0x557a3a, earth: 0x7d6a4f };
 
-export interface MetroPrep {
-  m: MetroLine;
-  l: Line;
-  /** Rail level at arc length s, or null where the line is underground. */
-  y: (s: number) => number | null;
-  /** Tunnel mouths: arc position and the direction (+1: the tunnel lies toward larger s). */
-  portals: { s: number; dir: 1 | -1 }[];
-  /** Stations snapped onto the line. */
-  stations: { name: string; s: number; elevated: boolean; x: number; z: number }[];
-}
+export type { MetroPrep } from '../../../sim/gen/layout';
 
-export function metroPrep(ctx: Ctx): MetroPrep[] {
-  return memo(ctx.net, ctx.warp, 'metro', () => ctx.net.metro.map((m) => prep(ctx, m)));
-}
-
-function prep(ctx: Ctx, m: MetroLine): MetroPrep {
-  const l = prepLine(m.p, ctx.warp);
-  const Y = LM.viaductY, R = LM.rampLen, K = LM.cutLen;
-  const ranges = m.elevated.map(([i0, i1]) => [l.at[Math.max(0, i0)] ?? 0, l.at[Math.min(m.p.length - 1, i1)] ?? l.len] as const);
-  const portals: MetroPrep['portals'] = [];
-  for (const [a, b] of ranges) {
-    if (b < l.len - 1e-6) portals.push({ s: Math.min(l.len, b + K), dir: 1 });
-    if (a > 1e-6) portals.push({ s: Math.max(0, a - K), dir: -1 });
-  }
-  const y = (s: number): number | null => {
-    for (const [a, b] of ranges) {
-      if (s < a - K || s > b + K) continue;
-      const up = a > 1e-6 ? (s - a) / R : Infinity, down = b < l.len - 1e-6 ? (b - s) / R : Infinity;
-      return Math.max(0, Y * Math.min(1, up, down));
-    }
-    return null;
-  };
-  const stations = m.stations.map((st) => {
-    const [gx, gz] = ctx.warp.toGame([st.x, st.z]);
-    let best = { s: 0, d: Infinity };
-    for (let i = 1; i < l.p.length; i++) {
-      const [ax, az] = l.p[i - 1], [bx, bz] = l.p[i], dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1;
-      const t = Math.max(0, Math.min(1, ((gx - ax) * dx + (gz - az) * dz) / L2));
-      const d = Math.hypot(ax + dx * t - gx, az + dz * t - gz);
-      if (d < best.d) best = { s: l.d[i - 1] + t * (l.d[i] - l.d[i - 1]), d };
-    }
-    return { name: st.name, s: best.s, elevated: st.elevated, x: gx, z: gz };
-  });
-  return { m, l, y, portals, stations };
-}
+export const metroPrep = (ctx: Ctx) => metroLayout(ctx.net, ctx.warp);
 
 /** The deck, ramp, cut, piers, portals and stations of every metro line inside the chunk. */
 export function buildMetro(ctx: Ctx) {
@@ -68,12 +26,10 @@ export function buildMetro(ctx: Ctx) {
       if (y >= 1) deckPiece(ctx, p, q, y, Math.floor((a + b) / 6) % 2 === 0);
       else cutPiece(ctx, p, q);
     }
-    const near = (s: number) => mp.stations.find((st) => st.elevated && Math.abs(st.s - s) < LM.station.len / 2);
     for (const s of marks(l, ctx.cx, ctx.cz, LM.pierStep)) {
       const y = mp.y(s);
-      if (y === null || y < 4) continue;
-      const st = near(s);
-      if (st) continue; // the station has its own pier pairs
+      if (y === null || y < METRO_PIER_MIN_Y) continue;
+      if (stationOver(mp, s)) continue; // the station has its own pier pairs
       pier(ctx, sample(l, s), y, pierLook(''));
     }
     for (const pt of mp.portals) {
@@ -82,7 +38,7 @@ export function buildMetro(ctx: Ctx) {
     }
     for (const st of mp.stations) {
       const q = sample(l, st.s);
-      if (st.elevated && (mp.y(st.s) ?? 0) > 6) {
+      if (st.elevated && (mp.y(st.s) ?? 0) > STATION_MIN_Y) {
         if (owns(ctx.cx, ctx.cz, q.x, q.z) && !inSectorV(q.x, q.z)) elevatedStation(ctx, q, st.name);
       } else if (!st.elevated && owns(ctx.cx, ctx.cz, st.x, st.z) && !inSectorV(st.x, st.z)) {
         undergroundEntrance(ctx, st.x, st.z, st.name);
@@ -130,13 +86,13 @@ export function pier(ctx: Ctx, q: S, y: number, look: PierLook) {
   P.box(1.9, 0.9, LM.viaductW * 0.85, q.x, top - 0.9, q.z, rot, C.pier);
   P.box(1.5, 0.6, LM.viaductW * 0.45, q.x, top - 1.5, q.z, rot, C.pier);
   P.cyl(1.0, top - 1.5, q.x, 0, q.z, look.shaft, 1, 0, 10);
-  look.base.forEach((c, i) => P.cyl(1.06, 0.45, q.x, i * 0.45, q.z, c, 1, 0, 10));
+  look.base.forEach((c, i) => P.cyl(METRO_PIER_R, 0.45, q.x, i * 0.45, q.z, c, 1, 0, 10));
 }
 
 /** The tunnel mouth: a concrete box over the tracks with a dark opening, grassed over, earth falling away. */
 export function portal(ctx: Ctx, q: S, dir: 1 | -1) {
   const f = ctx.frame(q.x, q.z, Math.atan2(q.dz * dir, q.dx * dir));
-  const h = LM.viaductW / 2 + 0.6;
+  const h = portalHalf();
   f.box(0, 14, -h - 0.8, h + 0.8, 0, 7.2, C.wall);
   f.box(-0.4, 0.2, -h - 1.2, h + 1.2, 6.4, 7.6, 0xa39c91); // headwall coping
   f.quad([-0.05, -h + 0.6, 0], [-0.05, h - 0.6, 0], [-0.05, h - 0.6, 5.6], [-0.05, -h + 0.6, 5.6], C.dark);

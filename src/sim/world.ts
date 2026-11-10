@@ -20,6 +20,8 @@ import { Traffic, type Vehicle } from './traffic';
 import { Crowd } from './crowd';
 import { BUS_REAR_DOOR } from './vehicles';
 import { layoutStreet, type StreetLayout } from './streetlayout';
+import { SolidGrid } from './solids';
+import { elevatedSolids } from './structures';
 
 export type Action = { kind: 'hop'; bus: Vehicle } | { kind: 'bike'; captain: Vehicle } | null;
 
@@ -33,6 +35,8 @@ export class World {
   readonly crowd: Crowd;
   /** Surveyed street life: stall rows, furniture, compound walls, medians (and their collision). */
   readonly street: StreetLayout;
+  /** What the flyover, the viaducts and the stations stand on: columns, ramps, station walls and towers. */
+  readonly solids: SolidGrid;
   readonly player = new Player();
   readonly events = new Events();
   t = 0;
@@ -54,6 +58,7 @@ export class World {
     this.water = new WaterMask(map.water ?? [], map.roads);
     this.street = layoutStreet(map, this.grid);
     this.railings = new RailingMask(canalOf(map).railings);
+    this.solids = new SolidGrid(elevatedSolids(map));
     this.player.x = start.x;
     this.player.z = start.z;
     this.traffic.populate(start.x, start.z);
@@ -66,10 +71,13 @@ export class World {
     this.exitNode = this.graph.nearestNode(end[0], end[1]);
   }
 
-  /** True if a body of radius `pad` can't stand at (x, z): a building, water, a railing, or beyond the map. */
+  /**
+   * True if a body of radius `pad` can't stand at (x, z): a building, water, a railing, a wall or stall, a pier,
+   * ramp or station wall, or (beyond the map) whatever the streamed world says.
+   */
   walkBlocked(x: number, z: number, pad: number) {
     return this.grid.blocked(x, z, pad) || this.water.blocked(x, z, pad) || this.railings.blocked(x, z, pad) ||
-      this.street.blocks.blocked(x, z, pad) || !!this.streamed?.blocked(x, z, pad);
+      this.street.blocks.blocked(x, z, pad) || this.solids.blocked(x, z, pad) || !!this.streamed?.blocked(x, z, pad);
   }
 
   /** Arrived at the Sealdah forecourt, by whatever got you there. */

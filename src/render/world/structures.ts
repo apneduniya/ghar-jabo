@@ -6,9 +6,9 @@
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { north as N } from '../../content/sectorv';
-import { canalAt, canalOf } from '../../sim/canal';
-import { flyoverDecks, greenLine, inBox, orangeLine, pierSpots, stations } from '../../sim/elevated';
+import { canalOf } from '../../sim/canal';
+import { flyoverDecks, greenLine, inBox, orangeLine, stations } from '../../sim/elevated';
+import { dryOf, orangePiers, viaducts } from '../../sim/structures';
 import type { MapData, Pt } from '../../sim/mapdata';
 import { posters } from './textures';
 import { Parts } from './northkit';
@@ -34,12 +34,12 @@ export function buildStructures(map: MapData): BuiltStructures {
   const canal = canalOf(map);
 
   const signs = buildFlyover(parts, posterParts, flyoverDecks(map.roads), map.roads);
-  buildViaduct(parts, greenLine(map.rails), canal.piers, { y: N.viaductY, w: 7, pierR: 0.9, skip: (x, z) => inBox(sv, x, z, -1) });
+  const v = viaducts();
+  buildViaduct(parts, greenLine(map.rails), canal.piers, v.green);
   const orange = orangeLine(map.roads, it);
-  buildViaduct(parts, orange, pierSpots(orange, N.orangePierStep, map.roads, -1), { y: N.orangeY, w: 6.4, pierR: 1.05, skip: (x, z) => inBox(it, x, z, -1) });
+  buildViaduct(parts, orange, orangePiers(orange, map.roads), v.orange);
   const line = canal.line;
-  const dry = (x: number, z: number) => !line || (() => { const c = canalAt(line, x, z); return c.d > c.hw + 1; })();
-  signs.push(...buildStations(parts, map.roads, dry));
+  signs.push(...buildStations(parts, map.roads, dryOf(map)));
   const water = line ? buildCanal(parts, posterParts, map, line, canal.railings, (x, z) => inBox(sv, x, z, 0.5) || inBox(it, x, z, 0.5)) : null;
 
   const group = new THREE.Group();
