@@ -82,9 +82,12 @@ test('walking across chunk borders stays inside the meshing slice', async ({ pag
   expect(r.loaded).toBeGreaterThan(2);
   expect(r.calls).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
   // One step may run past the 4 ms budget, a whole chunk at once never does. SwiftShader shares this server's
-  // CPU (a whole old-city chunk takes ~300 ms here), so only a real GPU machine gets the strict numbers.
+  // CPU (a whole old-city chunk takes ~300 ms here), so only a real GPU machine gets the strict numbers. Alone this
+  // step measures 40-90 ms here, but with the other e2e workers on the same CPU it reached 222 ms (2026-11-11),
+  // so the shared-CPU bound only catches a step that meshes a whole chunk at once. The Mac run (GJ_REAL_GPU) is
+  // the real check: worst frame ~40 ms over the whole route to Sealdah.
   if (process.env.GJ_REAL_GPU) { expect(r.maxMesh).toBeLessThan(12); expect(r.maxFrame).toBeLessThan(50); }
-  else expect(r.maxMesh).toBeLessThan(150);
+  else expect(r.maxMesh).toBeLessThan(280);
   expect(errors).toEqual([]);
 });
 
