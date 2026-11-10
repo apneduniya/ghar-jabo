@@ -3,12 +3,13 @@
 // Orange Line along the Biswa Bangla Sarani median beyond IT Centre.
 
 import type { Pier } from '../../sim/elevated';
+import { columnR, type ViaductStyle } from '../../sim/structures';
 import type { Pt } from '../../sim/mapdata';
 import { type Parts, walk } from './northkit';
 
 const CONCRETE = 0xc9c2b8, PIER = 0xbfb8ad, RAIL = 0x7a7f84;
 
-export interface ViaductStyle { y: number; w: number; pierR: number; skip?: (x: number, z: number) => boolean }
+export type { ViaductStyle };
 
 export function buildViaduct(parts: Parts, line: Pt[], piers: Pier[], v: ViaductStyle) {
   const half = v.w / 2;
@@ -27,16 +28,16 @@ export function buildViaduct(parts: Parts, line: Pt[], piers: Pier[], v: Viaduct
   for (const p of piers) {
     if (v.skip?.(p.x, p.z)) continue;
     const top = v.y - 1.75;
-    const off = Math.hypot(p.cx - p.x, p.cz - p.z);
+    const off = Math.hypot(p.cx - p.x, p.cz - p.z), r = columnR(p, v);
     // Hammerhead: a wide cap under the girder, flared down to the column.
     parts.box(1.8, 0.9, v.w * 0.92, p.x, top - 0.9, p.z, -Math.atan2(p.dz, p.dx), PIER);
     if (off > 0.5) {
       // The column stands on a median or footpath to one side: a cantilevered cap reaches back to the deck.
       parts.span([p.cx, p.cz], [p.x, p.z], 1.1, 1.6, top - 1.1, PIER);
-      parts.cyl(v.pierR * 1.15, top - 0.9, p.cx, 0, p.cz, PIER, 1, 0, 12);
+      parts.cyl(r, top - 0.9, p.cx, 0, p.cz, PIER, 1, 0, 12);
     } else {
       parts.box(1.5, 0.6, v.w * 0.5, p.x, top - 1.5, p.z, -Math.atan2(p.dz, p.dx), PIER);
-      parts.cyl(v.pierR, top - 1.5, p.cx, 0, p.cz, PIER, 1, 0, 12);
+      parts.cyl(r, top - 1.5, p.cx, 0, p.cz, PIER, 1, 0, 12);
     }
   }
 }

@@ -7,8 +7,8 @@
 // - Road over rail: parapets as on a canal bridge, over the rail corridor.
 
 import * as THREE from 'three';
-import type { Crossing } from '../../../sim/gen/types';
 import { LM, LM_TEXT } from '../../../content/landmarks';
+import { type BridgeSite, parapet, underbridge } from '../../../sim/gen/layout';
 import type { Ctx, Frame } from './ctx';
 
 const C = {
@@ -16,20 +16,16 @@ const C = {
   brick: 0x9a4a35, girder: 0x56685c, ballast: 0x6d655c, rail: 0x8b8f94, sleeper: 0x5a4a3c, earth: 0x6f6047, grass: 0x58733f,
   lamp: 0x3a3d42, light: 0xfff2c8,
 };
-const OLD = new Set(['beliaghata', 'narkeldanga', 'sealdah', 'maniktala', 'phoolbagan']);
-
-/** A crossing in game space: frame at its warped position, u along the road, v across. */
-export function buildCrossing(ctx: Ctx, c: Crossing, x: number, z: number, heading: number) {
-  const road = ctx.nearestRoad(x, z, (r) => r.bridge !== 'flyover');
-  const roadW = road && road.d < 12 ? road.w : 7;
-  const f = ctx.frame(x, z, road && road.d < 12 ? Math.atan2(road.dz, road.dx) : heading);
-  if (c.kind === 'rail' && !c.over) railUnder(f, c.width, roadW);
-  else canalBridge(f, c.width, roadW, c.kind === 'canal' && OLD.has(ctx.area(x, z)), c.kind === 'canal');
+/** A bridge where the layout puts it (sim/gen/layout.ts): frame at the site, u along the road, v across. */
+export function buildBridge(ctx: Ctx, b: BridgeSite) {
+  const f = ctx.frame(b.x, b.z, b.h);
+  if (b.kind === 'under') railUnder(f, b.width, b.roadW);
+  else canalBridge(f, b.width, b.roadW, b.ornate, b.water);
 }
 
 /** Parapets along both edges of the road over a span `width` (+ abutments), the deck edge and supports below. */
 export function canalBridge(f: Frame, width: number, roadW: number, ornate: boolean, water: boolean) {
-  const L = width / 2 + 2.5, e = roadW / 2 + 1.6; // parapet line: past the footpath
+  const { L, e } = parapet({ width, roadW }); // parapet line: past the footpath
   for (const s of [-1, 1]) {
     const v = s * e;
     f.box(-L, L, v - 0.2, v + 0.2, -1.4, 0.05, C.deck); // deck edge fascia
@@ -66,7 +62,7 @@ function ironRailing(f: Frame, u0: number, u1: number, v: number) {
 
 /** A steel plate-girder rail bridge across the road (rail corridor `width` along the road) on brick abutments. */
 export function railUnder(f: Frame, width: number, roadW: number) {
-  const S = roadW / 2 + 3.5, H = LM.railClearance, w = width / 2, emb = 16;
+  const { S, w, emb } = underbridge({ width, roadW }), H = LM.railClearance;
   for (const s of [-1, 1]) {
     // Abutment walls beside the footpaths, and the embankment carrying on beyond them.
     f.box(-w - 1, w + 1, s * S, s * (S + 1.6), 0, H + 0.3, C.brick);

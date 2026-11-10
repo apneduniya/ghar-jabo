@@ -9,6 +9,7 @@
 import { LM, LM_TEXT } from '../../../content/landmarks';
 import type { Ctx, Frame } from './ctx';
 import { pier, type PierLook } from './metro';
+import { stationGround } from '../../../sim/gen/layout';
 
 const C = {
   panel: 0xa7abae, white: 0xe6e3dc, glass: 0x86a3b4, roof: 0x2f62ad, sky: 0xc9d8e6, post: 0x5c6066, under: 0xd8d2c6,
@@ -34,8 +35,9 @@ export function elevatedStation(ctx: Ctx, q: S, name: string) {
   const f = ctx.frame(q.x, q.z, Math.atan2(q.dz, q.dx));
   const { len, w, concourse: U, platform: Pf, roof: R } = LM.station;
   const h = len / 2, t = w / 2, look = pierLook(name);
+  const ground = stationGround();
   // Pier pairs under the box, either side of the road below, with the station's own dressing.
-  for (let u = -h + 5; u <= h - 4; u += 10) for (const v of [-t + 1.6, t - 1.6]) {
+  for (const [u, v] of ground.piers) {
     const [x, z] = f.p(u, v);
     pier(ctx, { x, z, dx: q.dx, dz: q.dz }, U + 2.1, look);
   }
@@ -44,8 +46,8 @@ export function elevatedStation(ctx: Ctx, q: S, name: string) {
   if (shell) karunamoyeeShell(f, h, t, U);
   else genericBox(f, h, t, U, Pf, R);
   // Stair towers at both ends down to the footpaths.
-  for (const e of [-1, 1]) {
-    f.box(e * (h - 9), e * (h - 2), e * (t + 0.2), e * (t + 4.2), 0, U + 0.7, shell ? C.shell : C.stair);
+  for (const { e, u0, u1, v0, v1, top } of ground.towers) {
+    f.box(u0, u1, v0, v1, 0, top, shell ? C.shell : C.stair);
     f.box(e * (h - 9.2), e * (h - 1.8), e * (t + 0.1), e * (t + 4.4), U + 0.7, U + 1.1, C.post);
     f.sign(LM_TEXT.metro, 3.2, 0.8, e * (h - 5.5), e * (t + 4.25), U - 1.2, 0, e, '#2e9e5b', '#ffffff');
   }

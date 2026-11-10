@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { bakedMat } from '../gfx';
 import type { Pt } from '../../sim/mapdata';
+import { heading } from '../../sim/structures';
 
 export type V3 = [number, number, number];
 const colors = new Map<number, THREE.Color>();
@@ -66,26 +67,7 @@ export class Parts {
   }
 }
 
-/** Box rotation for a direction (dx, dz) in the ground plane: the box's length runs along it. */
-export const heading = (dx: number, dz: number) => -Math.atan2(dz, dx);
-
-export interface Step { x: number; z: number; rot: number; len: number; dist: number; dx: number; dz: number; i: number }
-
-/** Walk a polyline in steps of about `step`, giving each step's centre, heading, length and distance along. */
-export function* walk(p: Pt[], step: number): Generator<Step> {
-  let dist = 0, i = 0;
-  for (let k = 1; k < p.length; k++) {
-    const [ax, az] = p[k - 1], [bx, bz] = p[k];
-    const L = Math.hypot(bx - ax, bz - az);
-    if (L < 1e-6) continue;
-    const n = Math.max(1, Math.round(L / step)), len = L / n;
-    for (let j = 0; j < n; j++) {
-      const t = (j + 0.5) / n;
-      yield { x: ax + (bx - ax) * t, z: az + (bz - az) * t, rot: heading(bx - ax, bz - az), len, dist: dist + len * (j + 0.5), dx: (bx - ax) / L, dz: (bz - az) / L, i: i++ };
-    }
-    dist += L;
-  }
-}
+export { heading, walk, type Step } from '../../sim/structures';
 
 /** Deterministic 0..1 noise from an integer (so screenshots repeat). */
 export const hash = (n: number) => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
