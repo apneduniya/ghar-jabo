@@ -36,11 +36,18 @@ describe('free mode', () => {
     expect(r.metroOpen).toBe(true);
   });
 
-  it('runs one game minute per real second', () => {
+  it('runs one game minute per real second in the timed run', () => {
     const r = new Run();
     r.clockRunning = true;
     r.tick(60);
     expect(r.minute).toBe(START_MIN + 60);
+  });
+
+  it('runs one game minute every five real seconds in free roam (true-scale distances)', () => {
+    const r = new Run('free');
+    r.clockRunning = true;
+    r.tick(60);
+    expect(r.minute).toBeCloseTo(START_MIN + 12);
   });
 });
 

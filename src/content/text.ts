@@ -10,7 +10,7 @@ export const pick = <T>(xs: readonly T[]): T => rng.pick(xs);
 export const titleCopy = {
   premise: '6:30 PM, Salt Lake Sector V. <b>Get home to Sealdah.</b> Everything will go wrong.',
   timed: { name: 'BEFORE 10:30', line: 'Home by 10:30 PM · 4 min' },
-  free: { name: 'FREE ROAM', line: 'No deadline. Nights pass.' },
+  free: { name: 'FREE ROAM', line: 'No deadline. Real distances, endless city.' },
   howto: [
     ['🚌', 'Hop buses', 'Catch them moving'],
     ['📱', 'Rapi-Nah', 'It will cancel'],

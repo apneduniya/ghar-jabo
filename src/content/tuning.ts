@@ -61,7 +61,9 @@ export const T = {
   metro: { fare: 20 },
 
   /** Free roam: game minutes per real second (the streamed world is true scale, so it runs on its own rate). */
-  clock: { free: 1 },
+  // Free roam is true scale (a bus to Sealdah takes ~8 real minutes): 1 game minute every 5 real seconds keeps
+  // a trip to about an evening instead of a whole night.
+  clock: { free: 0.2 },
 };
 
 /** One storey in world units (see tools/map/geo.py FLOOR_U). Taller than a person (1.75), on halved footprints. */
