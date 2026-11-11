@@ -25,3 +25,22 @@ Acceptance:
 Files you may touch: src/render/world/greenery.ts, src/render/world/chunkprops.ts (tree/palm only),
 src/render/world/trees.ts (new), src/render/gfx.ts (append only), src/content/worldgen.ts (append only), tests.
 Out of scope: camera/controls (027), traffic, structures.
+
+## Notes (builder, 2026-11-12)
+Street View on the Mac (Dec 2025 – Jan 2026 car imagery; crops in /tmp/gj028/ref/):
+- **Sector V** (Street 13 at 22.5777, 88.4278; Street 23/Ring Rd at 22.5702, 88.4335): big rain trees and
+  mahogany-like trees whose grey trunks fork low into 3–4 long limbs, with the crown a wide, broken, olive-green
+  umbrella (sky shows through the edges). Coconut and royal palms in the gardens and medians, hedges behind
+  blue-and-white kerbs. Trunks here are mostly unpainted.
+- **Salt Lake** (1st Cross Rd, HA/GD blocks, 22.5769, 88.4131; 2nd Ave, 22.5824, 88.4238): huge old rain
+  trees and banyan/peepal over the footpath (a banyan with a stall, a bench and a railing under it), mango and
+  neem in front gardens, saplings on the avenues' medians. Debdaru (mast trees) and areca palms by the houses.
+- **Bypass / Biswa Bangla Sarani** (22.5699, 88.4047; 22.5814, 88.4543): young roadside trees (neem,
+  gulmohar-like feathery crowns) behind blue railings, shrubs along the kerb, sparse cover.
+- **Old city near Sealdah** (Golap Sastri Lane, 22.5652, 88.3658): few trees: a mango or neem in a compound
+  leaning over the lane, everything else is buildings and wires.
+- Whitewashed trunk bases (often with a red ring) are common on kerbside trees in Kolkata, less so in Sector V.
+
+Built: `src/render/world/trees.ts` (kit: rain, neem, gulmohar, banyan, ashoka/debdaru, coconut, areca, royal).
+Wind runs in Sector V's two forest meshes; the streamed chunks share chunkmat.ts's material (not in this spec's
+files), so they don't sway yet: `addWind` in that material, gated on the foliage marker (glow < 0), would add it.

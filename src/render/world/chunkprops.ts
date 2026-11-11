@@ -1,4 +1,4 @@
-// Props of a streamed chunk (GenProp), into the chunk's GeoBuf: trees and palms (greenery.ts shapes), trident
+// Props of a streamed chunk (GenProp), into the chunk's GeoBuf: trees and palms (the trees.ts kit), trident
 // lamps with night pools (lamps.ts), poles with sagging wire bundles, walls, dead ends with a parody sign, signs,
 // hoardings, benches, shrines, and the street life in chunkstalls.ts. `rot` turns local +z toward the road.
 
@@ -8,67 +8,33 @@ import { GeoBuf, place } from './chunkgeo';
 import { AD_COUNT, Tile } from './chunkatlas';
 import { lampPool, puddle } from './chunkground';
 import { board } from './chunkbuildings';
-import { canopy } from './greenery';
+import { pickWeighted, type Species, treeKit, VARIANTS } from './trees';
+import { TREES } from '../../content/worldgen';
 import { bike, busStop, C, car, cart, handcart, person, stall } from './chunkstalls';
 
 /** Text slots for signs: a tile id for the text, or null when none is free. */
 export type TextFn = (text: string, bg?: string, fg?: string) => number | null;
 
-let shapes: { trunk: THREE.BufferGeometry; wide: THREE.BufferGeometry; round: THREE.BufferGeometry; crown: THREE.BufferGeometry } | null = null;
-function treeShapes() {
-  shapes ??= {
-    trunk: new THREE.CylinderGeometry(0.5, 0.65, 1, 6).translate(0, 0.5, 0),
-    wide: canopy([[0, 0, 0, 3.4], [2.4, -0.4, 0.8, 2.4], [-2.2, -0.3, -0.9, 2.5], [0.4, 0.5, -2.2, 2.2], [-0.6, -0.2, 2.3, 2.2]]),
-    round: canopy([[0, 0, 0, 2.4], [0.9, 1.3, 0.3, 1.8], [-0.8, 1.0, -0.4, 1.7], [0.2, -0.9, 1.0, 1.7]]),
-    crown: fronds(),
-  };
-  return shapes;
-}
-
-/** A light palm crown: nine drooping fronds, two double-sided blades each (greenery's crown is ~5x the vertices). */
-function fronds() {
-  const pos: number[] = [], nor: number[] = [];
-  const v = new THREE.Vector3(), n = new THREE.Vector3();
-  for (let i = 0; i < 9; i++) {
-    const a = (i / 9) * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a);
-    const pts = [[0, 0], [1.25, 0.45], [2.5, -0.5]]; // (out, up) along the frond
-    for (let k = 1; k < 3; k++) {
-      const [o0, y0] = pts[k - 1], [o1, y1] = pts[k], w0 = k === 1 ? 0.1 : 0.22, w1 = k === 1 ? 0.22 : 0.02;
-      const P = [[o0, y0, -w0], [o1, y1, -w1], [o1, y1, w1], [o0, y0, w0]].map(([o, y, s]) => [o * ca - s * sa, y, o * sa + s * ca]);
-      n.set(0, 1, 0);
-      for (const tri of [[0, 2, 1], [0, 3, 2], [0, 1, 2], [0, 2, 3]]) for (const t of tri) { v.fromArray(P[t]); pos.push(v.x, v.y, v.z); nor.push(n.x, n.y, n.z); }
-    }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
-  return g;
-}
-
-const LEAF = [0x4f7a3a, 0x3f6b33, 0x5c8a3f, 0x476f36, 0x6a8f45], BARK = [0x5b4636, 0x6a5240, 0x4f4034];
 const POST = 0xe8e6df, GLOBE = 0xfff6dc;
 const m4 = new THREE.Matrix4();
 /** Foliage is marked with glow −1: the chunk shader dissolves it near the camera (see chunkmat.ts). */
 const FOLIAGE = -1;
 
-function tree(buf: GeoBuf, p: GenProp, k: number) {
-  const s = shapes ?? treeShapes(), v = p.v ?? k;
-  const rain = v % 3 !== 1, sc = 0.85 + (k % 5) * 0.1;
-  const H = (rain ? 4.2 : 3.4) * sc, R = (rain ? 0.75 : 0.55) * sc;
-  buf.geometry(s.trunk, place(p.x, 0, p.z, k, R, H + 1, R, 0, m4), C(BARK[k % 3]));
-  const c = sc * (0.85 + (k % 7) * 0.05);
-  buf.geometry(rain ? s.wide : s.round, place(p.x, H + (rain ? 1.6 : 2.2) * sc, p.z, k * 0.7, c, c, c, 0, m4), C(LEAF[k % LEAF.length]), FOLIAGE);
+/** Deterministic 0..1 per prop position (props carry no per-tree seed beyond `v`). */
+const h01 = (x: number, z: number, k: number) => (Math.abs(Math.sin(x * 12.9898 + z * 78.233 + k * 37.719) * 43758.5453) % 1);
+
+/** A tree or palm from the shared kit (trees.ts): wood as is, leaves marked as foliage, a little size and tilt. */
+function kitTree(buf: GeoBuf, p: GenProp, species: Species) {
+  const t = treeKit(species, Math.floor(h01(p.x, p.z, 1) * VARIANTS)), k = 0.86 + h01(p.x, p.z, 2) * 0.28;
+  const tilt = species === 'coconut' || species === 'areca' || species === 'royal' ? 0 : (h01(p.x, p.z, 3) - 0.5) * 0.08;
+  const m = place(p.x, 0, p.z, h01(p.x, p.z, 4) * Math.PI * 2, k, k * (0.92 + h01(p.x, p.z, 6) * 0.16), k, tilt, m4);
+  buf.geometry(t.wood, m, null);
+  buf.geometry(t.leaf, m, null, FOLIAGE);
 }
 
-function palm(buf: GeoBuf, p: GenProp, k: number) {
-  const s = shapes ?? treeShapes(), kind = (p.v ?? k) % 3;
-  const H = [8, 5.5, 9][kind], r = [0.3, 0.16, 0.45][kind], lean = kind === 0 ? ((k % 7) - 3) * 0.04 : 0;
-  const m = place(p.x, 0, p.z, k, r, H, r, lean, m4);
-  buf.geometry(s.trunk, m, C([0x8a7a66, 0x7f8a6a, 0xb8b4aa][kind]));
-  const top = new THREE.Vector3(0, 1, 0).applyMatrix4(m);
-  const c = [1.9, 1.2, 2.2][kind];
-  buf.geometry(s.crown, place(top.x, top.y, top.z, k, c, c, c, 0, m4), C(kind === 1 ? 0x6f9a45 : 0x5d8a3a), FOLIAGE);
-}
+const PALMS: Species[] = ['coconut', 'areca', 'royal'];
+const tree = (buf: GeoBuf, p: GenProp) => kitTree(buf, p, pickWeighted<Species>(TREES.street, h01(p.x, p.z, 5)));
+const palm = (buf: GeoBuf, p: GenProp, k: number) => kitTree(buf, p, PALMS[(p.v ?? k) % 3]);
 
 /** Three-globe trident (Sector V style) or, in the old city, a pole with one tube-light arm. */
 function lamp(buf: GeoBuf, f: THREE.Matrix4, p: GenProp, roads: GenRoad[]) {
@@ -185,7 +151,7 @@ export function buildProp(buf: GeoBuf, prop: GenProp, index: number, textFn: Tex
   const p = prop.v === undefined ? prop : { ...prop, v: Math.abs(Math.trunc(prop.v)) || 0 };
   const f = place(p.x, 0, p.z, p.rot ?? 0, 1, 1, 1, 0, new THREE.Matrix4());
   switch (p.kind) {
-    case 'tree': tree(buf, p, k); break;
+    case 'tree': tree(buf, p); break;
     case 'palm': palm(buf, p, k); break;
     case 'lamp': lamp(buf, f, p, roads); break;
     case 'pole':
