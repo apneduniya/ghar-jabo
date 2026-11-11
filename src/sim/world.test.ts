@@ -64,7 +64,7 @@ describe('traffic', () => {
 describe('bus hopping', () => {
   function atDoorOfSlowBus(w: World) {
     const bus = w.traffic.spawnBus(1, 100);
-    bus.base = 1; bus.speed = 1;
+    bus.base = 1; bus.speed = 1; bus.hangers = 0; // a full bus may throw you off: not what these test
     const d = Traffic.busDoor(bus, BUS_REAR_DOOR);
     w.player.x = d.x; w.player.z = d.z;
     return bus;
@@ -93,7 +93,7 @@ describe('bus hopping', () => {
     const w = makeWorld();
     const bus = w.traffic.spawnBus(1, w.traffic.busRoute.length - 40);
     bus.depotAt = undefined;
-    bus.base = 2; bus.speed = 2;
+    bus.base = 2; bus.speed = 2; bus.hangers = 0;
     const d = Traffic.busDoor(bus, BUS_REAR_DOOR);
     w.player.x = d.x; w.player.z = d.z;
     w.step({ ...NO_INTENT, action: true });
@@ -229,7 +229,7 @@ describe('the streamed world beyond the map', () => {
     const w = streamWorld('timed');
     const bus = w.traffic.spawnBus(1, 200);
     bus.depotAt = undefined;
-    bus.base = 1; bus.speed = 1;
+    bus.base = 1; bus.speed = 1; bus.hangers = 0; // a full bus may throw you off: not what these test
     const d = Traffic.busDoor(bus, BUS_REAR_DOOR);
     w.player.x = d.x; w.player.z = d.z;
     w.step({ ...NO_INTENT, action: true });
