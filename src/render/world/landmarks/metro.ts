@@ -4,7 +4,7 @@
 // Underground stretches draw nothing but the street entrances of their stations.
 
 import { LM } from '../../../content/landmarks';
-import { METRO_PIER_MIN_Y, METRO_PIER_R, STATION_MIN_Y, metroLayout, portalHalf, stationOver } from '../../../sim/gen/layout';
+import { METRO_PIER_MIN_Y, METRO_PIER_R, STATION_MIN_Y, metroLayout, metroPierAt, portalHalf, stationOver } from '../../../sim/gen/layout';
 import { intervals, marks, owns, inSectorV, pieces, sample } from './clip';
 import type { Ctx } from './ctx';
 import { elevatedStation, undergroundEntrance, pierLook } from './stations';
@@ -26,15 +26,16 @@ export function buildMetro(ctx: Ctx) {
       if (y >= 1) deckPiece(ctx, p, q, y, Math.floor((a + b) / 6) % 2 === 0);
       else cutPiece(ctx, p, q);
     }
-    for (const s of marks(l, ctx.cx, ctx.cz, LM.pierStep)) {
-      const y = mp.y(s);
-      if (y === null || y < METRO_PIER_MIN_Y) continue;
-      if (stationOver(mp, s)) continue; // the station has its own pier pairs
-      pier(ctx, sample(l, s), y, pierLook(''));
+    for (const m of marks(l, ctx.cx, ctx.cz, LM.pierStep)) {
+      const y0 = mp.y(m);
+      if (y0 === null || y0 < METRO_PIER_MIN_Y) continue;
+      if (stationOver(mp, m)) continue; // the station has its own pier pairs
+      const s = metroPierAt(ctx.net, ctx.warp, mp, m); // off a road the line crosses at an angle
+      if (s !== null) pier(ctx, sample(l, s), mp.y(s) ?? y0, pierLook(''));
     }
     for (const pt of mp.portals) {
       const q = sample(l, pt.s);
-      if (owns(ctx.cx, ctx.cz, q.x, q.z) && !inSectorV(q.x, q.z)) portal(ctx, q, pt.dir);
+      if (owns(ctx.cx, ctx.cz, q.x, q.z) && !inSectorV(q.x, q.z)) portal(ctx, q, pt.dir, pt.earth);
     }
     for (const st of mp.stations) {
       const q = sample(l, st.s);
@@ -90,15 +91,17 @@ export function pier(ctx: Ctx, q: S, y: number, look: PierLook) {
 }
 
 /** The tunnel mouth: a concrete box over the tracks with a dark opening, grassed over, earth falling away. */
-export function portal(ctx: Ctx, q: S, dir: 1 | -1) {
+export function portal(ctx: Ctx, q: S, dir: 1 | -1, earth = 30) {
   const f = ctx.frame(q.x, q.z, Math.atan2(q.dz * dir, q.dx * dir));
   const h = portalHalf();
   f.box(0, 14, -h - 0.8, h + 0.8, 0, 7.2, C.wall);
   f.box(-0.4, 0.2, -h - 1.2, h + 1.2, 6.4, 7.6, 0xa39c91); // headwall coping
   f.quad([-0.05, -h + 0.6, 0], [-0.05, h - 0.6, 0], [-0.05, h - 0.6, 5.6], [-0.05, -h + 0.6, 5.6], C.dark);
-  f.box(1.5, 22, -h - 4, h + 4, 7.2, 8.0, C.grass);
-  f.box(14, 30, -h - 6, h + 6, 0, 3.5, C.earth);
-  f.box(14, 30, -h - 6, h + 6, 3.5, 4.0, C.grass);
+  f.box(1.5, earth > 14 ? Math.min(22, earth) : 14.5, -h - 4, h + 4, 7.2, 8.0, C.grass);
+  if (earth > 14) { // the earth over the tunnel, short of any road beyond
+    f.box(14, earth, -h - 6, h + 6, 0, 3.5, C.earth);
+    f.box(14, earth, -h - 6, h + 6, 3.5, 4.0, C.grass);
+  }
   for (const side of [1, -1]) f.box(-1, 0, side * (h + 0.6) - 0.3, side * (h + 0.6) + 0.3, 0, 8.2, C.wall); // wing walls
 }
 

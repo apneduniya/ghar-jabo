@@ -5,7 +5,8 @@ import { T } from '../content/tuning';
 import { LM } from '../content/landmarks';
 import { flyoverDecks, isCanalBridge, roofs } from './elevated';
 import { clipMap } from './gen/clip';
-import { crossingSite, framePt, metroLayout, netDeckY, netDecks, parapet, stationOver } from './gen/layout';
+import { framePt, metroLayout, netDeckY, netDecks, stationOver } from './gen/layout';
+import { crossingSite, parapet } from './gen/sites';
 import { marks, sample } from './gen/lines';
 import { loadNet } from './gen/net';
 import { allSolids, structureConflicts } from './gen/solids';
@@ -235,13 +236,6 @@ describe('the streamed world: what its structures stand on is solid', () => {
       if (mode === 'free') expect(high).toBeGreaterThan(20);
     }
     expect(low).toBeGreaterThan(0);
-  });
-
-  it('wide structures never cut a network road (left out and reported), piers on roads are reported', () => {
-    const w = makeWorld('timed'), warp = w.streamed!.store.warp;
-    const c = structureConflicts(net, warp);
-    expect(c.some((x) => x.kept && x.kind === 'metro pier')).toBe(true);
-    expect(c.filter((x) => !x.kept).every((x) => x.kind !== 'metro pier')).toBe(true);
   });
 
   it('you can walk across the canal bridges', () => {
