@@ -94,7 +94,7 @@ describe('the Sector V street entrance', () => {
   it('is at Gate A, on foot, clear of buildings, water and railings', () => {
     const w = world();
     const e = w.metroEntrance;
-    expect(Math.hypot(e.x - north.gateA[0], e.z - north.gateA[1])).toBeLessThan(8);
+    expect(Math.hypot(e.x - north.gateA.real[0], e.z - north.gateA.real[1])).toBeLessThan(2);
     expect(w.walkBlocked(e.x, e.z, 0.6)).toBe(false);
   });
 

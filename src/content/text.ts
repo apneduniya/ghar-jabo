@@ -201,7 +201,8 @@ export const northSigns = {
   bankLine: 'Open every day except bandh days',
   itCentre: 'आईटी सेंटर · IT CENTRE',
   itCentreBn: 'আইটি সেন্টার',
-  gate: 'METRO · GATE A',
+  /** The navy name board on Gate A's pillar, in three scripts. */
+  gateA: ['সল্টলেক সেক্টর V', 'सॉल्ट लेक सेक्टर V', 'SALT LAKE SECTOR V'],
 };
 
 /** Dead ends in the timed run (side streets that don't go to Sealdah). Situations, never communities. */

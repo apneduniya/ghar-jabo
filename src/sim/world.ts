@@ -6,7 +6,7 @@ import { floods } from '../content/sectorv';
 import { arriveLine, cancelReasons, captainNames, ticker } from '../content/text';
 import { BuildingGrid, WaterMask } from './collide';
 import { canalOf, RailingMask } from './canal';
-import { gateSpot } from './elevated';
+import { gateADoor } from './elevated';
 import { Events } from './events';
 import type { MapData } from './mapdata';
 import { NO_INTENT, Player, type Intent } from './player';
@@ -63,8 +63,8 @@ export class World {
     this.player.z = start.z;
     this.traffic.populate(start.x, start.z);
     this.crowd = new Crowd(map, this.grid, rng, 110);
-    // Sector V's street entrance: OSM Gate A, on the footpath of the service road under the station.
-    const gate = gateSpot(map.roads);
+    // Sector V's street entrance: the Gate A doorway, on the station side of the service road (sim/elevated.ts).
+    const gate = gateADoor();
     this.metroEntrance = this.freeSpotNear(gate[0], gate[1]);
     // Where a captain carrying you heads: Sealdah when the world goes that far, else the map's exit.
     const end = this.streamed ? [this.streamed.sealdah.x, this.streamed.sealdah.z] : map.busPath[map.busPath.length - 1];

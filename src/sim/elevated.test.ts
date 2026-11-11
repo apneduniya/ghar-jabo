@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import mapJson from '../../public/data/sectorv.json';
 import { north } from '../content/sectorv';
-import { at, deckY, flyoverDecks, gateSpot, greenLine, inBox, isFlyover, local, nearest, onCarriageway, orangeLine, pierSpots, roofs, stations } from './elevated';
+import { at, deckY, flyoverDecks, gateADoor, greenLine, inBox, isFlyover, local, nearest, onCarriageway, orangeLine, pierSpots, roofs, stations } from './elevated';
 import type { MapData } from './mapdata';
 
 const map = mapJson as unknown as MapData;
@@ -82,9 +82,17 @@ describe('metro', () => {
     expect(Math.abs(d[0] - d[1])).toBeLessThan(2.5); // halfway between the two carriageways
   });
 
-  it('puts the street entrance at Gate A, on the footpath beside the service road', () => {
-    const g = gateSpot(map.roads);
-    expect(Math.hypot(g[0] - north.gateA[0], g[1] - north.gateA[1])).toBeLessThan(6);
+  it('puts the street entrance in the real Gate A doorway, on the station side of the service road', () => {
+    const g = gateADoor();
+    expect(Math.hypot(g[0] - north.gateA.real[0], g[1] - north.gateA.real[1])).toBeLessThan(2);
     expect(onCarriageway(map.roads, g[0], g[1])).toBe(false);
+    // The service road: the nearest at-grade road. The door is on its north-west side (+t, the station's side);
+    // OSM's node, where the entrance used to be pushed to, is on the other side.
+    const { sv } = stations();
+    let best: ReturnType<typeof nearest> | null = null;
+    for (const r of map.roads) if (!r.b) { const m = nearest(r.p, g[0], g[1]); if (!best || m.d < best.d) best = m; }
+    const side = (p: [number, number]) => local(sv, p[0], p[1])[1] - local(sv, best!.x, best!.z)[1];
+    expect(side(g)).toBeGreaterThan(0);
+    expect(side(north.gateAOsm)).toBeLessThan(0);
   });
 });

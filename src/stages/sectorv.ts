@@ -26,7 +26,7 @@ import { Ambience } from '../audio/ambience';
 import { floods } from '../content/sectorv';
 import { CONTROLS, T } from '../content/tuning';
 import { STREAM } from '../content/worldgen';
-import { northSigns, pick, ticker } from '../content/text';
+import { pick, ticker } from '../content/text';
 import { rng } from '../sim/rng';
 import { World } from '../sim/world';
 import { assets } from '../app/assets';
@@ -99,9 +99,7 @@ export function sectorv(): Scene {
   }
   // Station names, the IT Centre sign and the Nabadiganta gantry (render/world/structures.ts).
   dressing.add(...built.signs);
-  const ent = sign(`🚇 ${northSigns.gate}`, 3.6, 0.8, '#2e9e5b');
-  ent.position.set(world.metroEntrance.x, 3.8, world.metroEntrance.z);
-  dressing.add(ent);
+  // Gate A is marked by its own pillar: red roundel (lit at night) and navy name board (render/world/stations.ts).
   // Static geometry in one draw call, every static board (landmarks, shops, billboards) in one more.
   bake(dressing);
   batchSigns(dressing);

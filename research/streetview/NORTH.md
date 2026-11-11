@@ -116,6 +116,37 @@ The flyover deck itself is in `fly_01_*`, `fly_02_*`, `w1_*`.
   **About 8 CNG autos queue nose to tail along the kerb** (auto stand). White railings and people under
   the station.
 
+### Gate A re-shoot, 2026-11-11
+
+Owner playtest: "the metro entry is very bad and at wrong place". Street View (Jan–Feb 2026) and satellite;
+images in `img/metro/` (gitignored: `a0z_h40`, `a0z_h15`, `p1z_h310`, `g_a0`, `gbz_h195`, `g_gb`,
+`annotated_sat`, `dir_walk`). Game coords (x east, z south, 0.5 u/m), about ±3-5 m.
+
+- **Wrong side before task 026.** The entrance came from OSM's Gate A node (`gateSpot`), 2 u SE of the service
+  road's centre line, pushed outward on that side: about (-33.5, -194.6), across the road against the barrier by
+  the Nabadiganta flyover ramp, where there is no footpath.
+- **Real Gate A door:** 22.58070, 88.42865 = (-36.0, -204.3); Sector V station frame s -22.3, t 0.2. On the NW
+  (station) side of the service road, just past the kerb: a recessed doorway in a ground-level block under the
+  station's overhang at its SW (Wipro More) end, a black plate with a white "A" over it, a stair rising inside
+  (`a0z_h40`, `a0z_h15`).
+- **Mosaic mural** (big swirls: orange, ochre, teal, grey) immediately NE of the door, with a barred window; a
+  "drop-off point" sign at its foot (`p1z_h310`).
+- **Forecourt:** a small paved area SW of the door behind white railings with coloured square motifs; the railing
+  runs along the kerb from the pillar past the mural. Blue-and-white kerb.
+- **Sign pillar:** 22.58064, 88.42860 = (-38.5, -201.2), s -26, t -1.1: grey, free-standing, at the forecourt's
+  SW corner; red metro roundel on top, an angled navy name board (Bengali, Hindi, English) over the footpath, a
+  route map panel facing the road.
+- **Autos:** green-and-yellow CNG autos queue nose to tail along that kerb, NE of the door, facing NE.
+- **Bank block** (parody sign in the game): the peach block bridging the road starts NE of the mural, about
+  s -17..-10 (weak estimate from `a0z_h40`).
+- **Service road:** one lane plus an auto kerb lane, about 7-8 m. The map has OSM's way here as a 9 u (18 m)
+  one-way with its NW kerb at t 0.9; not narrowed (map data), so the game's Gate A stands 1-2 u further NW.
+- **Gate B** (Chavipatty Rd): door at 22.58124, 88.42890 = (-23.1, -234.3) (OSM's node is ~12 m east), up a
+  steel-railed ramp, "drop-off point" sign, a sloped stair enclosure with blue-trimmed glazing and an
+  orange-yellow hand-gesture mosaic (`gbz_h195`, `g_gb`). Not moved in 026.
+- **How a TIU student gets there** (`dir_walk`): Street 2 → PwC More → Street 13 → Wipro More → NE along the
+  service road north of the flyover → the pillar and the Gate A door. So Gate A is the game's metro entrance.
+
 ## 4. Metro stations on Biswa Bangla Sarani (22.5806–22.5816, 88.4287–88.4304)
 
 `st2_*`, `st3_*`, `st4_*`, platform `st1_*` (2022), `fly_06_*` (2020), satellite `t3d_c.jpg`
