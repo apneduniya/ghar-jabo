@@ -119,7 +119,7 @@ export class World {
     if (c?.captain?.state === 'waiting' && Math.hypot(c.x - p.x, c.z - p.z) < 3.5) return { kind: 'bike', captain: c };
     let best: Vehicle | null = null, bd = 2.6;
     for (const v of this.traffic.vehicles) {
-      if (v.kind !== 'bus') continue;
+      if (v.kind !== 'bus' || v.retired) continue;
       const d = Traffic.busDoor(v, BUS_REAR_DOOR);
       const dist = Math.hypot(d.x - p.x, d.z - p.z);
       if (dist < bd) { bd = dist; best = v; }
@@ -248,19 +248,23 @@ export class World {
       this.events.push({ type: 'hitstop', secs: 0.05 });
       if (this.rng.chance(0.3)) this.events.toast('DHADAK!', this.rng.pick(['Pothole. KMC sends regards.', 'That pothole has a pin code.', 'Your spine filed a complaint.']));
     }
-    if (this.traffic.routeStops.some((s) => Math.abs(s.s - v.s) < 1)) this.run.stats.footboardStops++;
+    const way = this.traffic.wayOf(v);
+    if (way.stops.some((s) => Math.abs(s.s - v.s) < 1)) this.run.stats.footboardStops++;
     if (p.stepBalance(dt, intent, this.t, v.speed < 2)) { this.hopOff(true); return; }
     if (intent.jump || intent.action) { this.hopOff(false); return; }
     if (v.depotAt && v.routeDir === 1 && v.s >= v.depotAt) {
       this.events.toast('DEPOT!', 'Conductor: "Ar jabe na! Sobai namun!"');
       this.events.sfx('bad');
-      v.routeDir = -1; // it turns round for the depot
+      // Out of service: it runs empty to the depot (it never swings across the median to turn round in the road).
+      v.depotAt = undefined;
+      v.retired = true;
+      v.hangers = 0;
       this.hopOff(false);
       return;
     }
     // The line ends at Sealdah: home by bus. The other way, it's back to College More and you're dropped.
     if (this.streamed?.atSealdah(p.x, p.z)) { this.arrive('bus'); return; }
-    if (v.gone || v.s >= this.traffic.busRoute.length - 2 || v.s <= 2) {
+    if (v.gone || v.s >= way.line.length - 2) {
       if (v.routeDir === 1) this.arrive('bus');
       else { this.events.toast('COLLEGE MORE', 'Conductor: "Last stop! Namun!" Wrong bus, dada.'); this.hopOff(false); }
     }

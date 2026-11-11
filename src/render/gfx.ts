@@ -249,3 +249,80 @@ export function batchSigns(root: THREE.Object3D): THREE.Mesh | null {
   root.add(mesh);
   return mesh;
 }
+
+// --- Vehicles (task 023) -------------------------------------------------------
+
+/**
+ * bake() for a vehicle: also keeps, per vertex, `hub` (a wheel part's hub x, y and 1 / radius; zero elsewhere,
+ * from userData.hub) and `brake` (1 on tail lights, from userData.brake), so one material can turn the wheels and
+ * light the brake lights in the vertex shader. Still one mesh, one draw call.
+ */
+export function bakeVehicle(root: THREE.Object3D): THREE.Mesh | null {
+  root.updateMatrixWorld(true);
+  const inv = root.matrixWorld.clone().invert();
+  const tag = (g: THREE.BufferGeometry, hub: number[], brake: number) => {
+    const n = g.attributes.position.count;
+    if (!g.attributes.hub) g.setAttribute('hub', new THREE.BufferAttribute(new Float32Array(n * 3).map((_, i) => hub[i % 3]), 3));
+    if (!g.attributes.brake) g.setAttribute('brake', new THREE.BufferAttribute(new Float32Array(n).fill(brake), 1));
+  };
+  // Tag each part's geometry in local space first (a clone, so shared box geometry stays clean), then bake.
+  root.traverse((o) => {
+    const m = o as THREE.Mesh;
+    if (!m.isMesh || (m.material as THREE.MeshBasicMaterial).map) return;
+    const own = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone();
+    // The hub is given in the vehicle's frame (x forward, y up); parts nested deeper (a rider) never carry one.
+    const h = o.userData.hub as [number, number, number] | undefined;
+    tag(own, h ? [h[0], h[1], 1 / h[2]] : [0, 0, 0], o.userData.brake ? 1 : 0);
+    m.geometry = own;
+  });
+  const geos: THREE.BufferGeometry[] = [];
+  const doomed: THREE.Mesh[] = [];
+  root.traverse((o) => {
+    const m = o as THREE.Mesh;
+    if (!m.isMesh) return;
+    const material = m.material as THREE.MeshLambertMaterial;
+    if (Array.isArray(material) || material.map || material.transparent) return;
+    const g = m.geometry.clone();
+    g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld));
+    if (!(material.vertexColors && g.attributes.color)) {
+      const n = g.attributes.position.count, col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) col.set([material.color.r, material.color.g, material.color.b], i * 3);
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    }
+    if (!g.attributes.glow) g.setAttribute('glow', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(Number(m.userData.glow ?? 0)), 1));
+    for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'color', 'glow', 'hub', 'brake'].includes(k)) g.deleteAttribute(k);
+    geos.push(g);
+    doomed.push(m);
+  });
+  if (!geos.length) return null;
+  for (const m of doomed) m.parent?.remove(m);
+  const merged = new THREE.Mesh(mergeGeometries(geos), bakedMat);
+  merged.userData.vehicle = true;
+  root.add(merged);
+  return merged;
+}
+
+/**
+ * A material for one vehicle model: bakedMat's night glow, plus wheels turned by `spin` (distance rolled, units)
+ * and tail lights lit by `brake` (0..1). Every vehicle material shares one shader program; only the two
+ * uniforms differ, so pooled models stay one draw call each.
+ */
+export function vehicleMaterial() {
+  const m = new THREE.MeshLambertMaterial({ vertexColors: true });
+  const spin = { value: 0 }, brake = { value: 0 };
+  m.userData = { spin, brake };
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uNight = nightUniform;
+    sh.uniforms.uSpin = spin;
+    sh.uniforms.uBrake = brake;
+    const turn = 'if (hub.z > 0.0) { float a = -uSpin * hub.z; mat2 r = mat2(cos(a), sin(a), -sin(a), cos(a));';
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute float glow;\nattribute vec3 hub;\nattribute float brake;\nuniform float uSpin;\nvarying float vGlow;\nvarying float vBrake;')
+      .replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>\n${turn} objectNormal.xy = r * objectNormal.xy; }`)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>\nvGlow = glow; vBrake = brake;\n${turn} transformed.xy = hub.xy + r * (transformed.xy - hub.xy); }`);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uNight;\nuniform float uBrake;\nvarying float vGlow;\nvarying float vBrake;')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += diffuseColor.rgb * vGlow * uNight * 1.6 + vec3(1.0, 0.12, 0.06) * vBrake * uBrake * 1.4;');
+  };
+  return m;
+}

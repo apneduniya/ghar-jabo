@@ -96,3 +96,26 @@ export const LANE_ROOM = {
   /** Lanes may move out round a structure until a bus hangs this far past the carriageway edge (the kerb strip). */
   overKerb: 0.4,
 };
+
+/** How vehicles hold their lane and turn (sim/traffic.ts, task 023). */
+export const DRIVE = {
+  /** Half the window a vehicle's path is averaged over: corners and lane changes become curves this long. */
+  round: 3,
+  /** Buses: their whole route is pre-smoothed with `round`; this rounds what's left of each 1 u step. */
+  busRound: 1,
+  /** How far ahead (units) a driver looks for the next bend, and the speed it takes a right-angle bend at. */
+  bendLook: 7,
+  bendSpeed: 4.5,
+  /** Bikes ride this share of the road width left of the centre line (cars 0.28): they filter past on the kerb side. */
+  bikeLane: 0.4,
+  /** Bikes and cars side by side may overlap this much before they count as in each other's way. */
+  squeeze: 0.12,
+  /** A bus line route may stray this far from the drawn bus line before it costs more. */
+  busTol: 6,
+  /** Following: look this many seconds of travel past followGap; stop this far behind; close up this fast per unit of gap. */
+  lookSecs: 0.6,
+  stopGap: 0.8,
+  closeRate: 1.5,
+  /** How hard drivers brake (per second, against 2.5 to speed up). */
+  brakeRate: 6,
+};
