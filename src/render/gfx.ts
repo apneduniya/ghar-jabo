@@ -125,6 +125,9 @@ export function building(w: number, h: number, d: number, color: number, windows
  * at a time and re-measuring cost up to 70 ms per landmark chunk (task 020).
  */
 export function fitFont(g: CanvasRenderingContext2D, text: string, maxW: number, start: number, min: number, font: (px: number) => string) {
+  // Whole pixels only: every distinct fractional size is a new font to the browser, and measuring Bengali or
+  // Devanagari in a new font costs ~2 ms (20 signs at fractional sizes: 43 ms; at whole sizes: 3 ms).
+  start = Math.max(min, Math.floor(start));
   g.font = font(start);
   const w = g.measureText(text).width;
   let size = w > maxW ? Math.max(min, Math.floor(start * maxW / w)) : start;

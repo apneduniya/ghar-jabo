@@ -4,7 +4,9 @@
 // `?fixture=1`, with the fixture source in ./fixture (loaded lazily, so it stays out of the main bundle).
 
 import * as THREE from 'three';
-import { renderer } from '../gfx';
+import { fitFont, renderer } from '../gfx';
+import { LM_TEXT } from '../../content/landmarks';
+import { northSigns } from '../../content/text';
 import { CHUNK, type Chunk, type ChunkSource } from '../../sim/gen/types';
 import { CHUNK_VIEW } from '../../content/tuning';
 import { ChunkView } from './chunks';
@@ -38,6 +40,7 @@ export class StreamedWorld {
   constructor(private scene: THREE.Scene, readonly src: ChunkSource, private sectorV: THREE.Object3D, private driven: Driven | null = null) {
     // Warp the network for the landmark builders once, so the first landmark chunk doesn't do it mid-ride.
     prepareStructures(src.net, src.warp);
+    warmText(src);
     warmLandmarks(src);
     this.mat = chunkMaterial();
     this.view = new ChunkView(src, { material: this.mat.material, text: this.mat.text, budgetMs: CHUNK_VIEW.budgetMs });
@@ -103,5 +106,26 @@ function warmLandmarks(src: ChunkSource) {
     const chunk: Chunk = { cx, cz, x0: cx * CHUNK, z0: cz * CHUNK, area: 'generic', roads: [], buildings: [], props: [], landmarks: [l.id], blockers: [] };
     const obj = structuresForChunk(chunk, src.net, src.warp);
     (obj?.userData.dispose as (() => void) | undefined)?.();
+  }
+}
+
+let textWarm = false;
+/**
+ * Measure every landmark sign's text once per page, in both faces the signs use. The first measurement of a string
+ * in a new script (Bidhan Nagar Road's Bengali and Hindi boards) costs ~35 ms of text shaping, which landed as a
+ * stall mid-ride; afterwards the browser has the glyphs and later measurements are cheap.
+ */
+function warmText(src: ChunkSource) {
+  if (textWarm) return;
+  textWarm = true;
+  const g = document.createElement('canvas').getContext('2d');
+  if (!g) return;
+  const texts = new Set<string>();
+  const walk = (v: unknown) => { if (typeof v === 'string') texts.add(v); else if (v && typeof v === 'object') Object.values(v).forEach(walk); };
+  walk(LM_TEXT);
+  walk(northSigns);
+  for (const l of src.net.landmarks) texts.add(l.name);
+  for (const t of texts) for (const face of ['system-ui, sans-serif', 'system-ui, "Noto Sans Bengali", sans-serif']) {
+    fitFont(g, t, 400, 64, 10, (n) => `bold ${n}px ${face}`);
   }
 }
