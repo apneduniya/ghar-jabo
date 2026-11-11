@@ -138,7 +138,6 @@ export class World {
     if (bump) {
       // Barged into someone at a run: you both stagger, and they let you know.
       p.vx *= 0.3; p.vz *= 0.3;
-      this.run.hurtDignity(1);
       this.run.stats.bumped++;
       this.events.sfx('bump');
       this.events.push({ type: 'shake', amp: 0.15, secs: 0.15 });
@@ -216,7 +215,6 @@ export class World {
     p.x = out.x; p.z = out.z;
     if (fell) {
       this.run.stats.falls++;
-      this.run.hurtDignity(12);
       this.events.push({ type: 'slowmo', scale: 0.35, secs: 0.7 });
       this.events.push({ type: 'hitstop', secs: 0.1 });
       this.events.push({ type: 'shake', amp: 0.9, secs: 0.6 });

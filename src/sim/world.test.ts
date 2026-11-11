@@ -11,6 +11,7 @@ import { clearance } from './streetlife';
 import worldJson from '../../public/data/world.json';
 import { clipMap } from './gen/clip';
 import { loadNet } from './gen/net';
+import { T } from '../content/tuning';
 
 const map = mapJson as unknown as MapData;
 
@@ -186,6 +187,34 @@ describe('street level', () => {
     steps(w, 120, () => ({ ...NO_INTENT, moveX: -wall.nx, moveZ: -wall.nz }));
     const side = (w.player.x - cx) * wall.nx + (w.player.z - cz) * wall.nz;
     expect(side).toBeGreaterThan(0);
+  });
+
+  // College More: Street 18 north's divider runs NNE from the junction (pieces from about (231, 115)).
+  // Walk straight across the road from the west carriageway (collision only: traffic is not the point here).
+  const across = (w: World, mx: number, mz: number, dx: number, dz: number) => {
+    const nx = dz, nz = -dx; // across the road
+    const p = w.player;
+    p.x = mx + nx * 5; p.z = mz + nz * 5; p.vx = p.vz = 0;
+    for (let i = 0; i < 180; i++) p.stepFoot(T.step, { ...NO_INTENT, moveX: -nx, moveZ: -nz }, (x, z) => w.walkBlocked(x, z, T.player.radius));
+    return (p.x - mx) * nx + (p.z - mz) * nz; // > 0: still on the side you started
+  };
+  const near = (w: World, x: number, z: number) => w.street.medians.find((m) => Math.hypot(m.x - x, m.z - z) < 2)!;
+
+  it('the divider at College More stops you walking across the road', () => {
+    const w = makeWorld();
+    for (const [x, z] of [[240.2, 95.9], [234.9, 106.7], [209.4, 115.6]]) {
+      const m = near(w, x, z);
+      expect(m, `a median at ${x},${z}`).toBeTruthy();
+      expect(across(w, m.x, m.z, m.dx, m.dz), `crossed at ${x},${z}`).toBeGreaterThan(0.5);
+    }
+  });
+
+  it('the College More junction gap lets you through', () => {
+    const w = makeWorld();
+    const m = near(w, 230.9, 114.8); // the divider's first piece; the junction is 4 u back towards Street 13
+    const gx = m.x - m.dx * 4, gz = m.z - m.dz * 4;
+    expect(w.street.medians.some((q) => Math.hypot(q.x - gx, q.z - gz) < 2)).toBe(false);
+    expect(across(w, gx, gz, m.dx, m.dz)).toBeLessThan(-3);
   });
 });
 

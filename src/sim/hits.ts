@@ -1,4 +1,4 @@
-// Walking into traffic: a fast vehicle knocks you down (and costs time and dignity); a slow one nudges you aside.
+// Walking into traffic: a fast vehicle knocks you down (and costs time); a slow one nudges you aside.
 
 import { T } from '../content/tuning';
 import type { World } from './world';
@@ -12,7 +12,6 @@ export function collideTraffic(w: World) {
     if (Math.abs(along) > v.len / 2 + 0.3 || Math.abs(across) > v.width / 2 + 0.35) continue;
     if (v.speed > T.traffic.hitSpeed && v.id !== w.captainId) {
       w.run.stats.taxiHits++;
-      w.run.hurtDignity(6);
       w.run.addMinutes(2);
       const name = v.kind === 'taxi' ? 'TAXI TAKKAR!' : v.kind === 'bus' ? 'BUS-E DHAKKA!' : v.kind === 'auto' ? 'AUTO-R DHAKKA!' : 'DHAKKA!';
       w.events.sfx('crash');

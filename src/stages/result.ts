@@ -66,7 +66,6 @@ function stats(run: Run): [string, string][] {
     ['Footboard stops', String(s.footboardStops)],
     ['Seat found', s.gaveSeat ? 'Gave it to Mashima' : s.seatFound ? 'Yes (!)' : 'No'],
     ['Ma\'s missed calls', String(s.momMissed)],
-    ['Dignity', `${Math.round(run.dignity)}%`],
   ];
 }
 

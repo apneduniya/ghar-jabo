@@ -14,7 +14,7 @@
 
   /* Layout. Every HUD element has a home slot measured from the safe area (notch, home bar, rounded corners).
      --sa-*: safe-area inset plus a gutter. --mini: minimap size (Minimap.size() uses the same formula).
-     --tr-w: width of the top-right column (money, dignity, minimap). --tl-h: height of the top-left clock block. */
+     --tr-w: width of the top-right column (money, minimap). --tl-h: height of the top-left clock block. */
   --gut: 10px;
   --sa-t: max(env(safe-area-inset-top), var(--gut));
   --sa-r: max(env(safe-area-inset-right), var(--gut));
@@ -35,7 +35,7 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--ink); font-family: var(--ui); color: #fff; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
-#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; } /* two thumbs at once is play, not a pinch */
 #ui { position: fixed; inset: 0; pointer-events: none; }
 #ui button, #ui .paper, #ui .call, #ui .diary { pointer-events: auto; }
 .layer { position: absolute; inset: 0; }
@@ -53,7 +53,7 @@ kbd { background: rgba(255,255,255,.16); border-radius: 4px; padding: 0 5px; fon
 .cholo:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--yellow-d); }
 .ghost { background: rgba(255,255,255,.14); color: #fff; padding: 12px 16px; border-radius: 12px; font-weight: 800; }
 
-/* ── HUD: top-left clock block, top-right money / dignity / minimap ── */
+/* ── HUD: top-left clock block, top-right money / minimap ── */
 .hud { position: absolute; top: var(--sa-t); left: var(--sa-l); right: var(--sa-r); display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 .hud-tl { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
 .hud-card { background: var(--ink-a); border: 2px solid var(--yellow); border-radius: 12px; padding: 4px 10px 6px; box-shadow: 0 4px 14px rgba(0,0,0,.3); min-width: 128px; }
@@ -73,12 +73,9 @@ kbd { background: rgba(255,255,255,.16); border-radius: 4px; padding: 0 5px; fon
 .hud-date { font: 800 10px var(--ui); letter-spacing: 1.2px; background: rgba(0,0,0,.5); padding: 3px 8px; border-radius: 6px; max-width: 46vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hud-tr { width: var(--tr-w); background: var(--ink-a); border-radius: 12px; padding: 4px 10px 7px; text-align: right; box-shadow: 0 4px 14px rgba(0,0,0,.3); }
 .hud-money { font-family: var(--display); font-size: 22px; line-height: 1.15; color: var(--yellow); }
-.hud-dig { font: 800 9px var(--ui); letter-spacing: 1px; display: flex; flex-direction: column; gap: 3px; opacity: .95; }
-.hud-dig i { height: 6px; background: rgba(255,255,255,.18); border-radius: 3px; overflow: hidden; display: block; }
-.hud-dig b { display: block; height: 100%; margin-left: auto; background: #6ec1ff; transition: width .3s; }
 
-/* Minimap: top-right, under money and dignity, in both orientations. Tap for the full map. */
-.minimap { position: absolute; top: calc(var(--sa-t) + 66px); right: calc(var(--sa-r) + (var(--tr-w) - var(--mini)) / 2); border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 14px rgba(0,0,0,.35); pointer-events: auto; background: #c9c2b4; }
+/* Minimap: top-right, under money, in both orientations. Tap for the full map. */
+.minimap { position: absolute; top: calc(var(--sa-t) + 46px); right: calc(var(--sa-r) + (var(--tr-w) - var(--mini)) / 2); border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 14px rgba(0,0,0,.35); pointer-events: auto; background: #c9c2b4; }
 .minimap.big { top: 50%; left: 50%; right: auto; transform: translate(-50%, -50%); border-radius: 14px; z-index: 7; }
 
 /* Notification stream: portrait, a column on the left under the clock block, stopping short of the minimap;
@@ -126,21 +123,26 @@ kbd { background: rgba(255,255,255,.16); border-radius: 4px; padding: 0 5px; fon
 .meter.rival b { background: #8e5bb5; }
 
 /* Thumb controls. Joystick bottom-left; on the right, a column: JUMP at the bottom corner,
-   the context action above it, Rapi-Nah above that (portrait) or beside JUMP (landscape). */
-.stick { position: absolute; left: calc(var(--sa-l) + 12px); bottom: calc(var(--sa-b) + 18px); width: var(--stick); height: var(--stick); border-radius: 50%; background: rgba(20,16,36,.35); border: 2px solid rgba(255,255,255,.55); pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: background .15s; }
-.stick.active { background: rgba(20,16,36,.5); }
-.stick i { position: absolute; left: 30%; top: 30%; width: 40%; height: 40%; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(0,0,0,.35); transition: transform .06s; }
-.stick .ar { position: absolute; color: rgba(255,255,255,.7); font-size: 11px; line-height: 1; }
-.stick .u { top: 6px; left: 50%; transform: translateX(-50%); } .stick .d { bottom: 6px; left: 50%; transform: translateX(-50%); }
-.stick .l { left: 7px; top: 50%; transform: translateY(-50%); } .stick .r { right: 7px; top: 50%; transform: translateY(-50%); }
-.stick em { position: absolute; bottom: -17px; left: 0; right: 0; text-align: center; font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: 2px; color: #fff; text-shadow: 0 1px 3px #000; }
+   the context action above it, Rapi-Nah above that (portrait) or beside JUMP (landscape).
+   The stick rests here; while a thumb holds it, input.ts moves the base under the thumb (no transition, so
+   nothing lags), and on release it glides home. */
+.stick { position: absolute; left: calc(var(--sa-l) + 12px); bottom: calc(var(--sa-b) + 18px); width: var(--stick); height: var(--stick); border-radius: 50%; background: radial-gradient(circle, rgba(20,16,36,.18) 0 38%, rgba(20,16,36,.38) 70%); border: 2px solid rgba(255,255,255,.6); pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: transform .16s ease-out, background .15s, opacity .2s; opacity: .85; }
+.stick.active { transition: none; opacity: 1; background: radial-gradient(circle, rgba(20,16,36,.28) 0 38%, rgba(20,16,36,.55) 70%); }
+.stick i { position: absolute; left: 31%; top: 31%; width: 38%; height: 38%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff, #dcd6ea); box-shadow: 0 3px 8px rgba(0,0,0,.4); }
+.stick .ar { position: absolute; width: 9px; height: 9px; border-top: 2.5px solid rgba(255,255,255,.75); border-left: 2.5px solid rgba(255,255,255,.75); border-radius: 2px; transition: opacity .2s; }
+.stick .u { top: 9px; left: calc(50% - 5px); transform: rotate(45deg); } .stick .d { bottom: 9px; left: calc(50% - 5px); transform: rotate(225deg); }
+.stick .l { left: 9px; top: calc(50% - 5px); transform: rotate(-45deg); } .stick .r { right: 9px; top: calc(50% - 5px); transform: rotate(135deg); }
+.stick.active .ar, .stick.active em { opacity: 0; }
+.stick em { position: absolute; bottom: -17px; left: 0; right: 0; text-align: center; font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: 2px; color: #fff; text-shadow: 0 1px 3px #000; transition: opacity .2s; }
 .keys { position: absolute; left: var(--sa-l); bottom: var(--sa-b); display: flex; flex-wrap: wrap; gap: 4px 10px; max-width: 46%; background: rgba(20,16,36,.6); padding: 5px 9px; border-radius: 9px; font-size: 11px; opacity: .8; }
-.jump-btn { position: absolute; right: calc(var(--sa-r) + 4px); bottom: calc(var(--sa-b) + 14px); width: var(--jump); height: var(--jump); border-radius: 50%; background: rgba(255,255,255,.92); color: var(--ink); font-family: var(--display); font-size: 15px; box-shadow: 0 4px 0 rgba(0,0,0,.3); }
-.jump-btn:active { transform: translateY(2px); }
+/* JUMP: an icon (a chevron over a leaping figure); the word stays as the button's accessible name. */
+.jump-btn { position: absolute; right: calc(var(--sa-r) + 4px); bottom: calc(var(--sa-b) + 14px); width: var(--jump); height: var(--jump); border-radius: 50%; background: rgba(255,255,255,.94) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%231b1430' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 10l7-6.5 7 6.5'/%3E%3Ccircle cx='20' cy='15.5' r='2.8' fill='%231b1430' stroke='none'/%3E%3Cpath d='M20 20v7M13.5 17.5L20 21.5l6.5-4M20 27l-5 6M20 27l5 6'/%3E%3C/svg%3E") center / 62% no-repeat; color: transparent; font-size: 0; box-shadow: 0 4px 0 rgba(0,0,0,.3), 0 0 0 3px rgba(27,20,48,.18); touch-action: none; }
+.jump-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.3), 0 0 0 3px rgba(27,20,48,.18); }
 .act-btn { position: absolute; right: calc(var(--sa-r) + 4px); bottom: calc(var(--sa-b) + var(--jump) + 26px); max-width: calc(100% - var(--stick) - 40px); background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 18px; padding: 13px 18px; border-radius: 16px; box-shadow: 0 5px 0 var(--yellow-d); animation: pulse 1s infinite, slideUp .15s ease-out; white-space: nowrap; }
 .act-btn.big { left: 50%; right: auto; transform: translateX(-50%); bottom: calc(var(--sa-b) + 30px); font-size: 24px; padding: 18px 36px; }
 .phone-btn { position: absolute; right: calc(var(--sa-r) + 4px); bottom: calc(var(--sa-b) + var(--jump) + 92px); background: #ffd400; color: #111; font-weight: 800; padding: 9px 12px; border-radius: 14px; font-size: 14px; box-shadow: 0 3px 0 rgba(0,0,0,.3); white-space: nowrap; }
 .phone-btn small { font-weight: 700; opacity: .7; }
+.act-btn, .phone-btn { touch-action: none; }
 .phone-btn.busy { opacity: .6; }
 
 /* City stage route bar: under the clock block, full width (no minimap in that stage). */
@@ -183,8 +185,7 @@ kbd { background: rgba(255,255,255,.16); border-radius: 4px; padding: 0 5px; fon
   .hud-date { font-size: 12px; }
   .hud-tr { padding: 6px 14px 9px; }
   .hud-money { font-size: 30px; }
-  .hud-dig { font-size: 11px; }
-  .minimap { top: calc(var(--sa-t) + 82px); }
+  .minimap { top: calc(var(--sa-t) + 58px); }
   .stream { left: calc(var(--sa-l) + 220px + 18vw); }
   .note, .call { width: min(400px, 100%); font-size: 14px; }
   .keys { font-size: 12px; }

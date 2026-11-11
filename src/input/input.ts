@@ -1,5 +1,8 @@
 // One control state for keyboard and touch: a move vector, jump, action and phone.
-// On phones the left half of the screen is a floating joystick.
+// On phones the lower-left of the screen is a floating joystick.
+
+import { CONTROLS } from '../content/tuning';
+import { clampBase, followBase, stickVector } from './stick';
 
 export const input = {
   /** Move vector, x = along the road towards Sealdah (screen up), z = across the road (screen right). */
@@ -34,9 +37,12 @@ function keyVector() {
   return { x, z };
 }
 
-// Joystick: always on screen (bottom-left) on touch devices, so nobody has to guess it exists.
-// A thumb anywhere on the left half drives it; the knob moves from the fixed base. Laptops get a key legend.
-const stick = { id: -1, ox: 0, oy: 0, x: 0, z: 0 };
+// Joystick: a resting stick is always on screen (bottom-left) on touch devices, so nobody has to guess it
+// exists. It floats: a thumb landing anywhere in the lower-left area brings the base to the thumb, and
+// dragging past the rim pulls the base along. Analog: a light push walks, the rim runs (input/stick.ts).
+// Each finger is its own pointer, so the right thumb can jump or hop while the left one steers.
+// Laptops get a key legend instead.
+const stick = { id: -1, bx: 0, by: 0, hx: 0, hy: 0, x: 0, z: 0 };
 let stickEl: HTMLElement | null = null;
 let knobEl: HTMLElement | null = null;
 let keysEl: HTMLElement | null = null;
@@ -52,7 +58,7 @@ export function enableStick(on: boolean) {
   if (touchDevice) {
     stickEl = document.createElement('div');
     stickEl.className = 'stick';
-    stickEl.innerHTML = '<span class="ar u">▲</span><span class="ar d">▼</span><span class="ar l">◀</span><span class="ar r">▶</span><em>MOVE</em>';
+    stickEl.innerHTML = '<span class="ar u"></span><span class="ar d"></span><span class="ar l"></span><span class="ar r"></span><em>MOVE</em>';
     knobEl = document.createElement('i');
     stickEl.appendChild(knobEl);
     ui.appendChild(stickEl);
@@ -68,27 +74,32 @@ function isUiTarget(t: EventTarget | null) {
   return t instanceof HTMLElement && !!t.closest('button, .phone, .card-wrap, .paper, .call, .minimap, .title-screen');
 }
 
+const rimPx = () => (stickEl?.offsetWidth || 124) * CONTROLS.rim; // the stick's size comes from style.css
+
 addEventListener('pointerdown', (e) => {
   input.tap = true;
   if (!stickEnabled || !stickEl || stick.id !== -1 || isUiTarget(e.target)) return;
-  if (e.clientX > innerWidth * 0.55) return;
-  const r = stickEl.getBoundingClientRect();
+  // The left part of the screen, below the clock and the notifications.
+  if (e.clientX > innerWidth * CONTROLS.stickZone[0] || e.clientY < innerHeight * CONTROLS.stickZone[1]) return;
+  // The resting centre (offsetLeft/Top ignore transforms; #ui covers the viewport).
+  stick.hx = stickEl.offsetLeft + stickEl.offsetWidth / 2;
+  stick.hy = stickEl.offsetTop + stickEl.offsetHeight / 2;
+  [stick.bx, stick.by] = clampBase(e.clientX, e.clientY, stickEl.offsetWidth / 2, innerWidth, innerHeight);
   stick.id = e.pointerId;
-  stick.ox = r.left + r.width / 2;
-  stick.oy = r.top + r.height / 2;
   stickEl.classList.add('active');
   move(e.clientX, e.clientY);
 });
 
 function move(cx: number, cy: number) {
-  const dx = cx - stick.ox, dy = cy - stick.oy;
-  const r = (stickEl?.offsetWidth || 128) * 0.4; // the stick's size comes from the layout (style.css)
-  const len = Math.min(r, Math.hypot(dx, dy));
-  const a = Math.atan2(dy, dx);
-  const kx = Math.cos(a) * len, ky = Math.sin(a) * len;
-  if (knobEl) knobEl.style.transform = `translate(${kx}px, ${ky}px)`;
-  stick.x = -ky / r; // screen up = forward
-  stick.z = kx / r;
+  const rim = rimPx();
+  [stick.bx, stick.by] = followBase(stick.bx, stick.by, cx, cy, rim);
+  const dx = cx - stick.bx, dy = cy - stick.by;
+  // No transitions while held: base and knob sit exactly where the thumb says.
+  if (stickEl) stickEl.style.transform = `translate(${stick.bx - stick.hx}px, ${stick.by - stick.hy}px)`;
+  if (knobEl) knobEl.style.transform = `translate(${dx}px, ${dy}px)`;
+  const v = stickVector(dx, dy, rim);
+  stick.x = v.fwd; // screen up = forward
+  stick.z = v.right;
 }
 
 addEventListener('pointermove', (e) => { if (e.pointerId === stick.id) move(e.clientX, e.clientY); });
@@ -98,7 +109,7 @@ const release = (e: PointerEvent) => {
   stick.id = -1;
   stick.x = stick.z = 0;
   if (knobEl) knobEl.style.transform = '';
-  stickEl?.classList.remove('active');
+  if (stickEl) { stickEl.style.transform = ''; stickEl.classList.remove('active'); } // glides home (style.css)
 };
 addEventListener('pointerup', release);
 addEventListener('pointercancel', release);
