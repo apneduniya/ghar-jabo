@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import type { Scene } from '../app/game';
 import { game } from '../app/game';
 import { bake, box, C, rand, resize, Shake, sign } from '../render/gfx';
-import { person } from '../render/models';
+import { Figures } from '../render/world/walkers';
 import { sceneLayer, el, hint, toast, notify, shakeUi, setDateline } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';
@@ -18,7 +18,7 @@ const PLAT: [number, number] = [36, 96];
 const EDGE_Z = -3.6; // platform edge; the train is beyond it
 const DOORS = [44, 52, 60, 68, 76, 84];
 
-interface Npc { obj: THREE.Group; vx: number; vz: number; home: THREE.Vector3; boarding: boolean }
+interface Npc { obj: THREE.Object3D; vx: number; vz: number; home: THREE.Vector3; boarding: boolean }
 
 export function station(): Scene {
   const run = game.run;
@@ -77,15 +77,33 @@ export function station(): Scene {
   // People: some queue at the gates, some stand on the escalator's right, the platform is packed.
   const crowdN = Math.round(18 + run.crowd * 26);
   function npcAt(x: number, z: number) {
-    const o = person();
+    // A stand-in moved by the crowd logic below; the rigged figures in `figs` draw it.
+    const o = new THREE.Object3D();
     o.position.set(x, 0, z);
     o.rotation.y = rand(-2, 2);
-    scene.add(o);
     npcs.push({ obj: o, vx: 0, vz: 0, home: o.position.clone(), boarding: false });
   }
   for (let i = 0; i < crowdN; i++) npcAt(rand(PLAT[0] + 2, PLAT[1] - 2), rand(EDGE_Z + 0.8, 3.5));
   for (let x = ESC[0] + 1; x < ESC[1]; x += 1.4) npcAt(x, 1.8 + rand(-0.2, 0.2));
   for (let i = 0; i < 6; i++) npcAt(rand(3, GATE_X - 2), rand(-4, 4));
+  // Everyone in a few rigged instanced meshes (render/rig.ts): they shuffle when shoved and walk to the doors.
+  const figs = new Figures(scene, npcs.length);
+  const lastPos = npcs.map((n) => n.obj.position.clone());
+  function drawNpcs(dt: number) {
+    const now = performance.now();
+    npcs.forEach((n, i) => {
+      if (!n.obj.visible) { figs.hide(i); return; }
+      const p = n.obj.position, dx = p.x - lastPos[i].x, dz = p.z - lastPos[i].z;
+      const speed = dt > 0 ? Math.hypot(dx, dz) / dt : 0;
+      if (speed > 0.8) {
+        const r = n.obj.rotation, want = Math.atan2(dx, dz);
+        r.y += Math.atan2(Math.sin(want - r.y), Math.cos(want - r.y)) * Math.min(1, dt * 10);
+      }
+      figs.place(i, dt, p.x, 0, p.z, Math.PI / 2 - n.obj.rotation.y, speed, { idle: i % 3 ? 'look' : 'phone', t: now / 1000 });
+      lastPos[i].copy(p);
+    });
+    figs.flush(now);
+  }
 
   // The train.
   const train = new THREE.Group();
@@ -308,6 +326,7 @@ export function station(): Scene {
     update(dt) {
       if (phase === 'walk') walkUpdate(dt);
       else if (phase === 'ride') rideUpdate(dt);
+      drawNpcs(dt);
       const p = body.pos;
       if (phase === 'walk') {
         const portrait = innerHeight > innerWidth;

@@ -1,28 +1,57 @@
 // Low-poly people and Kolkata vehicles. Each model is baked to one mesh (plus one textured mesh for buses),
-// so a full street of traffic stays inside the draw-call budget. Every model faces +x; left is -z.
+// so a full street of traffic stays inside the draw-call budget. Vehicles face +x (left is -z); people face +z.
 // Vehicles bake with bakeVehicle: their wheels turn and their brake lights light in the shader (actors.ts).
 
 import * as THREE from 'three';
 import { bake, bakeVehicle, box, C, mat, fitFont } from './gfx';
+import { figure, RiggedFigure, type Look } from './rig';
 import { BUS_FRONT_DOOR, BUS_LEN, BUS_REAR_DOOR, BUS_WIDTH } from '../sim/vehicles';
 
 /** Deterministic pick from a variant number, so the same vehicle always looks the same. */
 const vpick = <T>(xs: readonly T[], v: number, salt = 0) => xs[(v * 7 + salt * 13) % xs.length];
 
-export function person(shirt = C.shirt[Math.floor(Math.random() * C.shirt.length)], opts: { umbrella?: boolean; bag?: boolean; pants?: number } = {}): THREE.Group {
+const SKIN = [0xc68a5e, 0xb07850, 0x8d5a3b, 0xd29b72, 0x9c6644];
+const HAIR = [0x161210, 0x1f1712, 0x2a221c, 0x161210, 0x6e6a66];
+
+/**
+ * Kolkata at office hour, one look per crowd mesh: office shirt and trousers, kurta-pyjama, saree, salwar
+ * kameez with dupatta, a schoolkid in uniform, a young man in a tee with an umbrella. Clothes are light
+ * enough that a per-instance tint (render/world/walkers.ts) still varies them.
+ */
+export const CROWD_LOOKS: (Look & { scale: number })[] = [
+  { dress: 'shirt', skin: SKIN[0], hair: HAIR[0], top: 0xdfe8f2, bottom: 0x3a4656, shoes: 0x1a1a1a, bag: 'shoulder', bagColor: 0x2b2b2b, scale: 1 },
+  { dress: 'kurta', skin: SKIN[2], hair: HAIR[4], top: 0xf1ead8, bottom: 0xeae6dc, shoes: 0x5a3a24, scale: 0.97 },
+  { dress: 'saree', skin: SKIN[1], hair: HAIR[1], top: 0x8e2a3a, bottom: 0xf0e2c8, accent: 0xc0392b, shoes: 0x5a3a24, longHair: true, bag: 'shoulder', bagColor: 0x7a3b22, scale: 0.93 },
+  { dress: 'salwar', skin: SKIN[3], hair: HAIR[2], top: 0x9fc4e8, bottom: 0xf2f2ee, accent: 0xe8a33a, shoes: 0x3a2a20, longHair: true, scale: 0.94 },
+  { dress: 'uniform', skin: SKIN[4], hair: HAIR[0], top: 0xf6f6f2, bottom: 0x24324a, accent: 0x8a1f2a, shoes: 0x111111, shorts: true, bag: 'backpack', bagColor: 0x2f6db5, sleeves: 'short', scale: 0.78 },
+  { dress: 'tee', skin: SKIN[1], hair: HAIR[3], top: 0xe8e8e8, bottom: 0x34495e, shoes: 0xe8e8e8, bag: 'backpack', bagColor: 0x3b3b3b, umbrella: true, scale: 1.03 },
+];
+
+/** The student: orange tee, jeans, white sneakers, a backpack on both straps. */
+export const PLAYER_LOOK: Look = { dress: 'tee', skin: C.skin, hair: HAIR[0], top: C.player, bottom: 0x2f4a6e, shoes: 0xf2f2f2, bag: 'backpack', bagColor: 0x2b2b2b };
+
+const staticFigureMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+
+/**
+ * A standing person baked in its rest pose (stall keepers, bus hangers, the conductor, queues): the same
+ * figure as the walkers, without the rig. `shirt` picks the top; with no shirt, a random look from the crowd.
+ */
+export function person(shirt?: number, opts: { umbrella?: boolean; bag?: boolean; pants?: number } = {}): THREE.Group {
   const g = new THREE.Group();
-  const pants = opts.pants ?? C.pants[Math.floor(Math.random() * C.pants.length)];
-  g.add(box(0.18, 0.75, 0.2, pants, -0.12, 0, 0), box(0.18, 0.75, 0.2, pants, 0.12, 0, 0));
-  g.add(box(0.55, 0.6, 0.3, shirt, 0, 0.75, 0));
-  g.add(box(0.14, 0.55, 0.16, shirt, -0.36, 0.8, 0), box(0.14, 0.55, 0.16, shirt, 0.36, 0.8, 0));
-  g.add(box(0.32, 0.32, 0.3, C.skin, 0, 1.38, 0), box(0.34, 0.1, 0.32, 0x1d1d1d, 0, 1.68, 0));
-  if (opts.bag) g.add(box(0.42, 0.45, 0.18, 0x2b2b2b, 0, 0.8, -0.24));
-  if (opts.umbrella) g.add(box(0.04, 1.0, 0.04, 0x222222, 0.42, 0.9, 0));
+  const base = CROWD_LOOKS[shirt === undefined ? Math.floor(Math.random() * CROWD_LOOKS.length) : Math.random() < 0.5 ? 0 : 5];
+  const look: Look = { ...base, umbrella: opts.umbrella ?? (shirt === undefined && base.umbrella) };
+  if (shirt !== undefined) look.top = shirt;
+  if (opts.pants !== undefined) look.bottom = opts.pants;
+  if (opts.bag !== undefined) look.bag = opts.bag ? 'backpack' : undefined;
+  const m = new THREE.Mesh(figure(look), staticFigureMat);
+  m.scale.setScalar(shirt === undefined ? base.scale : 1);
+  g.add(m); // facing +z, like people always have here (vehicles face +x)
   bake(g);
   return g;
 }
 
-export function playerPerson() { return person(C.player, { bag: true }); }
+/** The hero, rigged: walk, run, jump, tumble, hang (render/rig.ts). Faces +z. */
+export function playerPerson() { return new RiggedFigure(PLAYER_LOOK); }
 
 // --- Vehicle kit ----------------------------------------------------------------
 

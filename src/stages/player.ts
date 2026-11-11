@@ -12,7 +12,6 @@ export class Body {
   onGround = true;
   downT = 0;
   slow = 1;
-  private bob = 0;
 
   get pos() { return this.obj.position; }
   get down() { return this.downT > 0; }
@@ -46,11 +45,10 @@ export class Body {
       if (input.jump && this.onGround) { this.vel.y = 7; this.onGround = false; }
       const moving = Math.hypot(this.vel.x, this.vel.z);
       if (moving > 0.5) {
-        this.obj.rotation.y = Math.atan2(this.vel.x, this.vel.z);
-        this.bob += dt * moving * 2.2;
+        // Turn smoothly, the short way round (the rig shuffles the feet while turning on the spot).
+        const want = Math.atan2(this.vel.x, this.vel.z), r = this.obj.rotation;
+        r.y += Math.atan2(Math.sin(want - r.y), Math.cos(want - r.y)) * Math.min(1, dt * 14);
       }
-      // Arm and leg swing via a little hop: cheap but readable.
-      if (this.onGround) p.y = Math.abs(Math.sin(this.bob)) * 0.12 * Math.min(1, moving / 4);
     }
     if (!this.onGround) {
       this.vel.y -= 20 * dt;
@@ -59,5 +57,7 @@ export class Body {
     }
     p.x += this.vel.x * dt;
     p.z = THREE.MathUtils.clamp(p.z + this.vel.z * dt, zMin, zMax);
+    // Legs and arms: stride matched to the real speed, tuck in the air, squash on landing (render/rig.ts).
+    this.obj.animate(dt, { speed: this.downT > 0 ? 0 : Math.hypot(this.vel.x, this.vel.z), airborne: !this.onGround, vy: this.vel.y, down: this.downT > 0, hang: false, sit: false });
   }
 }

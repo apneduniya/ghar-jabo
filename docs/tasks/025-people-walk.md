@@ -36,3 +36,18 @@ touch vehicle functions), src/render/world/walkers.ts, src/render/rig.ts (new), 
 src/stages/player.ts, src/stages/sectorv.ts (player model update only), src/stages/station.ts (people models
 only), src/sim/crowd.ts, src/content/tuning.ts (append only), tests.
 Out of scope: vehicles, controls, metro entrance (026).
+
+## Notes (builder, study)
+- Crossy Road / Mini Motorways / Townscaper people: no skeleton, just rigid blocks pivoting at hips and shoulders.
+  Read comes from **opposite-phase** leg/arm swing plus a **bob at twice the step rate**; detail on the body barely matters at phone size.
+- Foot sliding is what makes cheap walkers look fake (GTA-mobile crowds fix it by driving the cycle from distance
+  travelled, not time). Rule used here: one cycle = one stride = 4 · leg · sin(swing), phase rate = 2π · speed / stride.
+- Stride grows with speed and so does cadence (walk ≈ 2 steps/s, run ≈ 3). Runners lean in, bend elbows to ~90°
+  and get a flight phase (longer stride than legs alone allow).
+- The hips drop when the feet are apart; doing that in the shader keeps the planted foot on the ground for free.
+- Goose Game villagers sell "alive" with idles: breathing, look-arounds, phone checks, stopping for no reason. Turning
+  in place needs a foot shuffle or it reads as a statue on a turntable.
+- Hero sells weight with anticipation/tuck in the air and a short landing squash (Mario-style squash & stretch); a
+  tumble is just limbs flailing while the body rolls.
+- Variety for free: per-instance height, pace, phase offset and a clothing tint on a handful of looks (here saree,
+  salwar-dupatta, kurta-pyjama, office shirt, school uniform, tee + umbrella).

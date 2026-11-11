@@ -310,6 +310,7 @@ export function sectorv(): Scene {
       playerObj.position.set(p.x, p.state === 'hang' ? 0.6 : p.state === 'pillion' ? 0.55 : p.y, p.z);
       playerObj.rotation.set(p.state === 'hang' ? -p.lean * 0.6 : 0, -p.heading + Math.PI / 2, p.down ? Math.PI / 2 : 0);
       playerObj.scale.setScalar(p.state === 'pillion' ? 0.9 : 1);
+      playerObj.animate(dt, { speed: p.state === 'foot' ? Math.hypot(p.vx, p.vz) : 0, airborne: p.state === 'foot' && !p.onGround, vy: p.vy, down: p.down, hang: p.state === 'hang', sit: p.state === 'pillion' });
 
       // UI: context button, phone, balance bar.
       const a = world.action();

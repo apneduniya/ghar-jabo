@@ -152,3 +152,41 @@ export const CONTROLS = {
   /** Only roads this close (units from their carriageway edge) guide you. */
   roadNear: 6,
 };
+
+/** How people walk and run (task 025, render/rig.ts gait()). Angles in radians, speeds in units/s. */
+export const GAIT = {
+  /** Thigh swing either side of straight: base + perSpeed × speed, capped at maxSwing. */
+  swingBase: 0.22,
+  swingPerSpeed: 0.13,
+  maxSwing: 0.75,
+  /** Below this speed the swing fades out (standing still means standing). */
+  fadeBelow: 0.4,
+  /** A walk up to walkMax, a full run from runFrom: the run leans in, bends the elbows and adds flight. */
+  walkMax: 2.6,
+  runFrom: 4.5,
+  /** Extra stride from both feet leaving the ground at a full run (share of the walking stride). */
+  flight: 0.9,
+  /** Forward lean walking and at a full run. */
+  lean: [0.04, 0.22] as [number, number],
+  /** Leg swing (radians) from which elbows start to bend like a runner's. */
+  elbowFrom: 0.5,
+  /** Turning on the spot: shuffle speed per radian/s of turning. */
+  turnShuffle: 0.5,
+  /** Landing squash: how long (s) and how deep (0..1). */
+  landSecs: 0.22,
+  landSquash: 0.6,
+};
+
+/** Pedestrian pace and pauses (task 025, sim/crowd.ts). */
+export const CROWD = {
+  /** Walking speeds, units/s (a figure is 1.77 units tall, so these read as 1.1 to 1.9 m/s for a person). */
+  speed: [1.1, 1.9] as [number, number],
+  /** Some in a hurry. */
+  hurryShare: 0.12,
+  hurrySpeed: [2.2, 2.8] as [number, number],
+  /** Seconds walked between pauses, and how long a pause lasts. */
+  walkFor: [7, 22] as [number, number],
+  pauseFor: [2, 6] as [number, number],
+  /** How fast a walker gets up to speed or stops (1/s). */
+  accel: 3,
+};
