@@ -88,3 +88,11 @@ export const CHUNK_VIEW = {
   /** Hide the whole Sector V map beyond this distance from its origin. */
   hideSectorV: 600,
 };
+
+/** Streamed traffic beside structures (sim/gen/lanes.ts, task 022). */
+export const LANE_ROOM = {
+  /** Half a bus: the lane test's clearance. */
+  busHalf: 1.25,
+  /** Lanes may move out round a structure until a bus hangs this far past the carriageway edge (the kerb strip). */
+  overKerb: 0.4,
+};

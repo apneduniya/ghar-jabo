@@ -9,7 +9,7 @@
 
 import type { NetRoad, Pt } from '../../../sim/gen/types';
 import { LM } from '../../../content/landmarks';
-import { DECK_MIN_Y, DECK_PIECE, DECK_PIER, DECK_PIER_PHASE, DECK_PIER_Y, type NetDeck, deckHalf, flyoverNear as netFlyoverNear, netDeckY, netDecks } from '../../../sim/gen/layout';
+import { DECK_MIN_Y, DECK_PIECE, DECK_PIER, DECK_PIER_PHASE, DECK_PIER_Y, type NetDeck, deckHalf, deckPierAt, flyoverNear as netFlyoverNear, netDeckY, netDecks } from '../../../sim/gen/layout';
 import { intervals, marks, pieces, sample } from './clip';
 import type { Ctx } from './ctx';
 
@@ -34,10 +34,11 @@ export function buildDecks(ctx: Ctx) {
       const p = sample(d.l, a), q = sample(d.l, b), k = Math.floor((a + b) / 5);
       deckPiece(ctx, d, p, q, y, half, k);
     }
-    for (const s of marks(d.l, ctx.cx, ctx.cz, LM.flyoverPierStep, DECK_PIER_PHASE)) {
-      const y = deckY(d, s);
-      if (y < DECK_PIER_Y) continue;
-      const q = sample(d.l, s), rot = -Math.atan2(q.dz, q.dx);
+    for (const m of marks(d.l, ctx.cx, ctx.cz, LM.flyoverPierStep, DECK_PIER_PHASE)) {
+      if (deckY(d, m) < DECK_PIER_Y) continue;
+      const s = deckPierAt(ctx.net, ctx.warp, d, m); // off the cross streets below
+      if (s === null) continue;
+      const y = deckY(d, s), q = sample(d.l, s), rot = -Math.atan2(q.dz, q.dx);
       ctx.parts.box(1.6, 0.8, half * 1.7, q.x, y - 1.7, q.z, rot, C.pier);
       ctx.parts.cyl(DECK_PIER.r, y - 1.7, q.x, 0, q.z, C.pier, DECK_PIER.stretch, rot + Math.PI / 2, 10);
     }

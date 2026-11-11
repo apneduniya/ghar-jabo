@@ -13,7 +13,9 @@ import json, math, os, re, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(HERE, 'map'))
+sys.path.insert(0, HERE)
 from geo import HALF, simplify, simplify_ring, to_game, signed_area, point_in  # noqa: E402
+from world_snap import simplify_keeping, snap_line, snap_point  # noqa: E402
 
 RES = os.path.join(ROOT, 'research', 'routes')
 OUT = os.path.join(ROOT, 'public', 'data', 'world.json')
@@ -309,6 +311,20 @@ def nearest_line_pt(p):
     return best
 
 
+def road_heading(c, d_m):
+    poly = c['polyline']
+    for a, b in zip(poly, poly[1:]):
+        if a['d_m'] <= d_m <= b['d_m']: return math.atan2(b['game'][1] - a['game'][1], b['game'][0] - a['game'][0])
+    return 0.0
+
+
+def crossing_pt(c, x):
+    """A crossing on the median of the road it's on (OSM puts it on whichever carriageway the route walked), so the
+    bridge gap lines up with the road."""
+    h = road_heading(c, x['d_m'])
+    return snap_point(x['game'], (math.cos(h), math.sin(h)), net_roads)
+
+
 landmarks, seen = [], {}
 
 
@@ -360,20 +376,12 @@ add_lm('Green Line portal', 'metro-portal', mp['game'])
 for c in corr['corridors']:
     for x in c['crossings']:
         if x['kind'].startswith('water') and x['how'] == 'road bridge':
-            add_lm(f"{x['name'].split(' (')[0]} bridge", 'canal-bridge', x['game'], c['id'], x['d_m'])
+            add_lm(f"{x['name'].split(' (')[0]} bridge", 'canal-bridge', crossing_pt(c, x), c['id'], x['d_m'])
         elif x['kind'] == 'rail:rail' and 'above' in x['how']:
-            add_lm('Rail underbridge', 'rail-underbridge', x['game'], c['id'], x['d_m'])
+            add_lm('Rail underbridge', 'rail-underbridge', crossing_pt(c, x), c['id'], x['d_m'])
         elif x['kind'] == 'rail:rail': add_lm('Sealdah Beliaghata Flyover', 'flyover', x['game'], c['id'], x['d_m'])
 
 # --- Crossings ------------------------------------------------------------------------------------------------
-
-
-def road_heading(c, d_m):
-    poly = c['polyline']
-    for a, b in zip(poly, poly[1:]):
-        if a['d_m'] <= d_m <= b['d_m']: return math.atan2(b['game'][1] - a['game'][1], b['game'][0] - a['game'][0])
-    return 0.0
-
 
 def water_width(p, h):
     for w in water_polys:
@@ -398,6 +406,7 @@ for c in corr['corridors']:
         if inside(p) or k == 'water:drain' or 'tunnel' in x['how'] or 'underground' in x['how']: continue
         if any(math.dist(p, [q['x'], q['z']]) < 25 for q in crossings): continue
         h = road_heading(c, x['d_m'])
+        p = crossing_pt(c, x)
         if k.startswith('water'): kind, width, over = 'canal', water_width(p, h), True
         else: kind, width, over = 'rail', rail_width(p, h), 'above' not in x['how']
         crossings.append({'kind': kind, 'x': round(p[0], 1), 'z': round(p[1], 1), 'heading': round(h, 2), 'width': round(width, 1), 'over': over})
@@ -408,6 +417,10 @@ mp_pts = [q['game'] for q in m['polyline']]
 mdist = [q['d_m'] for q in m['polyline']]
 elev = [lv for lv in m['levels'] if lv['level'] == 'elevated']
 ranges = [[next(i for i, d in enumerate(mdist) if d >= lv['from_m']), max(i for i, d in enumerate(mdist) if d <= lv['to_m'])] for lv in elev]
+# Above the median of the roads it follows (3rd Avenue, the Bypass); the elevated ranges' ends survive.
+dense, at_old = snap_line(mp_pts, net_roads, inside, lambda i: any(i0 <= i < i1 for i0, i1 in ranges))
+mp_pts, where = simplify_keeping(dense, [at_old[i] for rg in ranges for i in rg], 0.25, simplify)
+ranges = [[where[at_old[i0]], where[at_old[i1]]] for i0, i1 in ranges]
 green = {'name': 'Green Line', 'p': [r1(q) for q in mp_pts], 'elevated': ranges,
          'stations': [{'name': s['name'], 'x': round(s['game'][0], 1), 'z': round(s['game'][1], 1), 'elevated': s['d_m'] < elev[-1]['to_m']}
                       for s in m['stations'] if not inside(s['game'])]}
@@ -415,8 +428,9 @@ orange = [[g(q['lat'], q['lon']) for q in e['geometry']] for e in railwater
           if e['type'] == 'way' and e['tags'].get('name') == 'New Garia - Airport (Line 6)']
 metro = [green]
 if orange:
-    line = max(orange, key=length)
-    metro.append({'name': 'Orange Line', 'p': [r1(q) for q in simplify(line, 1.0)], 'elevated': [[0, len(simplify(line, 1.0)) - 1]], 'stations': []})
+    line, _ = snap_line(simplify(max(orange, key=length), 1.0), net_roads, inside)
+    line = simplify(line, 0.25)
+    metro.append({'name': 'Orange Line', 'p': [r1(q) for q in line], 'elevated': [[0, len(line) - 1]], 'stations': []})
 
 # --- Water, areas, stops -----------------------------------------------------------------------------------------
 

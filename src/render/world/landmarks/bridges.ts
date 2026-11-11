@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { LM, LM_TEXT } from '../../../content/landmarks';
-import { type BridgeSite, parapet, underbridge } from '../../../sim/gen/layout';
+import { type BridgeSite, parapet, underbridge } from '../../../sim/gen/sites';
 import type { Ctx, Frame } from './ctx';
 
 const C = {
@@ -19,24 +19,25 @@ const C = {
 /** A bridge where the layout puts it (sim/gen/layout.ts): frame at the site, u along the road, v across. */
 export function buildBridge(ctx: Ctx, b: BridgeSite) {
   const f = ctx.frame(b.x, b.z, b.h);
-  if (b.kind === 'under') railUnder(f, b.width, b.roadW);
-  else canalBridge(f, b.width, b.roadW, b.ornate, b.water);
+  if (b.kind === 'under') railUnder(f, b.width, b.roadW, b.emb);
+  else canalBridge(f, b.width, b.roadW, b.ornate, b.water, b.par);
 }
 
 /** Parapets along both edges of the road over a span `width` (+ abutments), the deck edge and supports below. */
-export function canalBridge(f: Frame, width: number, roadW: number, ornate: boolean, water: boolean) {
-  const { L, e } = parapet({ width, roadW }); // parapet line: past the footpath
+export function canalBridge(f: Frame, width: number, roadW: number, ornate: boolean, water: boolean, par?: [[number, number], [number, number]]) {
+  const { e, runs } = parapet({ width, roadW, par }); // parapet line: past the footpath; each side short of a joining road
   for (const s of [-1, 1]) {
-    const v = s * e;
-    f.box(-L, L, v - 0.2, v + 0.2, -1.4, 0.05, C.deck); // deck edge fascia
+    const v = s * e, [a, b] = runs[s < 0 ? 0 : 1];
+    if (b - a <= 0.5) continue;
+    f.box(a, b, v - 0.2, v + 0.2, -1.4, 0.05, C.deck); // deck edge fascia
     if (ornate) {
-      f.box(-L, L, v - 0.25 * s - 0.2, v - 0.25 * s + 0.2, 0, 1.15, C.masonry);
-      f.box(-L, L, v - 0.25 * s - 0.25, v - 0.25 * s + 0.25, 1.15, 1.3, C.masonryDark);
-      for (let u = -L; u <= L + 1e-6; u += 6) f.box(u - 0.35, u + 0.35, v - 0.25 * s - 0.35, v - 0.25 * s + 0.35, 0, 1.75, C.masonryDark);
-      ironRailing(f, -L + 0.5, L - 0.5, v - 0.9 * s);
+      f.box(a, b, v - 0.25 * s - 0.2, v - 0.25 * s + 0.2, 0, 1.15, C.masonry);
+      f.box(a, b, v - 0.25 * s - 0.25, v - 0.25 * s + 0.25, 1.15, 1.3, C.masonryDark);
+      for (let u = a; u <= b + 1e-6; u += 6) f.box(u - 0.35, u + 0.35, v - 0.25 * s - 0.35, v - 0.25 * s + 0.35, 0, 1.75, C.masonryDark);
+      if (b - a > 1.5) ironRailing(f, a + 0.5, b - 0.5, v - 0.9 * s);
     } else {
-      for (let u = -L, i = 0; u < L - 1e-6; u += 2, i++) f.box(u, Math.min(L, u + 2), v - 0.18, v + 0.18, 0, 0.95, i % 2 ? C.blue : C.white);
-      f.box(-L, L, v - 0.22, v + 0.22, 0.95, 1.05, C.white);
+      for (let u = a, i = 0; u < b - 1e-6; u += 2, i++) f.box(u, Math.min(b, u + 2), v - 0.18, v + 0.18, 0, 0.95, i % 2 ? C.blue : C.white);
+      f.box(a, b, v - 0.22, v + 0.22, 0.95, 1.05, C.white);
     }
     // Abutments at the banks and a pier mid-stream on long spans.
     if (water) for (const u of [-width / 2, width / 2]) f.box(u - 0.8, u + 0.8, -e, e, -3, -1.4, C.masonryDark);
@@ -61,13 +62,16 @@ function ironRailing(f: Frame, u0: number, u1: number, v: number) {
 }
 
 /** A steel plate-girder rail bridge across the road (rail corridor `width` along the road) on brick abutments. */
-export function railUnder(f: Frame, width: number, roadW: number) {
-  const { S, w, emb } = underbridge({ width, roadW }), H = LM.railClearance;
+export function railUnder(f: Frame, width: number, roadW: number, embs?: [number, number]) {
+  const { S, w, emb: [e0, e1] } = underbridge({ width, roadW, emb: embs }), H = LM.railClearance;
   for (const s of [-1, 1]) {
-    // Abutment walls beside the footpaths, and the embankment carrying on beyond them.
+    // Abutment walls beside the footpaths, and the embankment carrying on beyond them (short of any other road).
+    const emb = s < 0 ? e0 : e1;
     f.box(-w - 1, w + 1, s * S, s * (S + 1.6), 0, H + 0.3, C.brick);
-    f.box(-w - 1.4, w + 1.4, s * (S + 1.6), s * (S + emb), 0, H - 0.4, C.earth);
-    f.box(-w - 1.4, w + 1.4, s * (S + 1.6), s * (S + emb), H - 0.4, H + 0.2, C.grass);
+    if (emb > 2) {
+      f.box(-w - 1.4, w + 1.4, s * (S + 1.6), s * (S + emb), 0, H - 0.4, C.earth);
+      f.box(-w - 1.4, w + 1.4, s * (S + 1.6), s * (S + emb), H - 0.4, H + 0.2, C.grass);
+    }
     for (const u of [-w - 1.2, w + 1.2]) f.box(u - 0.5, u + 0.5, s * S - 0.2, s * S + 0.2, 0, H + 0.8, C.brick); // pilasters
   }
   // Plate girders on the two faces, cross deck between, ballast, sleepers and two tracks.
@@ -76,10 +80,10 @@ export function railUnder(f: Frame, width: number, roadW: number) {
     for (let v = -S; v <= S; v += 1.6) f.box(u - 0.26, u + 0.26, v - 0.06, v + 0.06, H + 0.1, H + 1.4, 0x48584e); // stiffeners
   }
   f.box(-w, w, -S - 1.6, S + 1.6, H, H + 0.5, C.girder);
-  f.box(-w + 0.3, w - 0.3, -S - emb, S + emb, H + 0.5, H + 0.75, C.ballast);
+  f.box(-w + 0.3, w - 0.3, -S - e0, S + e1, H + 0.5, H + 0.75, C.ballast);
   for (const t of [-w / 2, w / 2]) {
-    for (const r of [-0.42, 0.42]) f.box(t + r - 0.04, t + r + 0.04, -S - emb, S + emb, H + 0.75, H + 0.9, C.rail);
-    for (let v = -S - emb + 0.4; v < S + emb; v += 1.4) f.box(t - 0.75, t + 0.75, v - 0.12, v + 0.12, H + 0.72, H + 0.8, C.sleeper);
+    for (const r of [-0.42, 0.42]) f.box(t + r - 0.04, t + r + 0.04, -S - e0, S + e1, H + 0.75, H + 0.9, C.rail);
+    for (let v = -S - e0 + 0.4; v < S + e1; v += 1.4) f.box(t - 0.75, t + 0.75, v - 0.12, v + 0.12, H + 0.72, H + 0.8, C.sleeper);
   }
   for (const s of [-1, 1]) f.sign(LM_TEXT.roadSafety, Math.min(2 * S - 1, 10), 0.9, s * (w + 0.23), 0, H + 0.75, s, 0, '#f2c230', '#1d1d1d');
 }
