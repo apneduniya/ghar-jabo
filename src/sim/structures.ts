@@ -145,14 +145,37 @@ function viaductSolids(piers: Pier[], v: ViaductStyle, out: Acc) {
 export interface LocalRect { s0: number; s1: number; t0: number; t1: number }
 const rect = (s0: number, s1: number, t0: number, t1: number): LocalRect => ({ s0, s1, t0, t1 });
 
-/** Sector V station's piers: on dry ground or in the canal, never on a carriageway (s, t of each centre). */
+/** Gate A's footprint along the service road (forecourt to the end of the mural): its walls carry the station there. */
+export const inGateA = (s: number, t: number) => s > N.gateA.forecourt - 0.5 && s < N.gateA.mural[1] + 1.5 && t < N.gateA.block[2];
+
+/** Sector V station's piers: on dry ground or in the canal, never on a carriageway or in Gate A (s, t of each centre). */
 export function svPiers(b: Box, roads: Road[]): Pt[] {
   const out: Pt[] = [];
   for (const t of [2, 9.5, 15.5]) for (let s = -b.half + 4; s <= b.half - 3; s += 10) {
     const [x, z] = at(b, s, t);
-    if (!onCarriageway(roads, x, z, 0.5)) out.push([s, t]);
+    if (!onCarriageway(roads, x, z, 0.5) && !inGateA(s, t)) out.push([s, t]);
   }
   return out;
+}
+
+/** An auto-rickshaw's footprint (render/models.ts auto(): about 2.1 long, 1.2 wide). */
+export const AUTO_HALF: Pt = [1.05, 0.62];
+
+/**
+ * Gate A at ground level (content/sectorv.ts north.gateA): the block with the doorway (its back wall and the two
+ * jambs), the mosaic mural wall NE of it, the sign pillar, the kerb railing (from the pillar to the end of the mural,
+ * so you come in through the forecourt) and the autos queued at the kerb.
+ */
+export function svGateA() {
+  const A = N.gateA, [b0, b1, back] = A.block, f = A.face, d = A.door, hw = A.doorW / 2, [ps, pt] = A.pillar;
+  const [a0, step, n, at0] = A.autos;
+  return {
+    block: [rect(b0, b1, f + A.recess, back), rect(b0, d - hw, f, f + A.recess), rect(d + hw, b1, f, f + A.recess)],
+    mural: rect(A.mural[0], A.mural[1], f, f + 0.3),
+    pillar: rect(ps - 0.45, ps + 0.45, pt - 0.25, pt + 0.25),
+    rail: rect(ps + 0.45, A.mural[1], A.rail - 0.04, A.rail + 0.04),
+    autos: Array.from({ length: n }, (_, k) => rect(a0 + k * step - AUTO_HALF[0], a0 + k * step + AUTO_HALF[0], at0 - AUTO_HALF[1], at0 + AUTO_HALF[1])),
+  };
 }
 export const SV_PIER_HALF = 0.6;
 
@@ -174,8 +197,6 @@ export function svGround(b: Box, roads: Road[] = []) {
   return {
     /** The low wall in front of the parking, and the parked cars behind it. */
     parkWall: rect(-20, 25, 12.6, 12.8), cars,
-    /** The mural wall on the service road. */
-    mural: rect(-33, -14, 4.15, 4.45),
     /** The yellow name tower at the west end. */
     tower: rect(-b.half - 2, -b.half + 2, 0.5, 4.5),
     /** The stair tower at Gate B on Chavipatty Rd (its entrance is the face with the sign, on +t). */
@@ -221,7 +242,11 @@ function stationSolids(map: MapData, out: Acc) {
   const { sv, it } = stations();
   for (const [s, t] of svPiers(sv, map.roads)) out.add(toSolid(sv, rect(s - SV_PIER_HALF, s + SV_PIER_HALF, t - SV_PIER_HALF, t + SV_PIER_HALF)));
   const g = svGround(sv, map.roads);
-  for (const r of [g.parkWall, ...g.cars, g.mural, g.tower, g.gateB]) out.wide('station wall', toSolid(sv, r));
+  for (const r of [g.parkWall, ...g.cars, g.tower, g.gateB]) out.wide('station wall', toSolid(sv, r));
+  const ga = svGateA();
+  for (const r of [...ga.block, ga.mural, ga.pillar, ga.rail]) out.wide('Gate A', toSolid(sv, r));
+  // The autos waiting at the kerb stand in the kerb lane: traffic moves out round them (the lane plan below).
+  for (const r of ga.autos) out.wide('Gate A autos', toSolid(sv, r));
   for (const p of itPiers(it, map.roads)) {
     const r = itPierRects(it, p.s);
     if (p.south) out.add(toSolid(it, r.south));

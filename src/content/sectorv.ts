@@ -15,14 +15,32 @@ type P = [number, number];
  * across it (negative = south-east towards the road, positive = north-west across the canal).
  */
 export const north = {
-  /** OSM subway_entrance nodes 13875696026 (Gate A, service-road side) and 13875696027 (Gate B, Chavipatty Rd). */
-  gateA: [-35.5, -197.8] as P,
+  /**
+   * OSM subway_entrance nodes 13875696026 (Gate A, service-road side) and 13875696027 (Gate B, Chavipatty Rd). OSM's
+   * Gate A sits 2 u south-east of the service road's centre line, across from the real door: use `gateA` below.
+   */
+  gateAOsm: [-35.5, -197.8] as P,
   gateB: [-17.2, -233.6] as P,
   /** Salt Lake Sector V (Green Line terminus): ends of OSM w535333512. It spans the canal to Chavipatty Rd. */
   sectorV: { a: [-46.5, -197.5] as P, b: [12.6, -234.2] as P, n0: -5, n1: 17 },
+  /** The peach bank block bridging the service road NE of the Gate A mural: s0, s1, t0 in Sector V's frame. */
+  gateBlock: [-17, -10, -10.8] as [number, number, number],
+  /**
+   * Gate A (Street View Jan 2026, NORTH.md §3 "Gate A re-shoot"), in Sector V's frame: s along, t across (+t NW).
+   * The real door is at 22.58070, 88.42865 = (-36.0, -204.3), s -22.3, t 0.2, just past the kerb of a 7-8 m service
+   * road; the map's road (OSM's one-way Bypass link, 9 u = 18 m) has its NW kerb at t 0.9, so everything stands a
+   * little further back; the pillar (real s -26, t -1.1) stands at the kerb.
+   * `door`: s of the doorway; `stand`: t where you stand in it (the trigger); `face`, `recess`: the block's road face
+   * and how deep the doorway goes; `block`: s0, s1, back t of the ground block (the canal bank); `mural`: s0, s1 of the mosaic wall
+   * NE of it; `forecourt`: s0 of the paved forecourt (SW of the door); `rail`: t of the kerb railing; `pillar`: the
+   * sign pillar's s, t; `autos`: first s, spacing, count and t of the auto queue at the kerb.
+   */
+  gateA: {
+    real: [-36.0, -204.3] as P, door: -22.3, stand: 2.0, face: 3.0, recess: 1.1, doorW: 2.4,
+    block: [-24.8, -19.4, 4.4] as [number, number, number], mural: [-19.4, -9] as P, forecourt: -28,
+    rail: 1.0, pillar: [-26.5, 1.3] as P, autos: [-16.2, 3.1, 5, 0.25] as [number, number, number, number],
+  },
   /** IT Centre (Orange Line): ends of OSM w535333500. It straddles the SW-bound carriageway of Biswa Bangla Sarani. */
-  /** The peach entrance block bridging the service road at Gate A: s0, s1, t0 in Sector V's frame (to its south face). */
-  gateBlock: [-28.5, -21.5, -10.8] as [number, number, number],
   itCentre: { a: [2.45, -207.65] as P, b: [59.8, -244.4] as P, n0: -6.5, n1: 8.6 },
   stationUnderside: 5.4, // the ground level below is open
   viaductY: 10, // Green Line rail level (top of the deck)

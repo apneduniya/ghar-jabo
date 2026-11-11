@@ -1,7 +1,7 @@
 // The two metro stations on Biswa Bangla Sarani (research/streetview/NORTH.md §3-4), side by side:
 // - Salt Lake Sector V (Green Line terminus), canal side: an elevated box on piers, grey and copper-brown panels,
-//   a curved blue truss roof with skylight strips over the platforms, open parking below, a mural wall on the
-//   service road, a peach entrance block over the road at Gate A, the yellow name tower, and a stair tower on
+//   a curved blue truss roof with skylight strips over the platforms, open parking below, Gate A on the service
+//   road (gateA below), a peach bank block over the road NE of it, the yellow name tower, and a stair tower on
 //   Chavipatty Rd at Gate B (the station spans the canal).
 // - IT Centre (Orange Line): a beige box straddling the road on piers, with the big trilingual sign and roundel.
 // - An enclosed steel-truss skywalk between them.
@@ -11,7 +11,8 @@ import { sign } from '../gfx';
 import { north as N } from '../../content/sectorv';
 import { northSigns } from '../../content/text';
 import { at, type Box, local, stations } from '../../sim/elevated';
-import { itPierRects, itPiers, itStair, itStairRect, type LocalRect, SV_PIER_HALF, svGround, svPiers } from '../../sim/structures';
+import { itPierRects, itPiers, itStair, itStairRect, type LocalRect, SV_PIER_HALF, svGateA, svGround, svPiers } from '../../sim/structures';
+import { auto } from '../models';
 import type { Pt, Road } from '../../sim/mapdata';
 import { heading, type Parts, type V3 } from './northkit';
 
@@ -21,6 +22,8 @@ const C = {
   yellow: 0xe9bf3c, peach: 0xe8b48c, wall: 0xc9c1b4, tower: 0xd6c6a6, orange: 0xd9622b,
 };
 const MURAL = [0xd9822b, 0xe8c547, 0x7bb661, 0x3e9c9a, 0x3f6fb5, 0x8d6aa8, 0xc4573f];
+/** Gate A's mosaic: big swirls of orange, ochre, teal, slate and sand (p1z_h310). */
+const MOSAIC = [0xd47a35, 0xc9a24a, 0xd9c49a, 0x4f8f8a, 0x7f8a90, 0xb85a3a, 0xe0b25a];
 const U = N.stationUnderside, CONC = 9.6, ROOF = 12.6, CROWN = 15;
 
 /** A box in a station's frame: s along its axis, t across (+t north-west), y up. */
@@ -81,19 +84,15 @@ function sectorV(parts: Parts, b: Box, roads: Road[]) {
     parts.quad(p3(b, s, tAt(k), ROOF), p3(b, s, tAt(k), yAt(k)), p3(b, s, tAt(k + 1), yAt(k + 1)), p3(b, s, tAt(k + 1), ROOF), C.glass, 0.4);
   for (const t of [t0, t1]) lb(parts, b, -h - 0.5, h + 0.5, t - 0.15, t + 0.15, ROOF - 0.4, ROOF + 0.1, C.roof);
 
-  // Ground level: parking behind low walls on the Chavipatty side, a mural on the service-road wall.
+  // Ground level: parking behind low walls on the Chavipatty side, Gate A on the service road.
   const g = svGround(b, roads);
   rb(parts, b, g.parkWall, 0, 0.8, C.wall);
   g.cars.forEach((c, i) => {
     rb(parts, b, c, 0.3, 1.1, [0xe8e8e8, 0xb83a32, 0x3b4b63, 0xc9c9c9, 0x6b6b6b, 0xe8e8e8, 0x2e6fae][i % 7]);
     lb(parts, b, c.s0 + 0.1, c.s1 - 0.1, 14.0, 16.0, 1.1, 1.65, 0x2a3440);
   });
-  rb(parts, b, g.mural, 0, 3.6, 0xb7a58e);
-  for (let s = -33; s < -14; s += 0.8) for (let y = 0; y < 3.6; y += 0.6) {
-    const c = MURAL[((Math.floor(y * 1.3 + 1.6 * Math.sin(s * 0.22) + 7)) % MURAL.length + MURAL.length) % MURAL.length];
-    parts.quad(p3(b, s, 4.12, y), p3(b, s + 0.8, 4.12, y), p3(b, s + 0.8, 4.12, y + 0.6), p3(b, s, 4.12, y + 0.6), c, 0, false);
-  }
-  // Peach entrance block bridging the service road at Gate A, with the parody bank sign.
+  signs.push(...gateA(parts, b));
+  // The peach bank block bridging the service road NE of Gate A's mural, with the parody bank sign.
   const [g0, g1, gt0] = N.gateBlock;
   lb(parts, b, g0, g1, gt0, n0 + 0.2, U, 9.4, C.peach);
   lb(parts, b, g0 + 0.1, g1 - 0.1, gt0 - 0.1, gt0 + 0.1, 6.6, 7.8, C.glass, 0.9);
@@ -163,4 +162,84 @@ function skywalk(parts: Parts, sv: Box, it: Box): THREE.Object3D[] {
     }
   }
   return [];
+}
+
+/**
+ * Gate A (Street View Jan 2026, research/streetview/NORTH.md §3): a recessed doorway in a ground block under the
+ * station's SW end, a black plate with a white "A" over it and a stair rising inside; the big mosaic mural NE of it;
+ * a paved forecourt behind white railings with coloured square motifs; blue-and-white kerb; the grey sign pillar with
+ * a red roundel (lit at night), an angled navy name board in three scripts and a route map; autos queued at the kerb.
+ */
+function gateA(parts: Parts, b: Box): THREE.Object3D[] {
+  const A = N.gateA, g = svGateA(), f = A.face, d = A.door, hw = A.doorW / 2, out: THREE.Object3D[] = [];
+  const [b0, b1, back] = A.block, rot = heading(b.u[0], b.u[1]);
+  // The block, its jambs and the lintel over the door, up to the station's underside.
+  for (const r of g.block) rb(parts, b, r, 0, U, C.wall);
+  lb(parts, b, d - hw, d + hw, f, f + A.recess, 2.9, U, C.wall);
+  lb(parts, b, b0 - 0.1, b1 + 0.1, f - 0.12, f, 2.75, 2.9, 0x8e8a84); // a ledge
+  // Inside the doorway: dark, with a stair rising away from the road.
+  lb(parts, b, d - hw, d + hw, f + A.recess - 0.05, f + A.recess, 0, 2.9, 0x23262a);
+  for (let k = 0; k < 6; k++) lb(parts, b, d - hw + 0.1, d + hw - 0.1, f + 0.25 + k * 0.14, f + A.recess - 0.05, 0, 0.22 * (k + 1), 0x8f8f8a);
+  lb(parts, b, d - hw, d + hw, f + 0.02, f + 0.08, 2.75, 2.9, 0x2d2d2d, 0.6); // door light
+  out.push(board(b, 'A', 1.1, 0.5, d, f - 0.14, 3.25, 0, -1, '#141414', '#ffffff'));
+  // The mosaic mural NE of the door.
+  rb(parts, b, g.mural, 0, U, 0xb7a58e);
+  const [m0, m1] = A.mural;
+  for (let s = m0; s < m1 - 0.01; s += 0.8) for (let y = 0; y < 4.2; y += 0.6) {
+    const k = Math.floor(y * 0.8 + 2.4 * Math.sin(s * 0.33 + y * 0.45) + 1.2 * Math.cos(s * 0.71) + 9);
+    const c = MOSAIC[k % MOSAIC.length], s1 = Math.min(m1, s + 0.8);
+    parts.quad(p3(b, s, f - 0.02, y), p3(b, s1, f - 0.02, y), p3(b, s1, f - 0.02, y + 0.6), p3(b, s, f - 0.02, y + 0.6), c, 0, false);
+  }
+  // Paved forecourt and footpath, blue-and-white kerb.
+  lb(parts, b, A.forecourt, m1, 0.9, f, 0, 0.1, 0xc7b29c);
+  lb(parts, b, A.forecourt, b0, f, back, 0, 0.1, 0xc7b29c);
+  for (let s = A.forecourt, i = 0; s < m1 + 6; s += 1, i++) lb(parts, b, s, s + 1, 0.75, 0.95, 0, 0.22, i % 2 ? 0x2f4f9a : 0xeeeeee);
+  // White railing along the kerb: posts, two rails and coloured square frames.
+  const r = g.rail, rt = (r.t0 + r.t1) / 2;
+  for (const y of [0.35, 1.1]) lb(parts, b, r.s0, r.s1, r.t0, r.t1, y, y + 0.06, 0xf2f2f0);
+  for (let s = r.s0, i = 0; s <= r.s1; s += 1.2, i++) {
+    lb(parts, b, s - 0.03, s + 0.03, r.t0, r.t1, 0, 1.16, 0xf2f2f0);
+    if (i % 2 === 0 || s + 0.9 > r.s1) continue;
+    const c = MURAL[i % MURAL.length], s0 = s + 0.25, y0 = 0.5 + (i % 3) * 0.12;
+    for (const [a, z, w, h] of [[s0, y0, 0.45, 0.05], [s0, y0 + 0.4, 0.45, 0.05], [s0, y0, 0.05, 0.45], [s0 + 0.4, y0, 0.05, 0.45]])
+      lb(parts, b, a, a + w, rt - 0.03, rt + 0.03, z, z + h, c);
+  }
+  // The sign pillar: grey, a red roundel on top (lit at night), the angled navy board, a route map facing the road.
+  const p = g.pillar, [ps, pt] = A.pillar;
+  rb(parts, b, p, 0, 4.4, 0x9c9c98);
+  // The roundel on top, facing along the road (a disc shows both ways): a red ring with a red bar across it (generic, no real logo).
+  const [rx, rz] = at(b, ps, pt);
+  for (const [r, th, c] of [[0.48, 0.08, 0xc8262c], [0.33, 0.1, 0xf6f4ee]] as const) {
+    const disc = new THREE.CylinderGeometry(r, r, th, 20);
+    disc.rotateX(Math.PI / 2);
+    disc.rotateY(rot + Math.PI / 2);
+    disc.translate(rx, 4.9, rz);
+    parts.add(disc, c, 1.2);
+  }
+  lb(parts, b, ps - 0.07, ps + 0.07, pt - 0.58, pt + 0.58, 4.8, 5.0, 0xc8262c, 1.2);
+  lb(parts, b, ps - 0.1, ps + 0.1, pt - 0.1, pt + 0.1, 4.4, 4.45, 0x9c9c98);
+  lb(parts, b, ps - 0.36, ps + 0.36, p.t0 - 0.04, p.t0, 1.3, 2.7, 0xf4f4f0);
+  for (const [k, c] of [[0, 0x2e9e5b], [1, 0x6a3fa0], [2, 0xd9622b], [3, 0x2f62ad]] as const)
+    lb(parts, b, ps - 0.28 + k * 0.15, ps - 0.2 + k * 0.15, p.t0 - 0.05, p.t0 - 0.04, 1.45 + k * 0.1, 2.5 - k * 0.15, c);
+  // The navy board sticks out from the pillar towards the road, angled, three scripts on both faces.
+  const board3 = new THREE.Group(), [bx, bz] = at(b, ps, pt);
+  board3.add(new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.95, 0.08), new THREE.MeshLambertMaterial({ color: 0x1f3a6e })));
+  for (const side of [1, -1]) northSigns.gateA.forEach((text, i) => {
+    const m = sign(text, 1.75, 0.26, '#1f3a6e', '#ffffff');
+    m.position.set(0, 0.3 - i * 0.3, side * 0.045);
+    if (side < 0) m.rotation.y = Math.PI;
+    board3.add(m);
+  });
+  // Its long side runs across the road at an angle, so it reads from Wipro More and from the NE.
+  board3.position.set(bx - b.n[0] * 0.55, 3.75, bz - b.n[1] * 0.55);
+  board3.rotation.y = rot + Math.PI / 2 - 0.4;
+  out.push(board3);
+  // Autos queued nose to tail at the kerb, facing up the road.
+  for (const r of g.autos) {
+    const a = auto(), [x, z] = at(b, (r.s0 + r.s1) / 2, (r.t0 + r.t1) / 2);
+    a.position.set(x, 0, z);
+    a.rotation.y = rot;
+    out.push(a);
+  }
+  return out;
 }

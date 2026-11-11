@@ -3,7 +3,8 @@ import mapJson from '../../public/data/sectorv.json';
 import worldJson from '../../public/data/world.json';
 import { T } from '../content/tuning';
 import { LM } from '../content/landmarks';
-import { flyoverDecks, isCanalBridge, roofs } from './elevated';
+import { north } from '../content/sectorv';
+import { at, flyoverDecks, isCanalBridge, roofs, stations } from './elevated';
 import { clipMap } from './gen/clip';
 import { framePt, metroLayout, netDeckY, netDecks, stationOver } from './gen/layout';
 import { crossingSite, parapet } from './gen/sites';
@@ -141,6 +142,43 @@ describe('Sector V: what the elevated north stands on is solid', () => {
     const w = makeWorld();
     for (const p of [map.pois.pwc, map.pois.wiproMore]) {
       expect(reachable(w, { x: p[0], z: p[1] }, w.metroEntrance).ok).toBe(true);
+    }
+  });
+
+  it('the Gate A door is reachable on foot from the TIU start, and walking into it opens the metro', () => {
+    const w = makeWorld();
+    const e = w.metroEntrance;
+    expect(Math.hypot(e.x - north.gateA.real[0], e.z - north.gateA.real[1])).toBeLessThan(2);
+    expect(reachable(w, { x: map.pois.tiu[0], z: map.pois.tiu[1] }, e, 1).ok).toBe(true);
+    // In through the forecourt behind the kerb railing: along it to the door, then turn and walk in.
+    const { sv } = stations(), A = north.gateA, p = w.player;
+    [p.x, p.z] = at(sv, A.forecourt, A.rail + 1.25);
+    expect(w.walkBlocked(p.x, p.z, R)).toBe(false);
+    expect(w.run.metroOpen).toBe(true);
+    let into = false;
+    for (const [s, t] of [[A.door, A.rail + 1.25], [A.door, A.face + A.recess]]) {
+      const [gx, gz] = at(sv, s, t);
+      for (let i = 0; i < 400 && p.state === 'foot' && Math.hypot(gx - p.x, gz - p.z) > 0.3; i++) {
+        const L = Math.hypot(gx - p.x, gz - p.z);
+        w.step({ ...NO_INTENT, moveX: (gx - p.x) / L, moveZ: (gz - p.z) / L });
+        if (w.events.drain().some((ev) => ev.type === 'stage' && ev.to === 'station')) into = true;
+      }
+    }
+    expect(p.state).toBe('gone');
+    expect(into).toBe(true);
+  });
+
+  it('nothing at Gate A stands in the doorway or on the walk in from the forecourt', () => {
+    const w = makeWorld();
+    const { sv } = stations(), A = north.gateA;
+    // Along the forecourt, between the kerb railing (and the pillar at its SW end) and the block's face.
+    for (let s = A.forecourt; s <= A.door; s += 0.5) {
+      const [x, z] = at(sv, s, A.rail + 1.25);
+      expect(w.walkBlocked(x, z, R), `s ${s}`).toBe(false);
+    }
+    for (let t = A.rail + 1.25; t <= A.face + A.recess - 0.5; t += 0.25) {
+      const [x, z] = at(sv, A.door, t);
+      expect(w.walkBlocked(x, z, R), `t ${t}`).toBe(false);
     }
   });
 

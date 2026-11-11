@@ -59,12 +59,7 @@ export function buildProps(scene: THREE.Object3D, map: MapData, world: PropsWorl
     statics.add(g);
   }
 
-  // Metro entrance: green walls and a roof over stairs going down.
-  const ent = new THREE.Group();
-  ent.add(box(3.4, 2.8, 0.3, 0x2e9e5b, 0, 0, 1.6), box(3.4, 2.8, 0.3, 0x2e9e5b, 0, 0, -1.6), box(3.8, 0.3, 3.6, 0x2e9e5b, 0, 2.8, 0));
-  for (let i = 0; i < 5; i++) ent.add(box(0.5, 0.15, 2.9, 0x9a9a9a, -1.2 + i * 0.5, -0.15 * i, 0));
-  ent.position.set(world.metroEntrance.x, 0, world.metroEntrance.z);
-  statics.add(ent);
+  // (The metro entrance is Gate A, built with the station: render/world/stations.ts.)
 
   // Puddles that never dry (Webel More): a cluster of shallow, sky-tinted pools rather than one slab.
   for (const f of floods) {

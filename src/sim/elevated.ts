@@ -107,19 +107,13 @@ export function stations() {
   return { sv, it: orient(N.itCentre.a, N.itCentre.b, N.itCentre.n0, N.itCentre.n1), gate: sub(sv, s0, s1, t0, sv.n0 + 0.2) };
 }
 
-/** Sector V's Gate A, moved off the service road's carriageway onto the footpath on the gate's side. */
-export function gateSpot(roads: Road[], gate: Pt = N.gateA): Pt {
-  let best: ReturnType<typeof nearest> | null = null, road: Road | null = null;
-  for (const r of roads) {
-    if (r.b || r.k === 'service') continue;
-    const m = nearest(r.p, gate[0], gate[1]);
-    if (!best || m.d < best.d) { best = m; road = r; }
-  }
-  if (!best || !road || best.d > road.w / 2 + 3) return gate;
-  let ox = gate[0] - best.x, oz = gate[1] - best.z;
-  const L = Math.hypot(ox, oz);
-  if (L < 0.2) { ox = best.dz; oz = -best.dx; } else { ox /= L; oz /= L; }
-  return [best.x + ox * (road.w / 2 + 1.2), best.z + oz * (road.w / 2 + 1.2)];
+/**
+ * Where you stand in Sector V's Gate A doorway: on the station (north-west) side of the service road, in the ground
+ * block under the station's SW end (content/sectorv.ts north.gateA). Not OSM's node, which is across the road.
+ */
+export function gateADoor(): Pt {
+  const { sv } = stations();
+  return at(sv, N.gateA.door, N.gateA.stand);
 }
 
 // --- The Nabadiganta flyover: two decks, one per direction.
