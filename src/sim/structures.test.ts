@@ -14,7 +14,7 @@ import type { MapData } from './mapdata';
 import { NO_INTENT } from './player';
 import { Rng } from './rng';
 import { Run } from './run';
-import { ON_ROAD, SolidGrid } from './solids';
+import { SolidGrid } from './solids';
 import { elevatedLayout, FLY, flyoverSteps } from './structures';
 import { World } from './world';
 
@@ -165,25 +165,25 @@ describe('Sector V: what the elevated north stands on is solid', () => {
     expect(bad).toEqual([]);
   });
 
-  it('no wide piece of structure (ramp, tin, wall) is solid on a carriageway: those are reported instead', () => {
+  it('a ramp or wall standing on a road is solid only where traffic lanes pass beside it; the rest is reported', () => {
+    const w = makeWorld();
     const { solids, conflicts } = elevatedLayout(map);
-    for (const s of solids) if (s.hw > 0.5) {
-      for (const [a, c] of [[0, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
-        const x = s.x + s.ux * s.hl * a - s.uz * s.hw * c, z = s.z + s.uz * s.hl * a + s.ux * s.hw * c;
-        for (const r of map.roads) if (!r.b) {
-          const n = r.p.reduce((m, _, i) => i ? Math.min(m, segD(x, z, r.p[i - 1], r.p[i])) : m, Infinity);
-          expect(n).toBeGreaterThan(r.w / 2 - ON_ROAD - 1e-6);
-        }
+    // Every lane in Sector V clears every solid, wide pieces included (a bus's half width of clearance).
+    const grid = new SolidGrid(solids);
+    const bad: string[] = [];
+    for (const e of w.graph.edges) {
+      if (Math.abs(e.ax) > 360 || Math.abs(e.az) > 360) continue;
+      for (let s2 = 0; s2 <= e.len; s2 += 1) {
+        const q = w.graph.at(e, s2, T.traffic.laneOffset);
+        if (grid.blocked(q.x, q.z, 1.0)) bad.push(`${q.x.toFixed(0)},${q.z.toFixed(0)}`);
       }
     }
-    expect(conflicts.every((c) => c.depth > ON_ROAD)).toBe(true);
+    expect(bad).toEqual([]);
+    // Left open: only the flyover ramp's foot on its own slip road near Gate A, where traffic drives onto the ramp.
+    expect(conflicts.length).toBeLessThanOrEqual(4);
+    expect(conflicts.every((c) => c.kind === 'flyover ramp' && c.road === 'primary_link')).toBe(true);
   });
 });
-
-function segD(x: number, z: number, a: [number, number], b: [number, number]) {
-  const dx = b[0] - a[0], dz = b[1] - a[1], t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / (dx * dx + dz * dz || 1)));
-  return Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z);
-}
 
 describe('the streamed world: what its structures stand on is solid', () => {
   it("can't walk into a metro pier, and nothing of the viaduct is in the way under its deck", () => {

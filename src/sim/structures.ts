@@ -5,9 +5,13 @@
 
 import { north as N } from '../content/sectorv';
 import { canalAt, canalOf } from './canal';
+import { planLanes } from './gen/lanes';
+import { LANE_ROOM, T } from '../content/tuning';
+import type { WarpedNet } from './gen/net';
+import { TRAFFIC_ROADS } from './roadgraph';
 import { at, type Box, deckY, type Deck, flyoverDecks, inBox, local, nearest, onCarriageway, orangeLine, type Pier, pierSpots, stations } from './elevated';
 import type { MapData, Pt, Road } from './mapdata';
-import { box, boxAlong, circle, ON_ROAD, type Solid } from './solids';
+import { box, boxAlong, circle, type Solid } from './solids';
 
 export interface Step { x: number; z: number; rot: number; len: number; dist: number; dx: number; dz: number; i: number }
 
@@ -82,6 +86,8 @@ export interface Conflict { kind: string; x: number; z: number; road: string; /*
 class Acc {
   readonly solids: Solid[] = [];
   readonly conflicts: Conflict[] = [];
+  /** Wide pieces waiting for the lane plan: solid if traffic can pass them, else reported. */
+  readonly cands: { kind: string; s: Solid; road: string; depth: number }[] = [];
   constructor(private roads: Road[]) {}
   add(s: Solid) { this.solids.push(s); }
   wide(kind: string, s: Solid) {
@@ -95,8 +101,7 @@ class Acc {
         if (d > depth) { depth = d; road = q.n || q.k; }
       }
     }
-    if (depth > ON_ROAD) this.conflicts.push({ kind, x: s.x, z: s.z, road, depth });
-    else this.solids.push(s);
+    this.cands.push({ kind, s, road, depth });
   }
 }
 
@@ -151,9 +156,19 @@ export function svPiers(b: Box, roads: Road[]): Pt[] {
 }
 export const SV_PIER_HALF = 0.6;
 
-/** Sector V station's walls and towers at ground level. */
-export function svGround(b: Box) {
-  const [gs, gt] = local(b, N.gateB[0], N.gateB[1]);
+/**
+ * Sector V station's walls and towers at ground level. With `roads`, the Gate B stair tower slides toward
+ * Chavipatty Rd (+t, its real side) until it is off every carriageway: OSM's Gate B point lands on Canal Side Road
+ * on the halved map, and the tower stood across the service road there.
+ */
+export function svGround(b: Box, roads: Road[] = []) {
+  const [gs, t0] = local(b, N.gateB[0], N.gateB[1]);
+  let gt = t0;
+  const onRoad = (t: number) => [[-3, -1.5], [3, -1.5], [-3, 2.2], [3, 2.2], [0, 0.35]].some(([ds, dt]) => {
+    const [x, z] = at(b, gs + ds, t + dt);
+    return onCarriageway(roads, x, z, LANE_ROOM.overKerb + T.traffic.pierClear); // clear of where a bus's side goes
+  });
+  for (let k = 0; k < 40 && roads.length && onRoad(gt); k++) gt += 0.5;
   const cars: LocalRect[] = [];
   for (let s = -16; s <= 20; s += 6) cars.push(rect(s - 0.85, s + 0.85, 13.3, 16.6));
   return {
@@ -205,7 +220,7 @@ function toSolid(b: Box, r: LocalRect): Solid {
 function stationSolids(map: MapData, out: Acc) {
   const { sv, it } = stations();
   for (const [s, t] of svPiers(sv, map.roads)) out.add(toSolid(sv, rect(s - SV_PIER_HALF, s + SV_PIER_HALF, t - SV_PIER_HALF, t + SV_PIER_HALF)));
-  const g = svGround(sv);
+  const g = svGround(sv, map.roads);
   for (const r of [g.parkWall, ...g.cars, g.mural, g.tower, g.gateB]) out.wide('station wall', toSolid(sv, r));
   for (const p of itPiers(it, map.roads)) {
     const r = itPierRects(it, p.s);
@@ -217,7 +232,7 @@ function stationSolids(map: MapData, out: Acc) {
 }
 
 /** Everything of the elevated north that stands on the ground, as solids, and what the data put on a road. */
-const cache = new WeakMap<MapData, { solids: Solid[]; conflicts: Conflict[] }>();
+const cache = new WeakMap<MapData, { solids: Solid[]; conflicts: Conflict[]; lanes: ((number | null)[] | undefined)[] }>();
 export function elevatedLayout(map: MapData) {
   let c = cache.get(map);
   if (c) return c;
@@ -229,7 +244,20 @@ export function elevatedLayout(map: MapData) {
   const orange = orangeLine(map.roads, it);
   viaductSolids(orangePiers(orange, map.roads), v.orange, out);
   stationSolids(map, out);
-  c = { solids: out.solids, conflicts: out.conflicts };
+  // The same lane plan as the streamed world (gen/lanes.ts): ground traffic moves beside a ramp or wall standing on
+  // its road where the carriageway has room, and the piece is solid. Only what no lane can pass is reported, and
+  // left open so it never cuts a road off.
+  const idx = map.roads.map((r, i) => (TRAFFIC_ROADS.has(r.k) && !r.b ? i : -1)).filter((i) => i >= 0);
+  const wn = { roads: idx.map((i) => ({ p: map.roads[i].p, road: { w: map.roads[i].w, oneway: !!map.roads[i].o, name: map.roads[i].n || map.roads[i].k, id: `m${i}` } })) } as unknown as WarpedNet;
+  const base = out.solids.length;
+  const plan = planLanes(wn, [...out.solids, ...out.cands.map((x) => x.s)]);
+  out.cands.forEach((x, j) => {
+    if (plan.blocked.has(base + j)) out.conflicts.push({ kind: x.kind, x: x.s.x, z: x.s.z, road: plan.blockedRoad.get(base + j) ?? x.road, depth: x.depth });
+    else out.solids.push(x.s);
+  });
+  const lanes: ((number | null)[] | undefined)[] = [];
+  idx.forEach((i, k) => { lanes[i] = plan.lane[k]; });
+  c = { solids: out.solids, conflicts: out.conflicts, lanes };
   cache.set(map, c);
   return c;
 }

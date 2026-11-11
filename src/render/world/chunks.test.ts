@@ -128,6 +128,16 @@ describe('chunk meshing', () => {
     expect(view.meshes()[0].name).toBe('chunk -4,-5');
   });
 
+  it('asks for structures in chunks with no landmarks too (the viaduct between stations)', () => {
+    const src = new HandSource();
+    const asked: string[] = [];
+    const view = new ChunkView(src, { material: mat, landmarks: (c) => { asked.push(`${c.cx},${c.cz}`); return new THREE.Group(); } });
+    const c = { ...fixtureChunk(fixtureNet, 5, 3), landmarks: [] };
+    src.load(c);
+    while (view.count === 0) view.update(5 * CHUNK + 10, 3 * CHUNK + 10, 1000);
+    expect(asked).toEqual(['5,3']);
+  });
+
   it('disposes geometry and frees text slots on unload, and never builds an unloaded chunk', () => {
     const src = new HandSource();
     const freed: number[] = [];

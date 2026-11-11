@@ -82,7 +82,7 @@ function sectorV(parts: Parts, b: Box, roads: Road[]) {
   for (const t of [t0, t1]) lb(parts, b, -h - 0.5, h + 0.5, t - 0.15, t + 0.15, ROOF - 0.4, ROOF + 0.1, C.roof);
 
   // Ground level: parking behind low walls on the Chavipatty side, a mural on the service-road wall.
-  const g = svGround(b);
+  const g = svGround(b, roads);
   rb(parts, b, g.parkWall, 0, 0.8, C.wall);
   g.cars.forEach((c, i) => {
     rb(parts, b, c, 0.3, 1.1, [0xe8e8e8, 0xb83a32, 0x3b4b63, 0xc9c9c9, 0x6b6b6b, 0xe8e8e8, 0x2e6fae][i % 7]);

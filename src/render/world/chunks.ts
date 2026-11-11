@@ -1,7 +1,7 @@
 // The streamed world's renderer. ChunkView listens to a ChunkSource (onLoad/onUnload) and turns each chunk into
 // ONE mesh (ground, roads, buildings and props share the atlas material, chunkmat.ts), built a slice at a time:
 // at most `budgetMs` of meshing per frame, nearest chunks first, so loading never hitches. Landmark structures
-// from structuresForChunk() go in as a second object only when a chunk has any. Unloading disposes geometry.
+// from structuresForChunk() (landmarks, viaducts, decks, bridges) go in as a second object when a chunk has any. Unloading disposes geometry.
 
 import * as THREE from 'three';
 import { CHUNK, type Chunk, type ChunkSource } from '../../sim/gen/types';
@@ -133,10 +133,10 @@ export class ChunkView {
     mesh.matrixAutoUpdate = false;
     this.group.add(mesh);
     let extra: THREE.Object3D | null = null;
-    if (c.landmarks.length) {
-      extra = (this.opts.landmarks ?? structuresForChunk)(c, this.src.net, this.src.warp);
-      if (extra) this.group.add(extra);
-    }
+    // Every chunk: linear structures (the metro viaduct, flyover decks, bridges) cross chunks with no landmark in
+    // them. Asking only landmark chunks left most of the Green Line between stations undrawn. Returns null if empty.
+    extra = (this.opts.landmarks ?? structuresForChunk)(c, this.src.net, this.src.warp);
+    if (extra) this.group.add(extra);
     this.built.set(k, { chunk: c, mesh, extra, texts: job.texts });
     this.stats.builtTotal++;
   }

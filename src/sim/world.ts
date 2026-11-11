@@ -21,7 +21,7 @@ import { Crowd } from './crowd';
 import { BUS_REAR_DOOR } from './vehicles';
 import { layoutStreet, type StreetLayout } from './streetlayout';
 import { SolidGrid } from './solids';
-import { elevatedSolids } from './structures';
+import { elevatedSolids, elevatedLayout } from './structures';
 
 export type Action = { kind: 'hop'; bus: Vehicle } | { kind: 'bike'; captain: Vehicle } | null;
 
@@ -52,7 +52,7 @@ export class World {
 
   constructor(readonly map: MapData, readonly run: Run, readonly rng: Rng, start: { x: number; z: number }, net: WorldNet | null = null) {
     this.streamed = net ? new Streamed(net, run.mode, run.seed) : null;
-    this.graph = new RoadGraph(map, this.streamed?.graphRoads());
+    this.graph = new RoadGraph(map, this.streamed?.graphRoads(), elevatedLayout(map).lanes);
     this.traffic = new Traffic(map, this.graph, rng, this.streamed?.route(map));
     this.grid = new BuildingGrid(map.buildings.map((b) => b.p));
     this.water = new WaterMask(map.water ?? [], map.roads);

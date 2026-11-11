@@ -30,11 +30,13 @@ export class RoadGraph {
   private index = new Map<string, number>();
 
   /** `extra`: more roads in game coords (the streamed world's net roads), joined to the map where ends coincide. */
-  constructor(map: MapData, extra: ExtraRoad[] = []) {
-    for (const r of map.roads) {
-      if (!TRAFFIC_ROADS.has(r.k) || r.b) continue; // the flyover deck stays empty for now
-      this.addLine({ p: r.p, w: r.w, oneway: !!r.o });
-    }
+  /** `mapLanes[i]`: per segment of map road i, the lane offset beside structures on it (structures.ts), or null. */
+  constructor(map: MapData, extra: ExtraRoad[] = [], mapLanes: ((number | null)[] | undefined)[] = []) {
+    map.roads.forEach((r, i) => {
+      if (!TRAFFIC_ROADS.has(r.k) || r.b) return; // the flyover deck stays empty for now
+      const plan = mapLanes[i];
+      this.addLine({ p: r.p, w: r.w, oneway: !!r.o, lane: plan ? (_a, _b, k) => plan[k] ?? null : undefined });
+    });
     for (const r of extra) this.addLine(r);
   }
 
