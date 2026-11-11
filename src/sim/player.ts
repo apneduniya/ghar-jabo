@@ -1,6 +1,6 @@
 // The student: runs, jumps, gets knocked down, hangs off buses, rides pillion. Pure logic.
 
-import { T } from '../content/tuning';
+import { CONTROLS, T } from '../content/tuning';
 
 export type PlayerState = 'foot' | 'hang' | 'pillion' | 'gone';
 
@@ -16,6 +16,62 @@ export interface Intent {
 }
 
 export const NO_INTENT: Intent = { moveX: 0, moveZ: 0, jump: false, action: false, phone: false, lean: 0 };
+
+/**
+ * Road magnetism: a world-space move (mx, mz) that is within `snap` radians of a road's direction (dx, dz),
+ * either way along it, is bent towards it, fully near the line and not at all at the edge of the window
+ * (the offset angle is squared), so "up" runs along the road but you can still drift across. Length is kept.
+ */
+export function roadAssist(mx: number, mz: number, dx: number, dz: number, snap = CONTROLS.roadSnap): [number, number] {
+  const mag = Math.hypot(mx, mz);
+  if (mag < 1e-6) return [mx, mz];
+  const sgn = mx * dx + mz * dz >= 0 ? 1 : -1;
+  const road = Math.atan2(dz * sgn, dx * sgn);
+  const off = Math.atan2(Math.sin(Math.atan2(mz, mx) - road), Math.cos(Math.atan2(mz, mx) - road));
+  if (Math.abs(off) >= snap) return [mx, mz];
+  const a = road + off * Math.abs(off) / snap;
+  return [Math.cos(a) * mag, Math.sin(a) * mag];
+}
+
+/**
+ * How fast the follow camera recentres behind the run direction (1/s), from the stick's forwardness
+ * (cos of its angle from screen-up, -1 when idle) and how long the current direction has been held.
+ * Running back at the camera: zero (no 180° flips). The stick's frame is latched while held (see
+ * `StickFrame`), so this swing never changes where you run: no spiralling.
+ */
+export function camFollowRate(forward: number, heldFor: number) {
+  const [lo, hi] = CONTROLS.camForward;
+  if (heldFor < CONTROLS.camDelay || forward <= lo) return 0;
+  return CONTROLS.camFollow * Math.min(1, (forward - lo) / (hi - lo));
+}
+
+const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
+
+/**
+ * The camera frame the stick is read in. Taken from the camera when the thumb goes down and held while the
+ * thumb holds still, so the camera can swing round behind you without bending your path. When the thumb
+ * turns, the frame catches up with the camera by up to `CONTROLS.reframe` radians per radian turned: the
+ * player is reacting to what's on screen, and the catch-up hides inside their own turn (no jumps).
+ */
+export class StickFrame {
+  yaw = 0;
+  /** Seconds the stick has been held. */
+  held = 0;
+  private dir: number | null = null;
+
+  /** `fwd`/`right`: the stick (screen up / right); `camYaw`: the camera now. Returns the yaw to read it in. */
+  update(fwd: number, right: number, camYaw: number, dt: number) {
+    if (Math.hypot(fwd, right) < 0.05) { this.dir = null; this.held = 0; this.yaw = camYaw; return this.yaw; }
+    const a = Math.atan2(right, fwd);
+    if (this.dir === null) { this.dir = a; this.yaw = camYaw; }
+    const turned = Math.abs(wrap(a - this.dir)) * CONTROLS.reframe;
+    this.dir = a;
+    const d = wrap(camYaw - this.yaw);
+    this.yaw = wrap(this.yaw + Math.max(-turned, Math.min(turned, d)));
+    this.held += dt;
+    return this.yaw;
+  }
+}
 
 export class Player {
   x = 0; y = 0; z = 0;
@@ -38,6 +94,13 @@ export class Player {
     this.onGround = false;
   }
 
+  /** Turn smoothly (the short way round) to face `target`: fast, but never a snap. */
+  turnTowards(target: number, dt: number) {
+    const d = Math.atan2(Math.sin(target - this.heading), Math.cos(target - this.heading));
+    const h = this.heading + d * Math.min(1, dt * CONTROLS.turnRate);
+    this.heading = Math.atan2(Math.sin(h), Math.cos(h));
+  }
+
   /** On-foot movement. `blocked(x, z)` says whether a spot is inside a building. */
   stepFoot(dt: number, intent: Intent, blocked: (x: number, z: number) => boolean) {
     const P = T.player;
@@ -51,7 +114,7 @@ export class Player {
       this.vx += (intent.moveX * sp - this.vx) * Math.min(1, dt * k);
       this.vz += (intent.moveZ * sp - this.vz) * Math.min(1, dt * k);
       if (intent.jump && this.onGround) { this.vy = P.jumpSpeed; this.onGround = false; }
-      if (Math.hypot(this.vx, this.vz) > 0.5) this.heading = Math.atan2(this.vz, this.vx);
+      if (Math.hypot(this.vx, this.vz) > 0.5) this.turnTowards(Math.atan2(this.vz, this.vx), dt);
     }
     if (!this.onGround) {
       this.vy -= P.gravity * dt;

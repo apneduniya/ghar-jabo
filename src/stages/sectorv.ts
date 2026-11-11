@@ -16,14 +16,15 @@ import type { ChunkSource } from '../sim/gen/types';
 import { Minimap } from '../ui/minimap';
 import { showTitle } from '../ui/title';
 import { unlockAudio } from '../audio/audio';
-import { NO_INTENT } from '../sim/player';
+import { camFollowRate, NO_INTENT, roadAssist, StickFrame } from '../sim/player';
+import { clearance, nearestRoad } from '../sim/streetlife';
 import { roofs } from '../sim/elevated';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { sfx } from '../audio/audio';
 import { Ambience } from '../audio/ambience';
 import { floods } from '../content/sectorv';
-import { T } from '../content/tuning';
+import { CONTROLS, T } from '../content/tuning';
 import { STREAM } from '../content/worldgen';
 import { northSigns, pick, ticker } from '../content/text';
 import { rng } from '../sim/rng';
@@ -144,12 +145,20 @@ export function sectorv(): Scene {
   let attracting = game.attract;
   game.attract = false;
   let orbit = 0;
+  const frame = new StickFrame(); // the camera frame the stick is read in (latched while held)
 
-  function intentFromInput(): Intent {
-    const fx = Math.cos(yaw), fz = Math.sin(yaw);
+  function intentFromInput(dt: number): Intent {
+    const fy = frame.update(input.mx, input.mz, yaw, dt), p = world.player;
+    const fx = Math.cos(fy), fz = Math.sin(fy);
+    let mx = fx * input.mx - fz * input.mz, mz = fz * input.mx + fx * input.mz;
+    // Near a road, "up" runs along it (sim/player.ts roadAssist).
+    if (p.state === 'foot' && (mx || mz) && clearance(map.roads, p.x, p.z) < CONTROLS.roadNear) {
+      const r = nearestRoad(map.roads, p.x, p.z);
+      if (r.d < Infinity) [mx, mz] = roadAssist(mx, mz, r.dx, r.dz);
+    }
     return {
-      moveX: fx * input.mx - fz * input.mz,
-      moveZ: fz * input.mx + fx * input.mz,
+      moveX: mx,
+      moveZ: mz,
       jump: input.jump,
       action: input.action,
       phone: input.phone,
@@ -280,7 +289,7 @@ export function sectorv(): Scene {
   function playUpdate(dt: number) {
       // Fixed 60 Hz simulation. Taps are latched until a step consumes them: a frame can run zero steps.
       acc += dt;
-      const now = intentFromInput();
+      const now = intentFromInput(dt);
       pending.jump ||= now.jump; pending.action ||= now.action; pending.phone ||= now.phone;
       while (acc >= T.step && !leaving) {
         acc -= T.step;
@@ -318,12 +327,18 @@ export function sectorv(): Scene {
       const bar = balanceUi?.querySelector<HTMLElement>('b');
       if (bar) { bar.style.left = `${50 - p.lean * 45}%`; bar.classList.toggle('danger', Math.abs(p.lean) > 0.7); }
 
-      // Camera: behind the direction of travel; while riding, behind the vehicle.
+      // Camera: while riding, behind the vehicle. On foot it swings gently round behind the run direction once
+      // a direction has been held a moment, never while you run back at it. The stick's frame is latched
+      // while held (StickFrame), so the swing never bends your path: no spiralling. Along a road, roadAssist
+      // has already lined the run up with the road, so the camera lines up with it too.
       const sp = Math.hypot(p.vx, p.vz);
-      const targetYaw = ride ? ride.heading : sp > 1.5 && input.mx > -0.5 ? Math.atan2(p.vz, p.vx) : yaw;
+      const runYaw = Math.atan2(p.vz, p.vx);
+      const away = sp > 1.5 ? Math.cos(runYaw - yaw) : -1;
+      const rate = ride ? 3 : camFollowRate(away, frame.held);
+      const targetYaw = ride ? ride.heading : runYaw;
       let d = targetYaw - yaw;
       d = Math.atan2(Math.sin(d), Math.cos(d));
-      yaw += d * Math.min(1, dt * (ride ? 3 : 1.8));
+      yaw += d * Math.min(1, dt * rate);
       const fx = Math.cos(yaw), fz = Math.sin(yaw);
       const portrait = innerHeight > innerWidth;
       const back = (portrait ? 11 : 9.5) * (ride?.kind === 'bus' ? 1.4 : 1);

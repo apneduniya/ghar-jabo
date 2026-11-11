@@ -24,7 +24,7 @@ export function sceneLayer(): HTMLElement {
 
 // HUD. Every element has a home corner (see "Layout" in style.css):
 //  top-left: mode tag, clock (with the day in free roam), deadline bar or time out, place name.
-//  top-right: money and dignity. The minimap, notification stream and Ma's call have their own slots.
+//  top-right: money. The minimap, notification stream and Ma's call have their own slots.
 
 let hud: HTMLElement | null = null;
 let hudMode: Run['mode'] | null = null;
@@ -39,7 +39,6 @@ export function showHud(show: boolean) {
       </div>
       <div class="hud-tr">
         <div class="hud-money"></div>
-        <div class="hud-dig"><span>DIGNITY</span><i><b></b></i></div>
       </div>`;
     root.appendChild(hud);
     hudMode = null;
@@ -69,7 +68,6 @@ export function updateHud(run: Run) {
   if (cue.textContent !== cueText) cue.textContent = cueText;
   if (!free) hud.querySelector<HTMLElement>('.hud-cue b')!.style.width = `${timeLeftFraction(run.minute) * 100}%`;
   hud.querySelector<HTMLElement>('.hud-money')!.textContent = `₹${run.money}`;
-  hud.querySelector<HTMLElement>('.hud-dig b')!.style.width = `${run.dignity}%`;
   hud.classList.toggle('late', !free && run.minute > 21 * 60 + 30);
 }
 

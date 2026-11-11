@@ -96,3 +96,36 @@ export const LANE_ROOM = {
   /** Lanes may move out round a structure until a bus hangs this far past the carriageway edge (the kerb strip). */
   overKerb: 0.4,
 };
+
+/** Thumb stick, turning and the follow camera (task 024). */
+export const CONTROLS = {
+  /** Share of the rim radius that reads as no input. */
+  deadZone: 0.1,
+  /** Response past the dead zone: out = t^curve (1 = linear; above 1 = finer control near the centre). */
+  curve: 1.5,
+  /** The knob's travel as a share of the stick's size; drag past it and the base follows the thumb. */
+  rim: 0.4,
+  /** Where a thumb may start the stick: left of this share of the width, below this share of the height. */
+  stickZone: [0.55, 0.3] as [number, number],
+  /** Divider collision: median pieces every this many units (finer than the drawn ones, so no holes at bends). */
+  medianStep: 1.5,
+  /** How fast the character turns to face where it's going (1/s, exponential). */
+  turnRate: 14,
+  /**
+   * While the thumb holds still, the stick keeps the camera frame it had when the thumb went down, so the
+   * camera can swing round behind you without changing where you run. When the thumb turns, that frame
+   * catches up with the camera by this many radians per radian turned (sim/player.ts StickFrame).
+   */
+  reframe: 1,
+  /** Camera recentring behind the run direction (1/s) at full strength. */
+  camFollow: 1.6,
+  /** Forwardness (cos of the stick angle from screen-up): no recentring at or below `[0]` (running back at the
+   * camera), full strength from `[1]`, a straight ramp between. */
+  camForward: [-0.3, 0.5] as [number, number],
+  /** Seconds a direction must be held before the camera starts to recentre. */
+  camDelay: 0.35,
+  /** Running within this angle (radians) of a road's direction runs exactly along it, and the camera lines up. */
+  roadSnap: 0.35,
+  /** Only roads this close (units from their carriageway edge) guide you. */
+  roadNear: 6,
+};

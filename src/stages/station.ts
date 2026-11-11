@@ -268,7 +268,7 @@ export function station(): Scene {
         shake.kick(0.3, 0.3);
         shakeUi();
         sfx.bump();
-        if (!input.action) { run.hurtDignity(3); toast('BRAKES!', pick(['You are now in someone\'s armpit.', 'Your face is on the door glass.', 'Umbrella in your ribs.'])); }
+        if (!input.action) { toast('BRAKES!', pick(['You are now in someone\'s armpit.', 'Your face is on the door glass.', 'Umbrella in your ribs.'])); }
       }
     }
     if (seated) {

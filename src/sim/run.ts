@@ -59,7 +59,6 @@ export class Run {
   minute = START_MIN;
   constructor(readonly mode: PlayMode = 'timed') {}
   money = START_MONEY;
-  dignity = 100;
   clockRunning = false;
   /** When Ma calls next. */
   nextCall = 19 * 60;
@@ -89,8 +88,6 @@ export class Run {
     this.money -= amount;
     return true;
   }
-
-  hurtDignity(n: number) { this.dignity = Math.max(0, Math.min(100, this.dignity - n)); }
 
   tried(mode: Mode) {
     if (!this.stats.modesTried.includes(mode)) this.stats.modesTried.push(mode);
