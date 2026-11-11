@@ -53,8 +53,9 @@ describe('metro', () => {
     }
     const [, t] = local(sv, it.c[0], it.c[1]);
     expect(t).toBeLessThan(sv.n0); // IT Centre is south-east of Sector V, across the road
-    // Sector V reaches across the canal to Chavipatty Rd: Gate B is inside its footprint.
-    expect(inBox(sv, north.gateB[0], north.gateB[1])).toBe(true);
+    // Sector V reaches across the canal to Chavipatty Rd: OSM's Gate B node and the game's Gate B door are inside it.
+    expect(inBox(sv, north.gateB.osm[0], north.gateB.osm[1])).toBe(true);
+    expect(inBox(sv, ...at(sv, north.gateB.door, north.gateB.face))).toBe(true);
   });
 
   it('runs the Green Line from the terminus SW to Wipro More, then NW along 3rd Ave', () => {

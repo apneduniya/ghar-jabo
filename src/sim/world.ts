@@ -6,7 +6,7 @@ import { floods } from '../content/sectorv';
 import { arriveLine, cancelReasons, captainNames, ticker } from '../content/text';
 import { BuildingGrid, WaterMask } from './collide';
 import { canalOf, RailingMask } from './canal';
-import { gateADoor } from './elevated';
+import { gateADoor, gateBDoor, gateStepsOut } from './elevated';
 import { Events } from './events';
 import type { MapData } from './mapdata';
 import { NO_INTENT, Player, type Intent } from './player';
@@ -42,7 +42,10 @@ export class World {
   t = 0;
   booking: { t: number } | null = null;
   captainId = 0;
+  /** Gate A, the game's metro entrance (the minimap marks it). */
   metroEntrance: { x: number; z: number };
+  /** Every street entrance that opens the metro: Gate A, then Gate B on Chavipatty Rd. */
+  metroEntrances: { x: number; z: number }[];
   private bumpT = 3;
   private ditchAt = Infinity;
   private exitNode: number;
@@ -66,6 +69,8 @@ export class World {
     // Sector V's street entrance: the Gate A doorway, on the station side of the service road (sim/elevated.ts).
     const gate = gateADoor();
     this.metroEntrance = this.freeSpotNear(gate[0], gate[1]);
+    const gateB = gateBDoor();
+    this.metroEntrances = [this.metroEntrance, this.freeSpotNear(gateB[0], gateB[1])];
     // Where a captain carrying you heads: Sealdah when the world goes that far, else the map's exit.
     const end = this.streamed ? [this.streamed.sealdah.x, this.streamed.sealdah.z] : map.busPath[map.busPath.length - 1];
     this.exitNode = this.graph.nearestNode(end[0], end[1]);
@@ -162,13 +167,15 @@ export class World {
     }
     if (this.streamed?.atSealdah(p.x, p.z)) { this.arrive('walk'); return; }
     const station = this.streamed?.stationAt(p.x, p.z);
-    if ((station || Math.hypot(this.metroEntrance.x - p.x, this.metroEntrance.z - p.z) < 2.5) && !p.down) {
+    const gate = this.metroEntrances.findIndex((e) => Math.hypot(e.x - p.x, e.z - p.z) < 2.5);
+    if ((station || gate >= 0) && !p.down) {
+      const [ox, oz] = gate >= 0 ? gateStepsOut()[gate] : [3, 0];
       if (!this.run.metroOpen) {
         this.events.toast('METRO BONDHO', 'Shutters down till 6:50 AM. The guard is asleep on a plastic chair.');
-        p.x += 3;
+        p.x += ox; p.z += oz;
       } else if (this.run.money < T.metro.fare) {
         this.events.toast('₹20 LAGBE', `You have ₹${this.run.money}. The token counter is unmoved.`);
-        p.x += 3;
+        p.x += ox; p.z += oz;
       } else {
         p.state = 'gone';
         this.run.tried('metro');

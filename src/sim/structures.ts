@@ -6,10 +6,9 @@
 import { north as N } from '../content/sectorv';
 import { canalAt, canalOf } from './canal';
 import { planLanes } from './gen/lanes';
-import { LANE_ROOM, T } from '../content/tuning';
 import type { WarpedNet } from './gen/net';
 import { TRAFFIC_ROADS } from './roadgraph';
-import { at, type Box, deckY, type Deck, flyoverDecks, inBox, local, nearest, onCarriageway, orangeLine, type Pier, pierSpots, stations } from './elevated';
+import { at, type Box, deckY, type Deck, flyoverDecks, inBox, nearest, onCarriageway, orangeLine, type Pier, pierSpots, stations } from './elevated';
 import type { MapData, Pt, Road } from './mapdata';
 import { box, boxAlong, circle, type Solid } from './solids';
 
@@ -148,12 +147,15 @@ const rect = (s0: number, s1: number, t0: number, t1: number): LocalRect => ({ s
 /** Gate A's footprint along the service road (forecourt to the end of the mural): its walls carry the station there. */
 export const inGateA = (s: number, t: number) => s > N.gateA.forecourt - 0.5 && s < N.gateA.mural[1] + 1.5 && t < N.gateA.block[2];
 
-/** Sector V station's piers: on dry ground or in the canal, never on a carriageway or in Gate A (s, t of each centre). */
+/** Gate B's footprint on Chavipatty Rd (the door block and the stair enclosure, with the ramp in front). */
+export const inGateB = (s: number, t: number) => s > N.gateB.block[0] - 1 && s < N.gateB.block[1] + 1 && t > N.gateB.back - 1;
+
+/** Sector V station's piers: on dry ground or in the canal, never on a carriageway or in Gate A or B (s, t of each centre). */
 export function svPiers(b: Box, roads: Road[]): Pt[] {
   const out: Pt[] = [];
   for (const t of [2, 9.5, 15.5]) for (let s = -b.half + 4; s <= b.half - 3; s += 10) {
     const [x, z] = at(b, s, t);
-    if (!onCarriageway(roads, x, z, 0.5) && !inGateA(s, t)) out.push([s, t]);
+    if (!onCarriageway(roads, x, z, 0.5) && !inGateA(s, t) && !inGateB(s, t)) out.push([s, t]);
   }
   return out;
 }
@@ -180,27 +182,27 @@ export function svGateA() {
 export const SV_PIER_HALF = 0.6;
 
 /**
- * Sector V station's walls and towers at ground level. With `roads`, the Gate B stair tower slides toward
- * Chavipatty Rd (+t, its real side) until it is off every carriageway: OSM's Gate B point lands on Canal Side Road
- * on the halved map, and the tower stood across the service road there.
+ * Gate B at ground level (content/sectorv.ts north.gateB, gbz_h195): the block with the doorway in the station's NW
+ * face (its back wall and two jambs; the NE jamb runs on as the sloped stair enclosure) and the steel ramp's outer
+ * rail along the face, open at the door end so you walk straight in from Chavipatty Rd's footpath.
  */
-export function svGround(b: Box, roads: Road[] = []) {
-  const [gs, t0] = local(b, N.gateB[0], N.gateB[1]);
-  let gt = t0;
-  const onRoad = (t: number) => [[-3, -1.5], [3, -1.5], [-3, 2.2], [3, 2.2], [0, 0.35]].some(([ds, dt]) => {
-    const [x, z] = at(b, gs + ds, t + dt);
-    return onCarriageway(roads, x, z, LANE_ROOM.overKerb + T.traffic.pierClear); // clear of where a bus's side goes
-  });
-  for (let k = 0; k < 40 && roads.length && onRoad(gt); k++) gt += 0.5;
-  const cars: LocalRect[] = [];
-  for (let s = -16; s <= 20; s += 6) cars.push(rect(s - 0.85, s + 0.85, 13.3, 16.6));
+export function svGateB() {
+  const B = N.gateB, [b0, b1] = B.block, f = B.face, d = B.door, hw = B.doorW / 2, [r0, r1, rt] = B.ramp;
   return {
-    /** The low wall in front of the parking, and the parked cars behind it. */
+    block: [rect(b0, b1, B.back, f - B.recess), rect(b0, d - hw, f - B.recess, f), rect(d + hw, b1, f - B.recess, f)],
+    rail: rect(r0, r1, rt - 0.04, rt + 0.04),
+  };
+}
+
+/** Sector V station's walls and towers at ground level. */
+export function svGround(b: Box) {
+  const [g0, g1] = N.gateB.block, cars: LocalRect[] = [];
+  for (let s = -16; s <= 20; s += 6) if (s + 0.85 < g0 - 0.5 || s - 0.85 > g1 + 0.5) cars.push(rect(s - 0.85, s + 0.85, 13.3, 16.6));
+  return {
+    /** The low wall in front of the parking, and the parked cars behind it (none in front of Gate B). */
     parkWall: rect(-20, 25, 12.6, 12.8), cars,
     /** The yellow name tower at the west end. */
     tower: rect(-b.half - 2, -b.half + 2, 0.5, 4.5),
-    /** The stair tower at Gate B on Chavipatty Rd (its entrance is the face with the sign, on +t). */
-    gateB: rect(gs - 3, gs + 3, gt - 1.5, gt + 2.2), gateBAt: [gs, gt] as Pt,
   };
 }
 
@@ -241,8 +243,10 @@ function toSolid(b: Box, r: LocalRect): Solid {
 function stationSolids(map: MapData, out: Acc) {
   const { sv, it } = stations();
   for (const [s, t] of svPiers(sv, map.roads)) out.add(toSolid(sv, rect(s - SV_PIER_HALF, s + SV_PIER_HALF, t - SV_PIER_HALF, t + SV_PIER_HALF)));
-  const g = svGround(sv, map.roads);
-  for (const r of [g.parkWall, ...g.cars, g.tower, g.gateB]) out.wide('station wall', toSolid(sv, r));
+  const g = svGround(sv);
+  for (const r of [g.parkWall, ...g.cars, g.tower]) out.wide('station wall', toSolid(sv, r));
+  const gb = svGateB();
+  for (const r of [...gb.block, gb.rail]) out.wide('Gate B', toSolid(sv, r));
   const ga = svGateA();
   for (const r of [...ga.block, ga.mural, ga.pillar, ga.rail]) out.wide('Gate A', toSolid(sv, r));
   // The autos waiting at the kerb stand in the kerb lane: traffic moves out round them (the lane plan below).

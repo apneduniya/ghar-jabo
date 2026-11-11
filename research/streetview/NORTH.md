@@ -140,10 +140,14 @@ images in `img/metro/` (gitignored: `a0z_h40`, `a0z_h15`, `p1z_h310`, `g_a0`, `g
 - **Bank block** (parody sign in the game): the peach block bridging the road starts NE of the mural, about
   s -17..-10 (weak estimate from `a0z_h40`).
 - **Service road:** one lane plus an auto kerb lane, about 7-8 m. The map has OSM's way here as a 9 u (18 m)
-  one-way with its NW kerb at t 0.9; not narrowed (map data), so the game's Gate A stands 1-2 u further NW.
+  one-way with its NW kerb at t 0.9. Task 032 narrowed it to 4 u (8 m) through `research/map/overrides.json`
+  `roads` (OSM w310458360): centre t -3.6, NW kerb t -1.6, and Gate A's door, railing, pillar and autos moved
+  onto that kerb line (door face t 1.1, the trigger 0.4 u from the real door point).
 - **Gate B** (Chavipatty Rd): door at 22.58124, 88.42890 = (-23.1, -234.3) (OSM's node is ~12 m east), up a
   steel-railed ramp, "drop-off point" sign, a sloped stair enclosure with blue-trimmed glazing and an
-  orange-yellow hand-gesture mosaic (`gbz_h195`, `g_gb`). Not moved in 026.
+  orange-yellow hand-gesture mosaic (`gbz_h195`, `g_gb`). Modelled in 032 at s 4.5 in the station's NW face; the
+  map's Chavipatty Rd centre line is at t 20.3 (kerb t 17.8), so the face stands at t 15.9 with the ramp and a
+  footpath in front, about 3 u SE of the real point. It opens the metro like Gate A.
 - **How a TIU student gets there** (`dir_walk`): Street 2 → PwC More → Street 13 → Wipro More → NE along the
   service road north of the flyover → the pillar and the Gate A door. So Gate A is the game's metro entrance.
 
