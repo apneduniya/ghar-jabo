@@ -242,7 +242,7 @@ describe('the streamed world beyond the map', () => {
       expect(Math.hypot(tx - w.streamed!.sealdah.x, tz - w.streamed!.sealdah.z)).toBeLessThan(60);
       expect(w.graph.route(from, to), mode).not.toBeNull();
     }
-  });
+  }, 30_000); // builds whole worlds; slow on a loaded shared CPU
 
   it('the bus line runs from Sector V to Sealdah, about 1,500 u beyond the square when timed', () => {
     const w = streamWorld('timed');

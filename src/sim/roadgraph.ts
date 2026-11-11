@@ -186,16 +186,39 @@ export class RoadGraph {
   route(a: number, b: number): Edge[] | null {
     const dist = new Map<number, number>([[a, 0]]);
     const prev = new Map<number, Edge>();
-    const open = new Set([a]);
-    while (open.size) {
-      let u = -1, du = Infinity;
-      for (const n of open) { const d = dist.get(n)!; if (d < du) { du = d; u = n; } }
-      open.delete(u);
+    // Binary min-heap of [distance, node]; stale entries are skipped when popped.
+    const heap: [number, number][] = [[0, a]];
+    const push = (d: number, n: number) => {
+      heap.push([d, n]);
+      for (let i = heap.length - 1; i > 0;) {
+        const p = (i - 1) >> 1;
+        if (heap[p][0] <= heap[i][0]) break;
+        [heap[p], heap[i]] = [heap[i], heap[p]]; i = p;
+      }
+    };
+    const pop = () => {
+      const top = heap[0], last = heap.pop()!;
+      if (heap.length) {
+        heap[0] = last;
+        for (let i = 0; ;) {
+          const l = 2 * i + 1, r = l + 1;
+          let m = i;
+          if (l < heap.length && heap[l][0] < heap[m][0]) m = l;
+          if (r < heap.length && heap[r][0] < heap[m][0]) m = r;
+          if (m === i) break;
+          [heap[m], heap[i]] = [heap[i], heap[m]]; i = m;
+        }
+      }
+      return top;
+    };
+    while (heap.length) {
+      const [du, u] = pop();
+      if (du > (dist.get(u) ?? Infinity)) continue;
       if (u === b) break;
       for (const id of this.out[u]) {
         const e = this.edges[id];
         const nd = du + e.len;
-        if (nd < (dist.get(e.to) ?? Infinity)) { dist.set(e.to, nd); prev.set(e.to, e); open.add(e.to); }
+        if (nd < (dist.get(e.to) ?? Infinity)) { dist.set(e.to, nd); prev.set(e.to, e); push(nd, e.to); }
       }
     }
     if (!prev.has(b) && a !== b) return null;

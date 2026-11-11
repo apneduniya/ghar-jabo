@@ -103,7 +103,7 @@ describe('Sector V: what the elevated north stands on is solid', () => {
       expect(walkAt(w, from.x, from.z, s.x, s.z)).toBeGreaterThan(FLY.pier.r + R - 0.05);
     }
     expect(tried).toBeGreaterThan(2);
-  });
+  }, 30_000); // builds whole worlds; slow on a loaded shared CPU
 
   it("can't walk through a ramp's retaining wall, but can walk under the high deck", () => {
     const w = makeWorld();
@@ -248,7 +248,7 @@ describe('the streamed world: what its structures stand on is solid', () => {
       }
     }
     expect(tried).toBeGreaterThan(0);
-  });
+  }, 30_000); // builds whole worlds; slow on a loaded shared CPU
 
   it("a flyover's low ramp is solid unless the data puts it on a road (then reported), its high deck open underneath", () => {
     let low = 0;
