@@ -31,6 +31,7 @@ function streetProps(ctx: Ctx, s: Street, cb: Box, idx: SegIndex, ob: Obstacles,
   const sides = s.real && s.w > 8 ? [1] : [1, -1];
   for (const side of sides) {
     const h = new Hasher([ctx.seed, s.key, side, 53]);
+    if (s.hawkers === side) { hawkerRow(ctx, s, side, cb, idx, ob, h, out); continue; }
     const slot = 7;
     for (let at = h.range(2, slot), n = 0; at < L - 2 && n < 600; at += slot, n++) {
       const [x, z, tx, tz] = frame(s, at);
@@ -94,4 +95,26 @@ export function props(ctx: Ctx, cb: Box, streets: Street[], idx: SegIndex, ob: O
     out.push({ kind: 'puddle', x: r.x, z: r.z, rot: r.heading, len: f.r * 2 });
   }
   return out;
+}
+
+/**
+ * A continuous row of tin-roofed stalls shoulder to shoulder along one side, facing the walkway (Sealdah's walk-in
+ * beside Vidyapati Setu: a ~3 m stall row against the flyover side, then the ~4 m walk; GAPS.md re-shoot).
+ */
+function hawkerRow(ctx: Ctx, s: Street, side: number, cb: Box, idx: SegIndex, ob: Obstacles, h: Hasher, out: GenProp[]) {
+  const L = s.cum[s.cum.length - 1], d = s.w / 2 + GEN.hawkerGap, step = GEN.hawkerStep;
+  // On the real road's own distance, so the row runs on unbroken across the pieces it is cut into.
+  const from = s.from ?? 0;
+  for (let at = Math.ceil((from + step / 2) / step) * step - step / 2 - from; at < L; at += step) {
+    if (at < 0) continue;
+    const [x, z, tx, tz] = frame(s, at);
+    const px = x + tz * side * d, pz = z - tx * side * d;
+    if (!inBox(cb, px, pz) || idx.onRoad(px, pz, 0.2, false, true) || ctx.water.point(px, pz)) continue;
+    if (Math.abs(px) < HALF + 4 && Math.abs(pz) < HALF + 4) continue;
+    // Landmark clear zones count only on the stalls' own side: across the walk stand the church and the station,
+    // behind their fences, and their zones reach over the lane.
+    if (ob.circles.some((c) => Math.hypot(c.x - px, c.z - pz) < c.r && ((c.x - x) * tz - (c.z - z) * tx) * side > 0)) continue;
+    // Facing the walkway: stalls on the left of travel turn to the right, and the other way round.
+    out.push({ kind: h.chance(0.12) ? 'cart' : 'stall', x: px, z: pz, rot: Math.atan2(tz, tx), len: GEN.hawkerStep - 0.2, v: h.int(0, 5) });
+  }
 }

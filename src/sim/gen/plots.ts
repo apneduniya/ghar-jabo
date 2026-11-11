@@ -77,7 +77,7 @@ export function frame(s: Street, at: number): [number, number, number, number] {
 
 /** A hash grid of street segments for quick footprint tests. */
 export class SegIndex {
-  private cells = new Map<number, { a: Pt; b: Pt; r: number; half: number }[]>();
+  private cells = new Map<number, { a: Pt; b: Pt; r: number; half: number; deck: boolean }[]>();
   constructor(streets: Street[], private size = 16) {
     for (const s of streets) {
       const r = reach(s);
@@ -88,7 +88,7 @@ export class SegIndex {
         for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
           const k = key(x, z);
           const l = this.cells.get(k);
-          const seg = { a, b, r, half: s.w / 2 };
+          const seg = { a, b, r, half: s.w / 2, deck: s.bridge === 'flyover' };
           if (l) l.push(seg); else this.cells.set(k, [seg]);
         }
       }
@@ -111,8 +111,10 @@ export class SegIndex {
   }
 
   /** True if (x, z) is within `pad` of a street's carriageway (footpaths excluded), or of its footpath too. */
-  onRoad(x: number, z: number, pad: number, withFoot = false): boolean {
+  /** `groundOnly`: ignore flyover decks (things at ground level can stand under a deck's edge). */
+  onRoad(x: number, z: number, pad: number, withFoot = false, groundOnly = false): boolean {
     for (const s of this.cells.get(key(Math.floor(x / this.size), Math.floor(z / this.size))) ?? []) {
+      if (groundOnly && s.deck) continue;
       const dx = s.b[0] - s.a[0], dz = s.b[1] - s.a[1], L2 = dx * dx + dz * dz || 1;
       const t = Math.max(0, Math.min(1, ((x - s.a[0]) * dx + (z - s.a[1]) * dz) / L2));
       if (Math.hypot(s.a[0] + dx * t - x, s.a[1] + dz * t - z) < (withFoot ? s.r : s.half) + pad) return true;

@@ -130,8 +130,18 @@ test('timed: a bus from Sector V reaches Sealdah and the run ends at home', asyn
     w.player.z = bus.z + s * -1.9 - c * (bus.width / 2 + 0.5);
     (window as any).gjBus = bus;
   });
+  // At SwiftShader's ~2 fps the bus drifts off between polls: step back beside its door before each tap, like a
+  // commuter running alongside.
   await expect.poll(async () => {
-    const state = await page.evaluate(() => (window as any).gj.debug.world.player.state);
+    const state = await page.evaluate(() => {
+      const w = (window as any).gj.debug.world, bus = (window as any).gjBus;
+      if (w.player.state !== 'hang') {
+        const c = Math.cos(bus.heading), s = Math.sin(bus.heading);
+        w.player.x = bus.x + c * -1.9 + s * (bus.width / 2 + 0.5);
+        w.player.z = bus.z + s * -1.9 - c * (bus.width / 2 + 0.5);
+      }
+      return w.player.state;
+    });
     if (state !== 'hang') await page.locator('.act-btn').dispatchEvent('pointerdown');
     return state;
   }, { timeout: 15_000 }).toBe('hang');

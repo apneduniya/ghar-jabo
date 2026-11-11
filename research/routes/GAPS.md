@@ -263,3 +263,27 @@ same panoramas.
   down the middle, a blue-and-white parapet draped in black tarps with shops built against the flyover, stall sheds
   behind an old balustrade, and on the east side a **red church with two domed towers** (the compound GAPS §3 point 8
   noted). The lane width and pier positions are still estimated.
+
+## Lane, piers and station front, 2026-11-11 (second pass; `img/gaps3/`)
+
+- **Sealdah walk-in lane (deck views `lane*-115/205/295`, satellite `sat-lane-*`, `sat-sealdah*`): measured.**
+  Google's car only drove the deck (Vidyapati Setu / Sealdah Flyover Rd); looking east from it, the strip below is a
+  row of tin- and tarp-roofed stalls against the deck's side, roofs at deck height (the deck is ~3 m up here), then a
+  walkway to the church compound's black iron fence. On satellite (~0.14 m/px) the whole strip is ~7 m: ~3 m of
+  stalls plus a ~4 m walk. **No free-standing piers in the walkway:** the deck's edge (a low parapet, then stalls) is
+  the strip's west side. North of point 6, APC Rd still runs at grade beside the lane.
+  Game: the walk-in road has `hawkers: -1` (stall row on its flyover side), a 7 u hawker strip kept free of
+  generated buildings, and the row runs only where it doesn't stand on APC Rd's carriageway.
+- **St John's Church: verified and measured.** Cross-shaped plan centred at 22.56950, 88.37097, twin towers with
+  green louvres and small spires, central gable with a round medallion, blue "ST JOHN'S CHURCH" board, black iron
+  fence and gate on the strip; front faces WNW across the strip to the deck.
+- **Sealdah station placement: corrected.** The station buildings face west onto the forecourt car park (between
+  the deck and Sealdah Station Rd, centre 22.5675, 88.3705) and the platform sheds run ENE. The model's frame
+  (u toward the flyover) had been turned ~75 deg by "face the nearest corridor line", laying the North block across
+  the walk-in lane; it is now anchored on the forecourt with its heading measured from the deck's bearing.
+- **Bidhan Nagar Road station front (CIT Rd `bnr-east-*`, `bnr-fork`, underpass `bnr-under-*`, `sat-bnr`):
+  verified: there is no street-facing front.** From CIT Rd a weathered 4-storey housing block with blue trim and
+  blue lock-up kiosks stands between the road and the station. The booking and reservation counters are small low
+  blocks east of platform 1, reached by lanes and by the footbridge, whose east arm comes down near Bidhannagar Rd.
+  Four tracks, platforms 1 (east), an island, and 4 (west) under long thin sheds. Bidhannagar Rd passes under the
+  line just north of the footbridge (the Ultadanga underpass), on a girder bridge.

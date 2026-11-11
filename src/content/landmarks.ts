@@ -29,6 +29,7 @@ export const LM_TEXT = {
   sealdahRoof: 'SEALDAH · শিয়ালদহ',
   // Bidhan Nagar Road (Ultadanga) suburban station: the classic yellow station board, in three scripts.
   railBoard: 'BIDHAN NAGAR ROAD',
+  churchBoard: "ST JOHN'S CHURCH",
   railBoardBn: 'বিধাননগর রোড',
   railBoardHi: 'बिधाननगर रोड',
   railCounter: 'BOOKING · RESERVATION',

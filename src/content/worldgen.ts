@@ -71,6 +71,11 @@ export const AREA_STYLE: Record<AreaKind, AreaStyle> = {
 };
 
 export const GEN = {
+  /** A continuous hawker row (NetRoad.hawkers): stall spacing along the road, and its offset beyond the kerb. */
+  hawkerStep: 3.4,
+  hawkerGap: 1.5,
+  /** Extra open width beside a hawker street: the stall row plus the gap to whatever is behind it. */
+  hawkerStrip: 7,
   /** Free-roam organic lane lattice cell (game units; lanes every ~70 m) and how far its nodes wander (fraction). */
   lattice: 36,
   jitter: 0.3,

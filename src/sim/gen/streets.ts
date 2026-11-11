@@ -23,6 +23,10 @@ export interface Street {
   rank: number;
   bridge?: 'canal' | 'rail' | 'flyover';
   tram?: boolean;
+  /** A continuous hawker row on this side (see NetRoad.hawkers). */
+  hawkers?: 1 | -1;
+  /** Where this piece starts along its real road (pieces are cut at crossings): keeps rows of things in step. */
+  from?: number;
   /** Ends in a dead end (timed): at p[p.length - 1]. */
   deadEnd?: boolean;
   /** The real road it branches off (stubs), so clearance checks skip it. */
@@ -34,7 +38,9 @@ export interface Street {
 
 const RANK: Record<RoadClass, number> = { primary: 4, secondary: 3, tertiary: 2, residential: 1, lane: 0 };
 export const footOf = (s: { cls: RoadClass; w: number }) => FOOT[s.cls];
-export const reach = (s: { cls: RoadClass; w: number }) => s.w / 2 + FOOT[s.cls];
+/** How far from a street's centre line nothing may be built: carriageway, footpath, and a hawker strip if it has one
+ * (Sealdah's walk-in: the stall row and the gap to the flyover stay open; no generated building stands in it). */
+export const reach = (s: { cls: RoadClass; w: number; hawkers?: number }) => s.w / 2 + FOOT[s.cls] + (s.hawkers ? GEN.hawkerStrip : 0);
 
 export function makeStreet(key: number, p: Pt[], w: number, cls: RoadClass, real: boolean, extra: Partial<Street> = {}): Street {
   const cum = [0];
@@ -68,13 +74,13 @@ function realOf(ctx: Ctx, r: WRoad): Street[] {
     }
   }
   cuts.sort((a, b) => a.s0 - b.s0);
-  const base = { tram: road.tram, bridge: road.bridge };
+  const base = { tram: road.tram, bridge: road.bridge, hawkers: road.hawkers };
   const out: Street[] = [];
   let s = 0, n = 0;
   const L = r.cum[r.cum.length - 1];
   const piece = (a: number, b: number, extra: Partial<Street>) => {
     if (b - a < 0.5) return;
-    out.push(makeStreet(r.key * 16 + n++, slice(r.p, r.cum, a, b), road.w, road.cls, true, { ...base, ...extra }));
+    out.push(makeStreet(r.key * 16 + n++, slice(r.p, r.cum, a, b), road.w, road.cls, true, { ...base, ...extra, from: a }));
   };
   for (const c of cuts) {
     if (c.s0 < s) continue;

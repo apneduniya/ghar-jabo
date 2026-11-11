@@ -28,6 +28,8 @@ export interface NetRoad {
   p: Pt[];
   /** Corridor ids this road belongs to (A_saltlake_phoolbagan, ...). */
   corridors: string[];
+  /** A continuous hawker row along one side (1: left of the direction of p, -1: right), e.g. Sealdah's walk-in. */
+  hawkers?: 1 | -1;
 }
 
 export type LandmarkKind =

@@ -205,7 +205,11 @@ for c in corr['corridors']:
     key = tuple(map(tuple, pts))
     tails.setdefault(key, set()).add(c['id'])
 for key, cs in tails.items():
-    roads.append({'cls': 'lane', 'lanes': 1, 'oneway': False, 'w': 4.0, 'p': [list(p) for p in key], 'corridors': sorted(cs)})
+    r = {'cls': 'lane', 'lanes': 1, 'oneway': False, 'w': 4.0, 'p': [list(p) for p in key], 'corridors': sorted(cs)}
+    # The north walk-in: a ~4 m walkway with a continuous row of tin-roofed stalls on the flyover side (west, the
+    # right of travel southward), measured on satellite and seen from the deck (GAPS.md, re-shoot 2026-11-11).
+    if key == tuple(map(tuple, SEALDAH_NORTH_WALK)): r['hawkers'] = -1
+    roads.append(r)
 
 
 def key_of(r): return (r.get('name'), r['cls'], r['lanes'], r['oneway'], r.get('bridge'), r.get('tram', False), tuple(r['corridors']), r['w'])
@@ -499,9 +503,24 @@ if st:
 
 # The red church with two domed towers on Sealdah's north approach, east of the walk-in strip (Street View Oct 2025,
 # research/routes/img/gaps2/sdn-foot-180; GAPS.md §3 point 8 "church compound to the east"). Faces the road (west).
-cx, cz = g(22.5692, 88.3711)
-landmarks.append({'id': 'sealdah-north-church', 'name': 'Church (Sealdah north)', 'kind': 'church', 'x': round(cx, 1), 'z': round(cz, 1),
-                  'heading': round(math.pi, 2), 'r': 22})
+# Measured on satellite (cross-shaped plan, centre 22.56950, 88.37097); its twin-tower front faces west-north-west,
+# across the stall strip to the flyover (bearing ~295 deg).
+# The model is drawn from its front face back (landmarks/surveyed.ts redChurch), so the anchor sits at the front:
+# half the cross's ~35 m length toward the road from the centre.
+ch = math.atan2(-math.cos(math.radians(295)), math.sin(math.radians(295)))
+cx, cz = g(22.56950, 88.37097)
+cx, cz = cx + math.cos(ch) * 8.5, cz + math.sin(ch) * 8.5
+landmarks.append({'id': 'sealdah-north-church', 'name': "St John's Church", 'kind': 'church', 'x': round(cx, 1), 'z': round(cz, 1),
+                  'heading': round(ch, 2), 'r': 30})
+
+# Sealdah station: its model's frame has u toward the flyover and v along it (landmarks/sealdah.ts). Facing "the
+# nearest corridor line" picked the walk-in lane and turned it ~75 deg, laying the North block across the lane. The
+# forecourt centre and the flyover's bearing are measured on satellite (gaps3/sat-sealdah*, 2026-11-11): the car
+# park between Vidyapati Setu (bearing ~25/205 deg) and Sealdah Station Rd, centre 22.5675, 88.3705.
+for lm in landmarks:
+    if lm['kind'] == 'sealdah-station':
+        fx, fz = g(22.5675, 88.3705)
+        lm.update({'x': round(fx, 1), 'z': round(fz, 1), 'heading': round(math.atan2(-math.cos(math.radians(295)), math.sin(math.radians(295))), 2)})
 
 stops = []
 for e in load('osm-landmarks.json')['elements']:
