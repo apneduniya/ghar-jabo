@@ -111,3 +111,16 @@ export const FLOOD_SPOTS: { name: string; x: number; z: number; r: number }[] = 
   { name: 'Kankurgachi', x: -1994.1, z: -171.3, r: 10 },
   { name: 'Sealdah, APC Rd', x: -3004.0, z: 379.2, r: 10 },
 ];
+
+/**
+ * Trees (task 028, render/world/trees.ts). `street` is the streamed world's mix of species for a 'tree' prop (its
+ * 'palm' props are coconut, areca or royal by variant): rain trees and neem dominate, debdaru line the Salt Lake
+ * avenues, gulmohar here and there, the odd banyan or peepal. `sectorv` splits Sector V's surveyed 'rain' and
+ * 'round' trees the same way. Wind: sway amplitude and leaf flutter in metres, faded out between `near` and `far`
+ * from the camera.
+ */
+export const TREES = {
+  street: { rain: 34, neem: 28, ashoka: 16, gulmohar: 12, banyan: 6, coconut: 4 },
+  sectorv: { rain: { rain: 80, gulmohar: 20 }, round: { neem: 55, ashoka: 30, banyan: 15 }, median: { neem: 70, ashoka: 30 } },
+  wind: { amp: 0.14, flutter: 0.04, near: 40, far: 70 },
+} as const;
