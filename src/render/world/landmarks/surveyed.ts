@@ -1,8 +1,7 @@
 // Places surveyed in research/routes/GAPS.md (from user photos, satellite and OSM; Google car tiles were blocked):
-// - City Centre (Salt Lake) mall, §1: not one box but cream concrete masses cut by open-air lanes and small
-//   courtyards; a set-back mauve upper band carrying big store signs (parody here); a projecting square concrete
-//   frame filled with horizontal louvres; a grey rooftop box and a thin parapet rail. About 3-4 retail storeys.
-//   Its frame faces 3rd Ave (u toward the road), where the Green Line and City Centre station stand.
+// - City Centre (Salt Lake) mall, §1, re-shot in Street View (Dec 2025, research/routes/img/gaps2/cc-front-*): the
+//   3rd Ave face is white with punched windows, not the mauve band of an older photo. Its frame faces 3rd Ave
+//   (u toward the road), where the Green Line runs over the median and City Centre station stands.
 // - Bidhan Nagar Road (Ultadanga) suburban station, §2: tracks bearing ~12 deg east of north (the frame's u runs
 //   along them); the booking and reservation counters on the east side (v > 0); island platforms under long sheds;
 //   the classic yellow station boards; a footbridge over the tracks; a wall of banner hoardings beyond.
@@ -13,40 +12,43 @@ import { hoarding, palm } from './kit';
 
 const C = {
   cream: 0xe8e0cc, creamDark: 0xcfc6b0, mauve: 0xa9879a, louvre: 0xd6cfbf, roofBox: 0x9a9c9e, rail: 0x6f7378,
-  paver: 0xb9ab9c, lane: 0x8f8a84, glass: 0x5d7fa3,
+  paver: 0xb9ab9c, lane: 0x8f8a84, glass: 0x5d7fa3, white: 0xf1f0ec, recess: 0xd9d6cf, planter: 0x6b8f4a, yellow: 0xe0b31e,
   ballast: 0x6e655c, sleeper: 0x4a3f36, steel: 0x8f969c, platform: 0xbdb6a8, edge: 0xe9d24a, shed: 0x6f8a7a,
   post: 0x5f6b72, station: 0xe9d9b4, maroon: 0x7a2a2a, fob: 0x7f8b93,
 };
 
-/** City Centre: two cream masses either side of an open-air lane, mauve sign band, the louvred frame. */
+/**
+ * City Centre (3rd Ave face, Street View Dec 2025): a white block of about five storeys with a grid of small deep-set
+ * square windows, a tall recessed entrance with dark glass in the middle, colourful shopfronts at ground level, a
+ * planted strip of palms and frangipani with a paved entrance plaza, and the "City Centre 1" board on a yellow pole.
+ */
 export function cityCentreMall(f: Frame) {
-  const H = 11.5; // ~3.5 retail storeys
-  f.box(-36, 4, -32, 32, 0, 0.05, C.paver); // forecourt pavers toward 3rd Ave
-  // Two masses split by an open-air lane (a glimpse into the block), the back one taller.
-  for (const [v0, v1, h] of [[-30, -4, H], [4, 30, H - 1.5]] as const) {
-    f.box(-34, 0, v0, v1, 0, h, C.cream);
-    for (let y = 2.8; y < h - 2.5; y += 2.9) f.box(-0.06, 0.02, v0 + 0.5, v1 - 0.5, y, y + 0.12, C.creamDark); // board-marked panels
-    f.box(-34.6, -0.6, v0 - 0.3, v1 + 0.3, h, h + 2.4, C.mauve); // the set-back mauve band
-    f.box(-34.7, -0.5, v0 - 0.35, v1 + 0.35, h + 2.4, h + 2.5, C.creamDark);
-    f.box(-33.5, -1, v0 + 0.5, v1 - 0.5, h + 2.5, h + 2.62, C.rail); // parapet rail
+  const H = 13; // ~5 storeys
+  f.box(-36, 5, -32, 32, 0, 0.05, C.paver);
+  f.box(-34, 0, -30, 30, 0, H, C.white);
+  f.box(-34.3, 0.3, -30.3, 30.3, H, H + 0.4, C.creamDark);
+  f.box(-30, -20, 8, 20, H + 0.4, H + 3, C.roofBox); // rooftop plant room
+  // Punched windows: small deep-set squares in a grid on the upper floors.
+  for (let y = 4.4; y < H - 1.5; y += 2.6) for (let v = -27; v <= 26; v += 4.2) {
+    if (Math.abs(v + 1) < 4) continue; // the entrance bay
+    f.box(-0.4, 0.02, v, v + 1.7, y, y + 1.6, C.recess);
+    f.box(-0.38, -0.3, v + 0.15, v + 1.55, y + 0.15, y + 1.45, C.glass, (Math.round(v + y) % 3 === 0) ? 0.6 : 0.1);
   }
-  f.box(-34, -18, -4, 4, 0, 0.06, C.lane); // the lane into the block
-  f.box(-20, -12, -4, 4, H + 0.6, H + 0.9, C.creamDark); // a bridge across the lane, upper level
-  // Big store signs on the mauve band, facing the road.
+  // The tall recessed entrance: dark glass set back in a white frame.
+  f.box(-3, 0.02, -4.6, 2.6, 0, 9.5, C.recess);
+  f.box(-2.9, -2.6, -4.2, 2.2, 0.2, 9.2, 0x23303a, 0.5);
+  // Shopfronts: coloured parody fascias over lit glazing.
   LM_TEXT.ccStores.forEach((t, i) => {
-    const v = [-24, -12, 10, 22][i];
-    f.sign(t, 9, 1.8, -0.45, v, H + 1.2 - (v > 0 ? 1.5 : 0), 1, 0, ['#f2c230', '#c4202a', '#1d1d1d', '#2f6db5'][i], '#ffffff');
+    const v = [-26, -16, 7, 17][i];
+    f.box(-0.1, 0.05, v, v + 8, 0.4, 3, C.glass, 0.8);
+    f.sign(t, 8, 1, 0.12, v + 4, 3.6, 1, 0, ['#e8611a', '#c4202a', '#1d1d1d', '#2f6db5'][i], '#ffffff');
   });
-  f.sign(LM_TEXT.ccName, 12, 1.6, 0.1, 0, 4.4, 1, 0, '#a9879a', '#fff6e8');
-  // The projecting square frame with horizontal louvres.
-  f.box(0, 1.6, -20, -11, 2.5, 3.1, C.cream);
-  f.box(0, 1.6, -20, -11, 10.9, 11.5, C.cream);
-  for (const v of [-20, -11.6]) f.box(0, 1.6, v, v + 0.6, 2.5, 11.5, C.cream);
-  for (let y = 3.6; y < 10.9; y += 0.7) f.box(0.3, 1.2, -19.4, -11.6, y, y + 0.18, C.louvre);
-  f.box(-26, -16, 10, 20, H - 1.5 + 2.5, H - 1.5 + 6, C.roofBox); // rooftop plant box
-  // Shop glazing at street level along the road face, lit at night.
-  for (let v = -29; v < 30; v += 5) if (Math.abs(v) > 5) f.box(-0.08, 0.02, v, v + 3.6, 0.4, 2.6, C.glass, 0.7);
-  for (const v of [-28, -6, 6, 28]) palm(f, 3, v);
+  // Planted strip along the road with a gap at the entrance, palms and frangipani.
+  for (const [a, b] of [[-31, -6], [5, 31]] as const) f.box(1.5, 4.5, a, b, 0, 0.5, C.planter);
+  for (const v of [-26, -15, 10, 22]) palm(f, 3, v);
+  // "City Centre 1" board on a yellow pole by the kerb.
+  f.box(4.6, 4.9, -9.2, -8.9, 0, 4.6, C.yellow);
+  f.sign(LM_TEXT.ccName, 3.2, 1.8, 4.75, -9.05, 5.2, 1, 0, '#3b2a3a', '#f4e9d8');
 }
 
 /** Bidhan Nagar Road: three tracks, two platforms under sheds, the east-side station building, the footbridge. */
@@ -91,4 +93,34 @@ export function railStation(f: Frame) {
   hoarding(f, -30, 16, 0, 10, 4, LM_TEXT.hoardings[0], 0, 1, '#e86a1a', '#ffffff');
   hoarding(f, 28, 16, 0, 10, 4, LM_TEXT.hoardings[1], 0, 1, '#1f5f9a', '#ffffff');
   for (const u of [-18, 18]) palm(f, u, 17);
+  // The auto queue at the kerb of the street outside (bnr-cit-270): green-yellow CNG autos and blue e-autos.
+  for (let i = 0; i < 9; i++) auto(f, -16 + i * 3.4, 20.5, i % 4 === 2 ? 0x4d93cf : 0x2e8b4a);
+}
+
+/** A parked three-wheeler: body, yellow canopy, one front wheel, two rear ones (for static queues). */
+function auto(f: Frame, u: number, v: number, body: number) {
+  f.box(u - 1.3, u + 1.3, v - 0.7, v + 0.7, 0.35, 1.25, body);
+  f.box(u - 1.4, u + 1.0, v - 0.75, v + 0.75, 1.25, 1.95, 0xf2c230);
+  f.box(u + 1.0, u + 1.35, v - 0.55, v + 0.55, 0.9, 1.7, 0x2a3036); // windscreen
+  for (const [du, dv] of [[1.1, 0], [-1, -0.6], [-1, 0.6]]) f.box(u + du - 0.25, u + du + 0.25, v + dv - 0.1, v + dv + 0.1, 0, 0.5, 0x1d1d1d);
+}
+
+/**
+ * The red church on Sealdah's north approach (Street View Oct 2025, gaps2/sdn-foot-180): red walls with white
+ * trim, two square towers with small domes and finials, behind an old compound wall east of the walk-in strip.
+ * The frame faces the road (u toward it).
+ */
+export function redChurch(f: Frame) {
+  const red = 0xc8322c, trim = 0xf2ece0, dome = 0x8a2a24;
+  f.box(-30, -6, -10, 10, 0, 9, red);
+  f.box(-30.2, -5.8, -10.2, 10.2, 9, 9.5, trim);
+  f.box(-30, -6, -6, 6, 9.5, 12.5, red); // the nave's raised gable band
+  for (let v = -8; v <= 8; v += 4) f.box(-5.9, -5.8, v - 0.6, v + 0.6, 2.5, 6.5, trim); // tall arched-window bays
+  for (const v of [-8, 8]) { // the two front towers
+    f.box(-8, -3, v - 2.5, v + 2.5, 0, 16, red);
+    for (const y of [5.5, 10.5, 15.5]) f.box(-8.1, -2.9, v - 2.6, v + 2.6, y, y + 0.35, trim);
+    f.box(-7.2, -3.8, v - 1.7, v + 1.7, 16, 18, dome);
+    f.box(-6, -5, v - 0.5, v + 0.5, 18, 20.2, trim); // finial
+  }
+  f.box(-2, -1.4, -14, 14, 0, 2.6, 0x9a948a); // the old compound wall toward the road
 }

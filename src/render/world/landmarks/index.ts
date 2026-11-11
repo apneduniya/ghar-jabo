@@ -21,7 +21,7 @@ import { glassEntrance } from './stations';
 import { sealdah } from './sealdah';
 import { billboards, kolkataSign, policeKiosk, statue, trafficIsland } from './junctions';
 import { busTerminus, clockTower, hospital, mall, market, nameBoard, stadiumGate } from './places';
-import { cityCentreMall, railStation } from './surveyed';
+import { cityCentreMall, railStation, redChurch } from './surveyed';
 import { fallbackFlyover } from './fallback';
 
 /** Static structures for one chunk, or null if there are none. Positions in game (warped) coords. */
@@ -80,6 +80,7 @@ function landmark(ctx: Ctx, lm: Landmark, x: number, z: number) {
     case 'clock-tower': return clockTower(f);
     case 'mall': return lm.id.startsWith('city-centre-1') ? cityCentreMall(f) : mall(f);
     case 'rail-station': return railStation(f);
+    case 'church': return redChurch(f);
     case 'market': return market(f);
     case 'hospital': return hospital(f);
     // The junction a flyover is named for can sit 100 u off the deck itself (Ultadanga More).

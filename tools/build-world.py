@@ -483,6 +483,12 @@ st = next((l for l in landmarks if l['kind'] == 'rail-station'), None)
 if st:
     landmarks[:] = [l for l in landmarks if l is st or l['kind'] == 'police-kiosk' or math.dist([l['x'], l['z']], [st['x'], st['z']]) > st['r'] + 5]
 
+# The red church with two domed towers on Sealdah's north approach, east of the walk-in strip (Street View Oct 2025,
+# research/routes/img/gaps2/sdn-foot-180; GAPS.md §3 point 8 "church compound to the east"). Faces the road (west).
+cx, cz = g(22.5692, 88.3711)
+landmarks.append({'id': 'sealdah-north-church', 'name': 'Church (Sealdah north)', 'kind': 'church', 'x': round(cx, 1), 'z': round(cz, 1),
+                  'heading': round(math.pi, 2), 'r': 22})
+
 stops = []
 for e in load('osm-landmarks.json')['elements']:
     t = e.get('tags', {})

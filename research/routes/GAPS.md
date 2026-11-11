@@ -243,3 +243,23 @@ the stalls. All of these need a ground car view (piers) or a fresh visit.
   the ramp foot and beside the deck.
 - The coverage layer (`…/data=!5m1!1e5`) plus a click on the line is the reliable way to land on these. The
   `viewpoint=` URL often misses them by 10–20 m.
+
+## Re-shoot, 2026-11-11 (car Street View loads again in a normal browser window)
+
+Images in `img/gaps2/` (gitignored). The earlier 403s came from running Chrome headless; a normal window loads the
+same panoramas.
+
+- **City Centre, 3rd Ave face (Dec 2025, `cc-front-325/235/55/145`): verified.** A white block of about five storeys
+  with a grid of small deep-set square windows, a tall recessed entrance with dark glass in the middle, colourful
+  shopfronts at ground level, a planted strip of palms and frangipani with a paved plaza, and the "City Centre 1"
+  board on a yellow pole. No mauve band on this face (the 2021 photo shows another side). The Green Line runs over
+  3rd Ave on round piers with traffic on both sides; a traffic-police booth and a hoarding wall face the mall.
+  Inside the block (`cc-inside-*`, Apr 2019) the lanes are covered corridors at this point.
+- **Bidhan Nagar Road station, CIT Rd side (Dec 2025, `bnr-cit-*`): verified street scene.** Weathered 4-5 storey
+  CIT housing blocks with blue trim, overhead wires, shop shutters, a long queue of green-yellow CNG autos and blue
+  e-autos at the kerb, old tram rails in CIT Rd, a statue on an orange-and-white pedestal (a real figure: not
+  modelled), a tall white-and-maroon residential tower behind. The station front itself still isn't in a car view.
+- **Sealdah north (Oct 2025, `sdn-foot-*`, `sdn-deck-0`): verified.** Tram rails in the road with orange bollards
+  down the middle, a blue-and-white parapet draped in black tarps with shops built against the flyover, stall sheds
+  behind an old balustrade, and on the east side a **red church with two domed towers** (the compound GAPS §3 point 8
+  noted). The lane width and pier positions are still estimated.
