@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clampBase, followBase, stickVector } from './stick';
+import { clampKnob, stickVector } from './stick';
 
 describe('thumb stick', () => {
   const rim = 50;
@@ -40,17 +40,16 @@ describe('thumb stick', () => {
     expect(Math.hypot(diag.fwd, diag.right)).toBeCloseTo(diag.mag);
   });
 
-  it('the base follows a thumb dragged past the rim, and stays put inside it', () => {
-    expect(followBase(100, 100, 120, 100, rim)).toEqual([100, 100]);
-    const [bx, by] = followBase(100, 100, 180, 100, rim);
-    expect(bx).toBeCloseTo(130);
-    expect(by).toBeCloseTo(100);
-    // So reversing the thumb answers at once: no dead travel back across the old base.
-    expect(stickVector(170 - bx, 0, rim).mag).toBeGreaterThan(0.5);
-  });
-
-  it('a base that lands at the screen edge is pulled fully on screen', () => {
-    expect(clampBase(5, 830, 62, 390, 844)).toEqual([68, 776]);
-    expect(clampBase(150, 600, 62, 390, 844)).toEqual([150, 600]);
+  it('the knob sits under the thumb inside the rim and is held to the rim beyond it (the base never moves)', () => {
+    expect(clampKnob(20, -10, rim)).toEqual([20, -10]);
+    const [kx, ky] = clampKnob(0, -180, rim);
+    expect(kx).toBeCloseTo(0);
+    expect(ky).toBeCloseTo(-rim);
+    const [dx, dy] = clampKnob(90, 120, rim); // keeps the direction
+    expect(Math.hypot(dx, dy)).toBeCloseTo(rim);
+    expect(Math.atan2(dy, dx)).toBeCloseTo(Math.atan2(120, 90));
+    // A thumb far past the rim still runs at full speed, and reversing it answers as soon as it crosses back.
+    expect(stickVector(0, -180, rim).mag).toBeCloseTo(1);
+    expect(stickVector(0, 30, rim).fwd).toBeLessThan(0);
   });
 });

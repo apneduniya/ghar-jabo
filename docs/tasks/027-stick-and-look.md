@@ -29,3 +29,27 @@ Files you may touch: src/input/*, src/ui/style.css, src/ui/ui.ts (hints only), s
 intent code only), src/sim/player.ts (StickFrame/turning only), src/content/tuning.ts (CONTROLS block),
 src/content/text.ts (control hints), tests/e2e/controls.spec.ts, tests.
 Out of scope: traffic, world, trees.
+
+## Notes (builder, 2026-11-12)
+- Every reference game splits the screen: left thumb moves (virtual stick), right thumb swipes the camera
+  (Genshin, GTA SA mobile, PUBG/BGMI, Free Fire); buttons sit on the right and a swipe that starts on a button
+  doesn't look. Genshin: "swipe: camera rotation, virtual joystick: movement", walk/run by how far you push.
+- Fixed vs floating: PUBG's layouts 1-2 bring the stick to wherever you touch the left half; layout 3 keeps it
+  fixed, and guides for 4-finger players recommend the fixed one (thumb stays anchored, muscle memory). Free
+  Fire's stick is a fixed HUD element you place and size in Custom HUD. Unity guides name three modes (fixed,
+  dynamic = appears under the thumb then stays, floating = follows past the rim) and recommend fixed for action
+  games. Owner asked for fixed: the base stays put; the knob follows the thumb and stops at the rim.
+- Movement is relative to the camera's current yaw; the camera does not chase the run direction on foot (the
+  owner's complaint). Genshin's only auto-camera options are opt-in (Y-axis reset on slopes, combat camera, boat
+  correction): vehicles are the case where auto-follow is normal, so riding still eases behind the bus/bike
+  after 3 s without a look drag.
+- Sensitivity: games expose separate horizontal/vertical sliders, vertical usually lower. Open-source web
+  games that fixed "too slow on phone" scaled by screen size (ONOSENDAI: 360° per full-width drag; others ~0.25°/px
+  on touch, several times the mouse rate). We use degrees per screen *short side* (200° yaw, 110° pitch), so
+  portrait, landscape and tablets turn alike for the same share of the screen: a quarter-width swipe ≈ 50°.
+- Pitch clamped (our chase camera: -0.55..+0.45 rad around the default tilt); light 50 ms exponential smoothing,
+  no inertia/fling (none of the references fling the camera after the thumb lifts).
+- Sources: Unity Discussions "why are joystick controls so terrible on mobile", Terraria mobile touch-controls
+  write-up (Medium), scriptsforunity.com touch input best practices, gamingonphone.com PUBG joystick guide,
+  answeroverflow PUBG joystick thread, Genshin fandom wiki Settings/Controls, Android Authority GTA SA review,
+  GitHub PRs arkin0x/ONOSENDAI#454, hexenwail#444, stlim0727/flight3d#206.

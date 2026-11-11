@@ -16,11 +16,12 @@ import type { ChunkSource } from '../sim/gen/types';
 import { Minimap } from '../ui/minimap';
 import { showTitle } from '../ui/title';
 import { unlockAudio } from '../audio/audio';
-import { camFollowRate, NO_INTENT, roadAssist, StickFrame } from '../sim/player';
+import { NO_INTENT, roadAssist, stickToWorld } from '../sim/player';
 import { clearance, nearestRoad } from '../sim/streetlife';
 import { roofs } from '../sim/elevated';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
+import { Look } from '../input/look';
 import { sfx } from '../audio/audio';
 import { Ambience } from '../audio/ambience';
 import { floods } from '../content/sectorv';
@@ -132,7 +133,9 @@ export function sectorv(): Scene {
   let balanceUi: HTMLElement | null = null;
   // Open looking along Street No. 2 towards the junction, not diagonally into a wall.
   const toJunction = -gate.x * gate.road.dx - gate.z * gate.road.dz > 0 ? 1 : -1;
-  let yaw = Math.atan2(gate.road.dz * toJunction, gate.road.dx * toJunction);
+  // The camera's look (task 027): it turns only when the player drags on the right half (or J/L, or a mouse drag).
+  const look = new Look();
+  look.set(Math.atan2(gate.road.dz * toJunction, gate.road.dx * toJunction));
   let acc = 0;
   let camReady = false;
   let lastPlace = '';
@@ -143,12 +146,14 @@ export function sectorv(): Scene {
   let attracting = game.attract;
   game.attract = false;
   let orbit = 0;
-  const frame = new StickFrame(); // the camera frame the stick is read in (latched while held)
+  // The point the camera orbits (eases after the player) and its current distance (eases after walls).
+  const pivot = new THREE.Vector3();
+  let camDist = 0;
 
-  function intentFromInput(dt: number): Intent {
-    const fy = frame.update(input.mx, input.mz, yaw, dt), p = world.player;
-    const fx = Math.cos(fy), fz = Math.sin(fy);
-    let mx = fx * input.mx - fz * input.mz, mz = fz * input.mx + fx * input.mz;
+  /** The stick, read in the camera's yaw right now (the camera never turns by itself on foot). */
+  function intentFromInput(): Intent {
+    const p = world.player;
+    let [mx, mz] = stickToWorld(input.mx, input.mz, look.yaw);
     // Near a road, "up" runs along it (sim/player.ts roadAssist).
     if (p.state === 'foot' && (mx || mz) && clearance(map.roads, p.x, p.z) < CONTROLS.roadNear) {
       const r = nearestRoad(map.roads, p.x, p.z);
@@ -210,7 +215,7 @@ export function sectorv(): Scene {
     scene, camera,
     enter() {
       resize(camera, 55, 72);
-      game.debug = { world, map, chunks: world.streamed?.store, streamed, yaw: () => yaw, setYaw: (v: number) => { yaw = v; camReady = false; }, look: (v: number) => { yaw = v; camReady = false; } };
+      game.debug = { world, map, chunks: world.streamed?.store, streamed, yaw: () => look.yaw, pitch: () => look.pitch, setYaw: (v: number) => { look.set(v); camReady = false; }, look: (v: number) => { look.set(v); camReady = false; } };
       layer = sceneLayer();
       if (attracting) {
         showHud(false);
@@ -287,7 +292,13 @@ export function sectorv(): Scene {
   function playUpdate(dt: number) {
       // Fixed 60 Hz simulation. Taps are latched until a step consumes them: a frame can run zero steps.
       acc += dt;
-      const now = intentFromInput(dt);
+      // Look first, so the stick is read in the camera the player sees this frame.
+      look.turn(input.lookYaw + input.turn * CONTROLS.keyTurn * dt, input.lookPitch);
+      const riding = world.riding;
+      // Riding: the camera follows the vehicle's heading, but a look drag wins for a few seconds.
+      if (riding && look.idle > CONTROLS.rideLookHold) look.ease(riding.heading, CONTROLS.rideFollow, dt);
+      look.step(dt);
+      const now = intentFromInput();
       pending.jump ||= now.jump; pending.action ||= now.action; pending.phone ||= now.phone;
       while (acc >= T.step && !leaving) {
         acc -= T.step;
@@ -326,31 +337,30 @@ export function sectorv(): Scene {
       const bar = balanceUi?.querySelector<HTMLElement>('b');
       if (bar) { bar.style.left = `${50 - p.lean * 45}%`; bar.classList.toggle('danger', Math.abs(p.lean) > 0.7); }
 
-      // Camera: while riding, behind the vehicle. On foot it swings gently round behind the run direction once
-      // a direction has been held a moment, never while you run back at it. The stick's frame is latched
-      // while held (StickFrame), so the swing never bends your path: no spiralling. Along a road, roadAssist
-      // has already lined the run up with the road, so the camera lines up with it too.
-      const sp = Math.hypot(p.vx, p.vz);
-      const runYaw = Math.atan2(p.vz, p.vx);
-      const away = sp > 1.5 ? Math.cos(runYaw - yaw) : -1;
-      const rate = ride ? 3 : camFollowRate(away, frame.held);
-      const targetYaw = ride ? ride.heading : runYaw;
-      let d = targetYaw - yaw;
-      d = Math.atan2(Math.sin(d), Math.cos(d));
-      yaw += d * Math.min(1, dt * rate);
-      const fx = Math.cos(yaw), fz = Math.sin(yaw);
+      // Camera (task 027): it orbits the player on the look's yaw and pitch, and never turns by itself on foot
+      // (riding eases it behind the vehicle above). Pitch tilts the orbit: looking down rises over the player,
+      // looking up drops behind the shoulder and lifts the gaze. Walls pull it in; decks keep it underneath.
+      const yaw = look.yaw, fx = Math.cos(yaw), fz = Math.sin(yaw);
       const portrait = innerHeight > innerWidth;
       const back = (portrait ? 11 : 9.5) * (ride?.kind === 'bus' ? 1.4 : 1);
-      let dist = back;
-      for (let k = 1.5; k <= back; k += 0.75) if (world.grid.blocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
-      const high = portrait ? 8 : 6.5;
-      const want = new THREE.Vector3(p.x - fx * dist, 2.6 + (high - 2.6) * (dist / back), p.z - fz * dist);
-      const roof = Math.min(overhead(want.x, want.z) ?? Infinity, overhead(p.x, p.z) ?? Infinity);
-      if (roof < Infinity) want.y = Math.min(want.y, roof - 1.4);
+      const high = (portrait ? 8 : 6.5) - CONTROLS.camPivot;
+      const elev = Math.max(0.08, Math.min(1.25, Math.atan2(high, back) - look.pitch));
+      const reach = Math.hypot(high, back);
+      const flat = Math.cos(elev) * reach;
+      let dist = flat;
+      for (let k = 1.5; k <= flat; k += 0.75) if (world.grid.blocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
       // First frame: snap behind the player instead of gliding in from the map's centre.
-      if (!camReady) { camera.position.copy(want); camReady = true; }
-      camera.position.lerp(want, Math.min(1, dt * 6));
-      camera.lookAt(p.x + fx * 6, 1.2, p.z + fz * 6);
+      if (!camReady) { pivot.set(p.x, 0, p.z); camDist = dist; camReady = true; }
+      pivot.x += (p.x - pivot.x) * Math.min(1, dt * 10);
+      pivot.z += (p.z - pivot.z) * Math.min(1, dt * 10);
+      camDist += (dist - camDist) * Math.min(1, dt * (dist < camDist ? 12 : 3)); // in fast at a wall, out gently
+      const s = camDist / flat;
+      camera.position.set(pivot.x - fx * camDist, Math.max(0.7, CONTROLS.camPivot + Math.sin(elev) * reach * s), pivot.z - fz * camDist);
+      const roof = Math.min(overhead(camera.position.x, camera.position.z) ?? Infinity, overhead(p.x, p.z) ?? Infinity);
+      if (roof < Infinity) camera.position.y = Math.min(camera.position.y, roof - 1.4);
+      // Looking down, the gaze comes in towards the player so they stay on screen.
+      const ahead = 6 * (1 - 0.65 * Math.min(0, look.pitch) / CONTROLS.pitchRange[0]);
+      camera.lookAt(pivot.x + fx * ahead, 1.2 + Math.max(0, look.pitch) * CONTROLS.camLift, pivot.z + fz * ahead);
       shake.apply(camera, dt);
       actors.billboard(camera);
       built.cull(camera.position.x, camera.position.z);

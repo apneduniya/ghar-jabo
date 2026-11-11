@@ -124,11 +124,15 @@ kbd { background: rgba(255,255,255,.16); border-radius: 4px; padding: 0 5px; fon
 
 /* Thumb controls. Joystick bottom-left; on the right, a column: JUMP at the bottom corner,
    the context action above it, Rapi-Nah above that (portrait) or beside JUMP (landscape).
-   The stick rests here; while a thumb holds it, input.ts moves the base under the thumb (no transition, so
-   nothing lags), and on release it glides home. */
-.stick { position: absolute; left: calc(var(--sa-l) + 12px); bottom: calc(var(--sa-b) + 18px); width: var(--stick); height: var(--stick); border-radius: 50%; background: radial-gradient(circle, rgba(20,16,36,.18) 0 38%, rgba(20,16,36,.38) 70%); border: 2px solid rgba(255,255,255,.6); pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: transform .16s ease-out, background .15s, opacity .2s; opacity: .85; }
-.stick.active { transition: none; opacity: 1; background: radial-gradient(circle, rgba(20,16,36,.28) 0 38%, rgba(20,16,36,.55) 70%); }
-.stick i { position: absolute; left: 31%; top: 31%; width: 38%; height: 38%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff, #dcd6ea); box-shadow: 0 3px 8px rgba(0,0,0,.4); }
+   The stick is fixed: the base never moves. While a thumb holds it, input.ts moves the knob inside the rim
+   (no transition, so nothing lags); on release the knob springs back to the centre. A drag on the right looks. */
+.stick { position: absolute; left: calc(var(--sa-l) + 12px); bottom: calc(var(--sa-b) + 18px); width: var(--stick); height: var(--stick); border-radius: 50%; background: radial-gradient(circle, rgba(20,16,36,.18) 0 38%, rgba(20,16,36,.38) 70%); border: 2px solid rgba(255,255,255,.6); pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: background .15s, opacity .2s; opacity: .85; }
+.stick.active { opacity: 1; background: radial-gradient(circle, rgba(20,16,36,.28) 0 38%, rgba(20,16,36,.55) 70%); }
+.stick i { position: absolute; left: 31%; top: 31%; width: 38%; height: 38%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff, #dcd6ea); box-shadow: 0 3px 8px rgba(0,0,0,.4); transition: transform .12s ease-out; }
+.stick.active i { transition: none; }
+/* First-run cue on the right half: fades out after the first look drag (input.ts). */
+.look-tip { position: absolute; right: calc(var(--sa-r) + 14px); top: 42%; padding: 6px 10px; border-radius: 12px; background: rgba(20,16,36,.45); font-size: 11px; font-weight: 800; letter-spacing: 1px; color: #fff; text-shadow: 0 1px 3px #000; pointer-events: none; transition: opacity .4s; }
+.look-tip.gone { opacity: 0; }
 .stick .ar { position: absolute; width: 9px; height: 9px; border-top: 2.5px solid rgba(255,255,255,.75); border-left: 2.5px solid rgba(255,255,255,.75); border-radius: 2px; transition: opacity .2s; }
 .stick .u { top: 9px; left: calc(50% - 5px); transform: rotate(45deg); } .stick .d { bottom: 9px; left: calc(50% - 5px); transform: rotate(225deg); }
 .stick .l { left: 9px; top: calc(50% - 5px); transform: rotate(-45deg); } .stick .r { right: 9px; top: calc(50% - 5px); transform: rotate(135deg); }

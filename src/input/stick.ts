@@ -1,4 +1,4 @@
-// Floating thumb stick maths, kept free of the DOM so it can be unit tested.
+// Fixed thumb stick maths (task 027: the base never moves, the knob stays inside it), kept free of the DOM so it can be unit tested.
 // Screen coordinates: x right, y down. Output: `fwd` = screen up, `right` = screen right, both -1..1.
 
 import { CONTROLS } from '../content/tuning';
@@ -18,19 +18,9 @@ export function stickVector(dx: number, dy: number, rim: number, deadZone = CONT
   return { fwd: (-dy / len) * mag, right: (dx / len) * mag, mag };
 }
 
-/**
- * Base centre after the thumb moves to (tx, ty): if the thumb is past the rim, the base slides along behind
- * it so the knob stays at the rim (no dead travel when you reverse). Otherwise the base stays put.
- */
-export function followBase(bx: number, by: number, tx: number, ty: number, rim: number): [number, number] {
-  const dx = tx - bx, dy = ty - by, len = Math.hypot(dx, dy);
-  if (len <= rim) return [bx, by];
-  const k = (len - rim) / len;
-  return [bx + dx * k, by + dy * k];
-}
-
-/** Keep a base of radius `r` fully on screen (w x h) with a margin. */
-export function clampBase(x: number, y: number, r: number, w: number, h: number, margin = 6): [number, number] {
-  const lo = r + margin;
-  return [Math.max(lo, Math.min(w - lo, x)), Math.max(lo, Math.min(h - lo, y))];
+/** The knob's offset for a thumb at (dx, dy) from the fixed base centre: the thumb's own spot, held to the rim. */
+export function clampKnob(dx: number, dy: number, rim: number): [number, number] {
+  const len = Math.hypot(dx, dy);
+  if (len <= rim) return [dx, dy];
+  return [(dx / len) * rim, (dy / len) * rim];
 }

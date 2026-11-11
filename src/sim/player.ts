@@ -34,43 +34,12 @@ export function roadAssist(mx: number, mz: number, dx: number, dz: number, snap 
 }
 
 /**
- * How fast the follow camera recentres behind the run direction (1/s), from the stick's forwardness
- * (cos of its angle from screen-up, -1 when idle) and how long the current direction has been held.
- * Running back at the camera: zero (no 180° flips). The stick's frame is latched while held (see
- * `StickFrame`), so this swing never changes where you run: no spiralling.
+ * The stick (fwd = screen up, right = screen right) in world space for a camera looking along `camYaw`
+ * (task 027: the camera only turns when the player looks, so this is read in the camera's yaw right now).
  */
-export function camFollowRate(forward: number, heldFor: number) {
-  const [lo, hi] = CONTROLS.camForward;
-  if (heldFor < CONTROLS.camDelay || forward <= lo) return 0;
-  return CONTROLS.camFollow * Math.min(1, (forward - lo) / (hi - lo));
-}
-
-const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
-
-/**
- * The camera frame the stick is read in. Taken from the camera when the thumb goes down and held while the
- * thumb holds still, so the camera can swing round behind you without bending your path. When the thumb
- * turns, the frame catches up with the camera by up to `CONTROLS.reframe` radians per radian turned: the
- * player is reacting to what's on screen, and the catch-up hides inside their own turn (no jumps).
- */
-export class StickFrame {
-  yaw = 0;
-  /** Seconds the stick has been held. */
-  held = 0;
-  private dir: number | null = null;
-
-  /** `fwd`/`right`: the stick (screen up / right); `camYaw`: the camera now. Returns the yaw to read it in. */
-  update(fwd: number, right: number, camYaw: number, dt: number) {
-    if (Math.hypot(fwd, right) < 0.05) { this.dir = null; this.held = 0; this.yaw = camYaw; return this.yaw; }
-    const a = Math.atan2(right, fwd);
-    if (this.dir === null) { this.dir = a; this.yaw = camYaw; }
-    const turned = Math.abs(wrap(a - this.dir)) * CONTROLS.reframe;
-    this.dir = a;
-    const d = wrap(camYaw - this.yaw);
-    this.yaw = wrap(this.yaw + Math.max(-turned, Math.min(turned, d)));
-    this.held += dt;
-    return this.yaw;
-  }
+export function stickToWorld(fwd: number, right: number, camYaw: number): [number, number] {
+  const fx = Math.cos(camYaw), fz = Math.sin(camYaw);
+  return [fx * fwd - fz * right, fz * fwd + fx * right];
 }
 
 export class Player {
