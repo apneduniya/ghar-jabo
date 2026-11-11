@@ -168,7 +168,7 @@ function skywalk(parts: Parts, sv: Box, it: Box): THREE.Object3D[] {
  * Gate A (Street View Jan 2026, research/streetview/NORTH.md §3): a recessed doorway in a ground block under the
  * station's SW end, a black plate with a white "A" over it and a stair rising inside; the big mosaic mural NE of it;
  * a paved forecourt behind white railings with coloured square motifs; blue-and-white kerb; the grey sign pillar with
- * a red roundel (lit at night), an angled navy name board in three scripts and a route map; autos queued at the kerb.
+ * a red disc with a white "M" (lit at night), an angled navy name board in three scripts and a route map; autos queued at the kerb.
  */
 function gateA(parts: Parts, b: Box): THREE.Object3D[] {
   const A = N.gateA, g = svGateA(), f = A.face, d = A.door, hw = A.doorW / 2, out: THREE.Object3D[] = [];
@@ -204,19 +204,27 @@ function gateA(parts: Parts, b: Box): THREE.Object3D[] {
     for (const [a, z, w, h] of [[s0, y0, 0.45, 0.05], [s0, y0 + 0.4, 0.45, 0.05], [s0, y0, 0.05, 0.45], [s0 + 0.4, y0, 0.05, 0.45]])
       lb(parts, b, a, a + w, rt - 0.03, rt + 0.03, z, z + h, c);
   }
-  // The sign pillar: grey, a red roundel on top (lit at night), the angled navy board, a route map facing the road.
+  // The sign pillar: grey, a red "M" disc on top (lit at night), the angled navy board, a route map facing the road.
   const p = g.pillar, [ps, pt] = A.pillar;
   rb(parts, b, p, 0, 4.4, 0x9c9c98);
-  // The roundel on top, facing along the road (a disc shows both ways): a red ring with a red bar across it (generic, no real logo).
+  // The marker on top, facing along the road (a disc shows both ways): a plain red disc with a white "M" on each
+  // face. Generic on purpose: a ring with a bar across it reads as a real transit logo.
   const [rx, rz] = at(b, ps, pt);
-  for (const [r, th, c] of [[0.48, 0.08, 0xc8262c], [0.33, 0.1, 0xf6f4ee]] as const) {
-    const disc = new THREE.CylinderGeometry(r, r, th, 20);
-    disc.rotateX(Math.PI / 2);
-    disc.rotateY(rot + Math.PI / 2);
-    disc.translate(rx, 4.9, rz);
-    parts.add(disc, c, 1.2);
+  const disc = new THREE.CylinderGeometry(0.48, 0.48, 0.08, 20);
+  disc.rotateX(Math.PI / 2);
+  disc.rotateY(rot + Math.PI / 2);
+  disc.translate(rx, 4.9, rz);
+  parts.add(disc, 0xc8262c, 1.2);
+  const mark = new THREE.Group();
+  for (const side of [1, -1]) {
+    const m = sign('M', 0.5, 0.5, '#c8262c', '#ffffff');
+    m.position.set(0, 0, side * 0.045);
+    if (side < 0) m.rotation.y = Math.PI;
+    mark.add(m);
   }
-  lb(parts, b, ps - 0.07, ps + 0.07, pt - 0.58, pt + 0.58, 4.8, 5.0, 0xc8262c, 1.2);
+  mark.position.set(rx, 4.9, rz);
+  mark.rotation.y = rot + Math.PI / 2;
+  out.push(mark);
   lb(parts, b, ps - 0.1, ps + 0.1, pt - 0.1, pt + 0.1, 4.4, 4.45, 0x9c9c98);
   lb(parts, b, ps - 0.36, ps + 0.36, p.t0 - 0.04, p.t0, 1.3, 2.7, 0xf4f4f0);
   for (const [k, c] of [[0, 0x2e9e5b], [1, 0x6a3fa0], [2, 0xd9622b], [3, 0x2f62ad]] as const)
