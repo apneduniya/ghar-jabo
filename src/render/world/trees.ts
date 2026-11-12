@@ -333,6 +333,13 @@ export function pickWeighted<T extends string>(mix: Partial<Record<T, number>>, 
 
 /** Seconds, for the wind; set from a mesh's onBeforeRender. */
 export const windUniform = { value: 0 };
+/**
+ * Leaves closer to the camera than this (units) dissolve, so a crown between the camera and the player never
+ * hides them. The stage sets it each frame to the camera-to-player distance; 10 when there's no player.
+ */
+export const leafFadeUniform = { value: 10 };
+/** GLSL: discard a leaf fragment that is nearer the camera than uLeafFade (dithered over the last 4 units). */
+export const LEAF_FADE = 'if (length(vViewPosition) < uLeafFade && fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) > (length(vViewPosition) - (uLeafFade - 4.0)) / 4.0) discard;';
 
 /**
  * Wind sway for a Lambert shader: displaces by world height (trunks barely move, crowns most), coherent per tree

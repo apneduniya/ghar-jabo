@@ -11,6 +11,7 @@ import { Actors } from '../render/actors';
 import { buildCityMap, map } from '../render/world/citymap';
 import { buildProps } from '../render/world/props';
 import { Walkers } from '../render/world/walkers';
+import { leafFadeUniform } from '../render/world/trees';
 import { fixtureSource, StreamedWorld } from '../render/world/streamed';
 import type { ChunkSource } from '../sim/gen/types';
 import { Minimap } from '../ui/minimap';
@@ -366,6 +367,8 @@ export function sectorv(): Scene {
       // Under a deck, the viaduct, a station or a rail bridge (Sector V's or the streamed world's), it ducks under.
       const y = roofCam.apply(dt, roofAt, CONTROLS.camPivot + Math.sin(elev) * reach * s, p.x, p.z, cx, cz);
       camera.position.set(cx, Math.max(0.7, y), cz);
+      // Leaves nearer the camera than the student dissolve: a crown in between never hides them.
+      leafFadeUniform.value = Math.max(6, Math.hypot(cx - p.x, Math.max(0.7, y) - 1, cz - p.z) - 1);
       // Looking down, the gaze comes in towards the player so they stay on screen.
       const ahead = 6 * (1 - 0.65 * Math.min(0, look.pitch) / CONTROLS.pitchRange[0]);
       camera.lookAt(pivot.x + fx * ahead, 1.2 + Math.max(0, look.pitch) * CONTROLS.camLift, pivot.z + fz * ahead);

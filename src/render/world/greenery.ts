@@ -6,7 +6,7 @@
 
 import * as THREE from 'three';
 import { TREES } from '../../content/worldgen';
-import { addWind, pickWeighted, type Species, treeKit, VARIANTS, windUniform } from './trees';
+import { addWind, LEAF_FADE, leafFadeUniform, pickWeighted, type Species, treeKit, VARIANTS, windUniform } from './trees';
 
 type PalmKind = 'coconut' | 'areca' | 'royal';
 interface Tree { x: number; z: number; s: number; species: Species }
@@ -22,9 +22,10 @@ function nearFade(m: THREE.MeshLambertMaterial, leaf: boolean) {
   m.onBeforeCompile = (sh) => {
     addWind(sh, leaf, TREES.wind);
     if (!leaf) return;
-    sh.fragmentShader = sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
-      float camD = length(vViewPosition);
-      if (camD < 10.0 && fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) > (camD - 5.0) / 5.0) discard;`);
+    sh.uniforms.uLeafFade = leafFadeUniform;
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uLeafFade;')
+      .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>\n      ${LEAF_FADE}`);
   };
   m.customProgramCacheKey = () => (leaf ? 'tree-leaf' : 'tree-wood');
   return m;

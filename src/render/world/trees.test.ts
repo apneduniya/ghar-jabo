@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { buildTree, pickWeighted, SPECIES, TRI_CAP, treeKit, VARIANTS } from './trees';
+import { buildTree, LEAF_FADE, leafFadeUniform, pickWeighted, SPECIES, TRI_CAP, treeKit, VARIANTS } from './trees';
 import { GeoBuf } from './chunkgeo';
 import { buildProp } from './chunkprops';
 import { Forest } from './greenery';
@@ -86,4 +86,17 @@ describe('trees in the world', () => {
     expect(tris).toBeLessThan(121 * 360);
   });
 
+
+  it('leaves between the camera and the player dissolve (the stage drives uLeafFade)', () => {
+    // A crown between the chase camera (~11 u back) and the student used to fill the screen beyond 10 u.
+    const f = new Forest(), root = new THREE.Group();
+    f.rain(0, 0);
+    f.build(root);
+    const leaf = root.children.map((m) => (m as THREE.Mesh).material as THREE.Material).find((m) => m.customProgramCacheKey() === 'tree-leaf')!;
+    const sh = { uniforms: {} as Record<string, unknown>, vertexShader: THREE.ShaderLib.lambert.vertexShader, fragmentShader: THREE.ShaderLib.lambert.fragmentShader };
+    leaf.onBeforeCompile(sh as never, undefined as never);
+    expect(sh.uniforms.uLeafFade).toBe(leafFadeUniform);
+    expect(sh.fragmentShader).toContain('uniform float uLeafFade;');
+    expect(sh.fragmentShader).toContain(LEAF_FADE);
+  });
 });

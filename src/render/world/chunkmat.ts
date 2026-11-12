@@ -9,7 +9,7 @@ import { asphalt, facadeBlock, facadeClad, facadeOffice, facadeOld, facadeReside
 import { ATLAS_H, ATLAS_W, RECT_COUNT, SIGN_COUNT, TEXT_COLS, TEXT_H, TEXT_ROWS, TEXT_W, TextSlots, Tile, rectUniform, tileRects } from './chunkatlas';
 import { streetAds } from '../../content/text';
 import { SHOP_SIGNS } from './frontage';
-import { addWind } from './trees';
+import { addWind, LEAF_FADE, leafFadeUniform } from './trees';
 import { TREES } from '../../content/worldgen';
 
 /**
@@ -134,6 +134,7 @@ export function chunkMaterial(): ChunkMaterial {
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, map });
   material.onBeforeCompile = (sh) => {
     sh.uniforms.uNight = nightUniform;
+    sh.uniforms.uLeafFade = leafFadeUniform;
     sh.uniforms.uGlowMap = { value: glowMap };
     sh.uniforms.uText = { value: textTex };
     sh.uniforms.uRects = { value: chunkRects() };
@@ -144,6 +145,7 @@ export function chunkMaterial(): ChunkMaterial {
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 uniform float uNight;
+uniform float uLeafFade;
 uniform sampler2D uGlowMap;
 uniform sampler2D uText;
 uniform vec4 uRects[${RECT_COUNT}];
@@ -151,13 +153,10 @@ varying float vGlow;
 varying float vTile;
 vec3 chunkGlow = vec3(0.0);
 float hash12(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }`)
-      // Foliage (glow < 0) dissolves near the camera, like greenery.ts; lamp pools (tile pool) only exist at night.
+      // Foliage (glow < 0) dissolves between the camera and the player, like greenery.ts; lamp pools (tile pool) only exist at night.
       .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
       int tileId = int(vTile + 0.5);
-      if (vGlow < 0.0) {
-        float camD = length(vViewPosition);
-        if (camD < 10.0 && hash12(gl_FragCoord.xy) > (camD - 5.0) / 5.0) discard;
-      }`)
+      if (vGlow < 0.0) { ${LEAF_FADE} }`)
       .replace('#include <map_fragment>', `
       vec2 rep = vMapUv;
       vec4 texel; vec4 glowTexel;
