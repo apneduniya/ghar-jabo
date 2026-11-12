@@ -1,10 +1,10 @@
-// Glue between the Sector V stage and the streamed world: owns the ChunkView and its material, pulls the fog
-// in by area once you leave the Sector V square (chunks past the fog are hidden, so nothing pops in), and hides
-// the whole Sector V map when you are far from it. Works with builder G's ChunkStore (`world.chunks`) or, behind
+// Glue between the Sector V stage and the streamed world: owns the ChunkView and its material and the lamp pools,
+// sets the fog by area once you leave the Sector V square (chunks past the fog are hidden, so nothing pops in), and
+// hides the whole Sector V map once you are well outside it (a plain ground stands in for it). Works with builder G's ChunkStore (`world.chunks`) or, behind
 // `?fixture=1`, with the fixture source in ./fixture (loaded lazily, so it stays out of the main bundle).
 
 import * as THREE from 'three';
-import { fitFont, renderer } from '../gfx';
+import { fitFont, nightUniform, renderer } from '../gfx';
 import { LM_TEXT } from '../../content/landmarks';
 import { northSigns } from '../../content/text';
 import { CHUNK, type Chunk, type ChunkSource } from '../../sim/gen/types';
@@ -13,6 +13,8 @@ import { ChunkView } from './chunks';
 import { prepareStructures, structuresForChunk } from './landmarks';
 import { chunkMaterial, type ChunkMaterial } from './chunkmat';
 import { OLD_AREAS, SQUARE } from './chunkground';
+import { LampPools } from './lamps';
+import { windUniform } from './trees';
 
 /** A source we drive ourselves (the fixture); G's ChunkStore is stepped by the sim instead. */
 export interface Driven { update(x: number, z: number): void }
@@ -28,9 +30,18 @@ export function areaFogFar(src: ChunkSource, x: number, z: number) {
   return F.sectorv + (far - F.sectorv) * t;
 }
 
+/** How far (x, z) is outside the Sector V square (0 inside it). */
+export const outsideSquare = (x: number, z: number) => Math.hypot(Math.max(0, Math.abs(x) - SQUARE), Math.max(0, Math.abs(z) - SQUARE));
+
+/** Lowest share of the draw distance the adaptive view may use: higher at night, when fog is all you'd see. */
+export const reachFloor = (night: number) => CHUNK_VIEW.adapt.min + (CHUNK_VIEW.adapt.minNight - CHUNK_VIEW.adapt.min) * Math.min(1, Math.max(0, night));
+
 export class StreamedWorld {
   readonly view: ChunkView;
   private mat: ChunkMaterial;
+  readonly pools: LampPools;
+  /** Stands in for the Sector V ground while the map is hidden, so looking back shows ground, not sky. */
+  private standIn: THREE.Mesh;
 
   /** Tests only: load every chunk around (x, z) now (the real store streams a slice per frame otherwise). */
   pump: ((x: number, z: number) => void) | null = null;
@@ -45,6 +56,12 @@ export class StreamedWorld {
     this.mat = chunkMaterial();
     this.view = new ChunkView(src, { material: this.mat.material, text: this.mat.text, budgetMs: CHUNK_VIEW.budgetMs });
     scene.add(this.view.group);
+    this.pools = new LampPools(src, sectorV);
+    scene.add(this.pools.mesh);
+    this.standIn = new THREE.Mesh(new THREE.PlaneGeometry(SQUARE * 2, SQUARE * 2).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0x8a8174 }));
+    this.standIn.name = 'sector v stand-in';
+    this.standIn.visible = false;
+    scene.add(this.standIn);
   }
 
   /** Once per frame with the player's position. Returns the draw distance in use. */
@@ -53,15 +70,22 @@ export class StreamedWorld {
     // Adaptive draw distance: if the last frame came close to the draw-call budget (lots of chunks, landmarks and
     // traffic in view), pull the view and fog in a little; ease back out when there's room. Fog and visibility
     // move together, so nothing pops.
+    // At night the view stops shrinking at a floor, unless the frame is close to the budget itself.
     const calls = renderer.info.render.calls, A = CHUNK_VIEW.adapt;
-    if (calls > A.high) this.reach = Math.max(A.min, this.reach - A.down);
+    const floor = calls > A.hard ? A.min : reachFloor(nightUniform.value);
+    if (calls > A.high) this.reach = Math.max(Math.min(floor, this.reach), this.reach - A.down);
     else if (calls < A.low) this.reach = Math.min(1, this.reach + A.up);
     const far = areaFogFar(this.src, x, z) * this.reach;
     const fog = this.scene.fog as THREE.Fog | null;
     if (fog) { fog.far = far; fog.near = far * CHUNK_VIEW.fogNear; }
     this.view.update(x, z, far);
     this.mat.flush();
-    this.sectorV.visible = Math.hypot(x, z) < CHUNK_VIEW.hideSectorV;
+    windUniform.value = performance.now() / 1000;
+    // By distance from the player, not from the origin: the map and the chunks both drawn at the square's edge
+    // were the draw-call peak that pulled the fog in (AUDIT.md issue 31).
+    this.sectorV.visible = outsideSquare(x, z) < CHUNK_VIEW.hideSectorV;
+    this.standIn.visible = !this.sectorV.visible;
+    this.pools.update(nightUniform.value, this.sectorV.visible);
     return far;
   }
 
@@ -80,6 +104,10 @@ export class StreamedWorld {
   dispose() {
     this.view.dispose();
     this.mat.dispose();
+    this.pools.dispose();
+    this.standIn.removeFromParent();
+    this.standIn.geometry.dispose();
+    (this.standIn.material as THREE.Material).dispose();
   }
 }
 

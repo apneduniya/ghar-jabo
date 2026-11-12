@@ -1,10 +1,10 @@
 // The ground of a streamed chunk, in the Sector V style (citymap.ts): dusty ground, textured asphalt, paver
-// footpaths, blue-and-white kerbs, dashed centre lines, tram rails, puddles and (at night) warm lamp pools.
+// footpaths, blue-and-white kerbs, dashed centre lines, tram rails and puddles. (Lamp pools are lamps.ts LampPools, one instanced mesh.)
 // Everything goes into the chunk's GeoBuf; see chunks.ts for how it becomes one draw call.
 
 import * as THREE from 'three';
 import { CHUNK, type AreaKind, type Chunk, type GenRoad, type Pt, type RoadClass } from '../../sim/gen/types';
-import { GeoBuf, along, normalAt, polyDist, polyLength, segDist } from './chunkgeo';
+import { GeoBuf, along, normalAt, polyLength, segDist } from './chunkgeo';
 import { Tile } from './chunkatlas';
 
 /** The real Sector V map covers this square (|x|, |z| ≤ SQUARE); chunks never draw ground over it. */
@@ -118,21 +118,6 @@ export function puddle(buf: GeoBuf, x: number, z: number, r: number, k: number) 
   const water = new THREE.Color(0x7d9bb3);
   buf.disc(x, z, r, 0.075, water, 0, 0, Tile.white, 9, 0.6 + (k % 3) * 0.15);
   if (k % 2) buf.disc(x + r * 0.9, z + r * 0.3, r * 0.5, 0.076, water, 0, 0, Tile.white, 7);
-}
-
-/**
- * A warm pool of lamp light on the carriageway in front of a lamp at (x, z), facing (fx, fz). It is a disc of the
- * same asphalt, colour and world uvs as the road under it, so by day it can't be seen; at night its `glow` (1 in
- * the middle, 0 at the rim) lights it up smoothly. Nothing is drawn when there's no road in front of the lamp.
- */
-export function lampPool(buf: GeoBuf, x: number, z: number, fx: number, fz: number, roads: GenRoad[], r = 2.6) {
-  let best: GenRoad | null = null, bd = Infinity;
-  for (const road of roads) { const d = polyDist(road.p, x + fx * 2, z + fz * 2); if (d < bd) { bd = d; best = road; } }
-  if (!best || bd > best.w / 2) return;
-  const rad = Math.min(r, best.w * 0.45);
-  const cx = x + fx * (0.6 + rad), cz = z + fz * (0.6 + rad);
-  if (polyDist(best.p, cx, cz) > best.w / 2) return;
-  buf.disc(cx, cz, rad, roadY(best) + 0.005, roadColour(best), 1, 0, Tile.asphalt, 14, 1, ASPHALT_UV, false);
 }
 
 /** Total road length in a chunk (for tests and stats). */

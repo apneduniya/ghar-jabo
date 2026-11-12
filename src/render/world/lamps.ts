@@ -11,10 +11,19 @@ import { WIRE_ZONES } from '../../content/streetlife';
 import type { MapData } from '../../sim/mapdata';
 import type { StreetLayout } from '../../sim/streetlayout';
 import { clearance, nearestRoad } from '../../sim/streetlife';
+import type { Chunk, ChunkSource } from '../../sim/gen/types';
+import { lampPool } from '../../sim/gen/lamps';
+import { LAMPS } from '../../content/worldgen';
 
 const MAIN = new Set(['primary', 'secondary', 'tertiary']);
 const POST = 0xe8e6df, GLOBE = 0xfff6dc, IRON = 0x55585c;
 const RADIUS = 330;
+/** Name of Sector V's own pool mesh, which LampPools adopts. */
+const SECTOR_POOLS = 'sector v lamp pools';
+/** Sector V's pools are 0.55 opaque; in LampPools' brighter material they are tinted down to match. */
+const SECTOR_TINT = 0.55 / LAMPS.poolGlow;
+/** Most lamp pools the streamed world draws at once (every loaded chunk's). */
+const POOL_CAP = 4096;
 
 function trident(root: THREE.Object3D, x: number, z: number, rot: number) {
   const g = new THREE.Group();
@@ -92,7 +101,11 @@ export function buildLamps(root: THREE.Object3D, map: MapData, layout: StreetLay
   // Soft radial pools (bright centre fading to nothing), so they read as light on the road, not as sand.
   const poolGeo = mergeGeometries(pools.map(([x, z, r]) => new THREE.PlaneGeometry(r * 2.2, r * 2.2).rotateX(-Math.PI / 2).translate(x, 0.07, z)));
   const poolMat = fadeInAtNight(new THREE.MeshBasicMaterial({ map: poolTexture(), color: 0xffa040, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }), 0.55);
-  root.add(new THREE.Mesh(poolGeo, poolMat));
+  const poolMesh = new THREE.Mesh(poolGeo, poolMat);
+  // The streamed world's LampPools draws these too when it runs (one call for both), and hides this mesh.
+  poolMesh.name = SECTOR_POOLS;
+  poolMesh.userData.pools = pools;
+  root.add(poolMesh);
   wires(root, map);
   return { lamps: lamps.length };
 }
@@ -147,4 +160,85 @@ function poolTexture() {
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
+}
+
+/**
+ * The streamed world's lamp pools (task 031): every lamp in every loaded chunk gets a soft additive pool like
+ * Sector V's, covering the carriageway in front of it, the footpath and the frontage behind. One instanced mesh
+ * for all chunks, so it costs one draw call, and only at night. Far pools fade to nothing in the fog (an additive
+ * pool tinted toward the fog colour would glow purple on the horizon).
+ */
+export class LampPools {
+  readonly mesh: THREE.InstancedMesh;
+  private byChunk = new Map<string, [number, number, number][]>();
+  /** Sector V's pools (buildLamps), drawn here while the Sector V map is shown. */
+  private sector: [number, number, number][] = [];
+  private sectorShown = false;
+  private dead = false;
+  private dirty = true;
+  private mat: THREE.MeshBasicMaterial;
+
+  constructor(src: ChunkSource, sectorV?: THREE.Object3D) {
+    const geo = new THREE.PlaneGeometry(2.2, 2.2).rotateX(-Math.PI / 2);
+    this.mat = fadeInAtNight(new THREE.MeshBasicMaterial({ map: poolTexture(), color: 0xffa850, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }), LAMPS.poolGlow) as THREE.MeshBasicMaterial;
+    this.mat.onBeforeCompile = (sh) => {
+      sh.fragmentShader = sh.fragmentShader.replace('#include <fog_fragment>', `#ifdef USE_FOG
+        float fogFactor = smoothstep(fogNear, fogFar, vFogDepth);
+        gl_FragColor.rgb *= 1.0 - fogFactor;
+      #endif`);
+    };
+    this.mat.customProgramCacheKey = () => 'lamp-pools';
+    this.mesh = new THREE.InstancedMesh(geo, this.mat, POOL_CAP);
+    this.mesh.name = 'lamp pools';
+    this.mesh.count = 0;
+    this.mesh.frustumCulled = false;
+    this.mesh.renderOrder = 1;
+    // Sector V's own pool mesh would be a second call at the square's edge, the draw-call peak (AUDIT.md issue 31).
+    const own = sectorV?.getObjectByName(SECTOR_POOLS);
+    if (own) { this.sector = own.userData.pools as [number, number, number][]; own.visible = false; }
+    for (const c of src.loaded()) this.load(c);
+    src.onLoad((c) => { if (!this.dead) this.load(c); });
+    src.onUnload((c) => { if (this.byChunk.delete(`${c.cx},${c.cz}`)) this.dirty = true; });
+  }
+
+  private load(c: Chunk) {
+    const pools = c.props.filter((p) => p.kind === 'lamp').map(lampPool);
+    if (pools.length) { this.byChunk.set(`${c.cx},${c.cz}`, pools); this.dirty = true; }
+  }
+
+  /** Once per frame: shown only at night; instances rebuilt when chunks came or went or Sector V was hidden. */
+  update(night: number, sectorShown = false) {
+    if (sectorShown !== this.sectorShown) { this.sectorShown = sectorShown; this.dirty = true; }
+    if (this.dirty) this.rebuild();
+    this.mesh.visible = night > 0.02 && this.mesh.count > 0;
+  }
+
+  private rebuild() {
+    this.dirty = false;
+    const m = new THREE.Matrix4(), col = new THREE.Color();
+    let n = 0;
+    const put = (x: number, z: number, r: number, k: number) => {
+      if (n >= POOL_CAP) return;
+      // Just above the road (0.06) and footpath (0.03); y 0.07 like Sector V's pools.
+      this.mesh.setMatrixAt(n, m.makeScale(r, 1, r).setPosition(x, 0.07, z));
+      this.mesh.setColorAt(n++, col.setScalar(k));
+    };
+    if (this.sectorShown) for (const [x, z, r] of this.sector) put(x, z, r, SECTOR_TINT);
+    for (const pools of this.byChunk.values()) for (const [x, z, r] of pools) put(x, z, r, 1);
+    this.mesh.count = n;
+    this.mesh.instanceMatrix.needsUpdate = true;
+    if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true;
+  }
+
+  /** Pools in use (tests). */
+  get count() { return this.mesh.count; }
+
+  dispose() {
+    this.dead = true;
+    this.mesh.removeFromParent();
+    this.mesh.geometry.dispose();
+    this.mesh.dispose();
+    this.mat.map?.dispose();
+    this.mat.dispose();
+  }
 }

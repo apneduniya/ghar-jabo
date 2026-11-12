@@ -4,9 +4,10 @@
 // to exactly one chunk (the one containing it) whichever chunk computes it.
 
 import { deadEnds } from '../../content/text';
-import { AREA_STYLE, FLOOD_SPOTS, GEN } from '../../content/worldgen';
+import { AREA_STYLE, FLOOD_SPOTS, GEN, LAMPS } from '../../content/worldgen';
 import { HALF } from './clip';
 import { clipSegToBox, hash, Hasher, rectRing, segDist } from './geom';
+import { junctionMasts, streetLamps } from './lamps';
 import { frame, type Obstacles, type SegIndex } from './plots';
 import { areaOf, type Box, type Ctx, footOf, meets, type Street } from './streets';
 import type { GenProp, Pt } from './types';
@@ -15,10 +16,10 @@ const inBox = (b: Box, x: number, z: number) => x >= b[0] && x < b[2] && z >= b[
 /** Does any segment of p pass through the box (ends outside it)? */
 const crosses = (p: Pt[], b: Box) => p.some((q, i) => i > 0 && clipSegToBox(p[i - 1], q, b[0], b[1], b[2], b[3]) !== null);
 
-function freeSpot(ctx: Ctx, x: number, z: number, idx: SegIndex, ob: Obstacles, onRoadOk = false): boolean {
+function freeSpot(ctx: Ctx, x: number, z: number, idx: SegIndex, ob: Obstacles, onRoadOk = false, pad = 0.2, zone = 1): boolean {
   if (Math.abs(x) < HALF + 4 && Math.abs(z) < HALF + 4) return false;
-  if (!onRoadOk && idx.onRoad(x, z, 0.2)) return false;
-  for (const c of ob.circles) if (Math.hypot(c.x - x, c.z - z) < c.r) return false;
+  if (!onRoadOk && idx.onRoad(x, z, pad)) return false;
+  for (const c of ob.circles) if (Math.hypot(c.x - x, c.z - z) < c.r * zone) return false;
   return !ctx.water.point(x, z);
 }
 
@@ -49,6 +50,7 @@ function streetProps(ctx: Ctx, s: Street, cb: Box, idx: SegIndex, ob: Obstacles,
   const foot = footOf(s);
   const main = s.real && (s.cls === 'primary' || s.cls === 'secondary' || s.cls === 'tertiary');
   const sides = s.real && s.w > 8 ? [1] : [1, -1];
+  streetLamps(ctx, s, cb, (x, z) => freeSpot(ctx, x, z, idx, ob, false, 0.2, LAMPS.zone), out);
   for (const side of sides) {
     const h = new Hasher([ctx.seed, s.key, side, 53]);
     if (s.hawkers === side) { hawkerRow(ctx, s, side, cb, idx, ob, h, out); continue; }
@@ -69,7 +71,7 @@ function streetProps(ctx: Ctx, s: Street, cb: Box, idx: SegIndex, ob: Obstacles,
       const r = h.next();
       const nearMarket = ob.circles.some((c) => c.market && Math.hypot(c.x - x, c.z - z) < 90);
       const stallP = st.stall * (nearMarket ? 2.5 : 1);
-      if (main && n % Math.round(GEN.lampEvery / slot) === 0) put('lamp', kerb);
+      if (main && n % Math.round(GEN.lampEvery / slot) === 0) { /* the old lamp slot: lamps.ts lights the street now */ }
       else if (st.wires && n % Math.round(GEN.poleEvery / slot) === 0 && side === -1) put('pole', kerb, { len: GEN.poleEvery });
       else if (r < stallP) put(h.chance(0.15) ? 'cart' : 'stall', outer - 0.6, { len: h.range(2.5, 4.5), v: h.int(0, 5) });
       else if (r < stallP + st.tree * 0.35) put(area.kind === 'saltlake' && h.chance(0.15) ? 'palm' : 'tree', outer, { v: h.int(0, 3) });
@@ -98,6 +100,7 @@ export function props(ctx: Ctx, cb: Box, streets: Street[], idx: SegIndex, ob: O
   const out: GenProp[] = [];
   const near: Box = [cb[0] - 14, cb[1] - 14, cb[2] + 14, cb[3] + 14];
   for (const s of streets) if (meets(near, ...s.box) && (s.p.some((q) => q[0] >= near[0] && q[0] <= near[2] && q[1] >= near[1] && q[1] <= near[3]) || crosses(s.p, near))) streetProps(ctx, s, cb, idx, ob, out);
+  junctionMasts(ctx, cb, (x, z) => freeSpot(ctx, x, z, idx, ob, false, 1), out);
   // Bus stops at real stops: on the footpath of the nearest real road, facing along it.
   for (const st of ctx.wn.stops) {
     if (!inBox(cb, st.x, st.z)) continue;
