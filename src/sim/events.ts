@@ -15,7 +15,10 @@ export type GameEvent =
   | { type: 'stage'; to: 'station' }
   /** Reached the Sealdah forecourt (the streamed world's finish). */
   | { type: 'arrive'; mode: ArriveMode }
-  | { type: 'end'; ending: 'still-sector-v' };
+  | { type: 'end'; ending: 'still-sector-v' }
+  // The metro stage (task 033): a hint line under the HUD, and the metro's own ending.
+  | { type: 'hint'; text: string }
+  | { type: 'end'; ending: 'howrah-express' };
 
 export class Events {
   list: GameEvent[] = [];

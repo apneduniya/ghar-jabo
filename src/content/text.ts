@@ -228,3 +228,30 @@ export const arriveLine = { title: 'SEALDAH!', line: 'The forecourt. Somewhere i
 
 /** Banner when a newer build is served than the one this tab is running (app/update.ts). */
 export const NEW_VERSION = 'Notun version esheche · tap to reload';
+
+/** The metro station stage (task 033, sim/station.ts and stages/station.ts). */
+export const stationText = {
+  start: 'Find a green gate. Walk left on the escalator.',
+  gateShut: { title: 'GATE BONDHO', line: 'Red gate. Try a green one, dada.' },
+  token: { title: '₹20 token', body: 'The gate beeped at you. Twice.' },
+  standRight: { title: 'BAAM DIK!', line: '"Daan dike daranor jaiga. Hatle baam dike, dada."' },
+  platform: 'Get to a door before it shuts! Shove through the crowd.',
+  yellowLine: { title: '"Holud line-er pechhone thakun."', body: 'Stay behind the yellow line.' },
+  shove: { title: 'DHAKKA!', lines: ['"Dada, thik kore daran!"', '"Bag-ta shorie nin!"', '"Line-e daran!"', 'Someone\'s elbow is in your ear.'] },
+  trainComing: '📢 Train aschhe!',
+  doorsOpen: 'Doors open! Get in!',
+  doorsClosing: 'Darja bondho hochhe! Doors closing!',
+  missedTrain: { title: 'TRAIN CHHERE DILO', line: 'Doors closed on your hopes. Next one soon.' },
+  in: { title: 'IN!', packed: 'Someone\'s bag, someone\'s elbow, all on you.', calm: 'You\'re in. Breathe.', burst: 'GHUSHE GECHHI!' },
+  seatHint: 'A seat! Tap to stay awake. Don\'t miss Sealdah.',
+  standHint: 'Standing. Tap when the train brakes.',
+  nextStation: 'Next station · porer station',
+  brakes: { title: 'BRAKES!', lines: ['You are now in someone\'s armpit.', 'Your face is on the door glass.', 'Umbrella in your ribs.'] },
+  sealdah: { title: 'SEALDAH!', body: '"Sealdah. Darja dan dike khulbe." Get off NOW!', hint: 'SEALDAH! Tap to get off!' },
+  doorsShut: { title: 'DARJA BONDHO', line: 'Doors closed. Next stop: Esplanade… Howrah Maidan…' },
+  asleep: { title: 'GHUMIYE PORLAM', line: 'Eyes closed for one second. It was a long second.', burst: 'GHUMIYE PORLAM!' },
+  out: { title: 'SEALDAH!', line: 'Out of the coach. Barely.' },
+  buttons: { jump: 'JUMP', awake: 'STAY AWAKE', hold: 'HOLD ON', off: 'UTRO! GET OFF', drowsy: 'DROWSY', squeeze: 'SQUEEZE' },
+  towards: 'GREEN LINE · TOWARDS SEALDAH',
+  signs: { token: 'TOKEN · AUTO-DEBIT ₹20 · টোকেন', escalator: 'STAND RIGHT · WALK LEFT', platform: 'GREEN LINE · সবুজ লাইন · TOWARDS SEALDAH →' },
+};
