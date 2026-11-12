@@ -2,6 +2,7 @@
 
 import { GEN } from '../../content/worldgen';
 import { densify, strHash } from './geom';
+import { landmarkPlace } from './landmarks';
 import type { AreaKind, Landmark, NetRoad, Pt, Warp, WorldNet } from './types';
 
 /** Parses world.json (already JSON-decoded) into a WorldNet, filling defaults the builder leaves out. */
@@ -71,7 +72,9 @@ export class WarpedNet {
         for (const c of cellsOf(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]))) this.push(this.cells, c, [ri, k]);
       }
     });
-    this.landmarks = net.landmarks.map((l) => { const [gx, gz] = w([l.x, l.z]); return { ...l, gx, gz }; });
+    // Where each model stands: warped, then slid back off the roads where it would reach a carriageway (landmarks.ts),
+    // so generated buildings and props keep clear of the model where it is drawn.
+    this.landmarks = net.landmarks.map((l) => { const { x: gx, z: gz } = landmarkPlace(net, warp, l); return { ...l, gx, gz }; });
     this.water = net.water.map((ring) => densify([...ring, ring[0]], 16).slice(0, -1).map(w));
     this.water.forEach((ring, i) => { const b = boxOf(ring); for (const c of cellsOf(...b)) this.push(this.waterCells, c, i); });
     const [sx, sz] = w([net.sealdah.x, net.sealdah.z]);

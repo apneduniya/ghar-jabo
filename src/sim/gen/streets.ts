@@ -229,7 +229,7 @@ function latticeBox(ctx: Ctx, b: Box): Lattice {
         if (f.grid && i % GEN.islandEvery === 0 && j % GEN.islandEvery === 0) {
           const p = node(ctx, f, i, j);
           if (p[0] < b[0] || p[0] >= b[2] || p[1] < b[1] || p[1] >= b[3]) continue;
-          if (keepEdge(f, i, j, 1, 0) && keepEdge(f, i, j, 0, 1) && keepEdge(f, i - 1, j, 1, 0) && keepEdge(f, i, j - 1, 0, 1)) islands.push({ x: p[0], z: p[1], r: GEN.islandR });
+          if (keepEdge(f, i, j, 1, 0) && keepEdge(f, i, j, 0, 1) && keepEdge(f, i - 1, j, 1, 0) && keepEdge(f, i, j - 1, 0, 1) && !nearNetRoad(ctx, p, GEN.islandR)) islands.push({ x: p[0], z: p[1], r: GEN.islandR });
         }
       }
     }
@@ -237,7 +237,21 @@ function latticeBox(ctx: Ctx, b: Box): Lattice {
   return { streets, islands };
 }
 
-type Lattice = { streets: Street[]; islands: { x: number; z: number; r: number }[] };
+/**
+ * True if a round island of radius r at p would reach a net road's carriageway (flyover decks excepted: they pass
+ * overhead). A lattice node can land on a real road (AUDIT.md 13: r53 and 2nd Cross Rd at Salt Lake), and its
+ * island would shut every lane.
+ */
+function nearNetRoad(ctx: Ctx, p: Pt, r: number) {
+  for (const [ri, k] of ctx.wn.segmentsIn(p[0] - 40, p[1] - 40, p[0] + 40, p[1] + 40)) {
+    const q = ctx.wn.roads[ri];
+    if (q.road.bridge === 'flyover') continue;
+    if (segDist(p[0], p[1], q.p[k - 1][0], q.p[k - 1][1], q.p[k][0], q.p[k][1]) < q.road.w / 2 + r + 1) return true;
+  }
+  return false;
+}
+
+type Lattice ={ streets: Street[]; islands: { x: number; z: number; r: number }[] };
 const LBOX = 128;
 
 const tileKey = (i: number, j: number) => -((i + 30000) * 60000 + (j + 30000)) - 2;

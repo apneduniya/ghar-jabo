@@ -12,11 +12,11 @@ import * as THREE from 'three';
 import { batchSigns } from '../../gfx';
 import type { Chunk, Landmark, WorldNet, Warp } from '../../../sim/gen/types';
 import { inSectorV, owns } from './clip';
-import { Ctx } from './ctx';
+import { Ctx, type Frame } from './ctx';
 import { buildMetro, metroPrep, portal } from './metro';
 import { buildDecks, buildMedians, flyoverNear } from './decks';
 import { buildBridge } from './bridges';
-import { warpHeading } from '../../../sim/gen/layout';
+import { landmarkModel, landmarkPlace, onMetroLine, statueSuppressed } from '../../../sim/gen/landmarks';
 import { crossingSite, landmarkBridge } from '../../../sim/gen/sites';
 import { glassEntrance } from './stations';
 import { sealdah } from './sealdah';
@@ -39,8 +39,8 @@ export function structuresForChunk(chunk: Chunk, net: WorldNet, warp: Warp): THR
     buildBridge(ctx, crossingSite(net, warp, c, x, z));
   }
   for (const lm of net.landmarks) {
-    const [x, z] = warp.toGame([lm.x, lm.z]);
-    if (owns(ctx.cx, ctx.cz, x, z) && !inSectorV(x, z)) landmark(ctx, lm, x, z);
+    const { x, z } = landmarkPlace(net, warp, lm);
+    if (owns(ctx.cx, ctx.cz, x, z) && !inSectorV(x, z)) landmark(ctx, lm);
   }
   return assemble(ctx, `structures ${chunk.cx},${chunk.cz}`);
 }
@@ -58,21 +58,41 @@ export function prepareStructures(net: WorldNet, warp: Warp) {
 
 /** One landmark's model alone (for tests, triangle budgets and the debug view). */
 export function landmarkAlone(net: WorldNet, warp: Warp, lm: Landmark): THREE.Object3D | null {
-  const [x, z] = warp.toGame([lm.x, lm.z]);
+  const { x, z } = landmarkPlace(net, warp, lm);
   const ctx = new Ctx(net, warp, Math.floor(x / 128), Math.floor(z / 128));
-  landmark(ctx, lm, x, z);
+  landmark(ctx, lm);
   return assemble(ctx, lm.id);
 }
 
-const near = (net: WorldNet, warp: Warp, x: number, z: number, r: number, kinds: Landmark['kind'][]) =>
-  net.landmarks.some((o) => kinds.includes(o.kind) && (() => { const [ox, oz] = warp.toGame([o.x, o.z]); return Math.hypot(ox - x, oz - z) < r; })());
+/**
+ * The frame a landmark's model is drawn in: its warped spot, slid back off the roads where its footprint would
+ * reach a carriageway (sim/gen/landmarks.ts). The collision (sim/gen/solids.ts) uses the same frame and sizes.
+ */
+export function landmarkFrame(ctx: Ctx, lm: Landmark) {
+  const p = landmarkPlace(ctx.net, ctx.warp, lm);
+  return { f: ctx.frame(p.x, p.z, p.h), island: p.island, r: p.r };
+}
 
-function landmark(ctx: Ctx, lm: Landmark, x: number, z: number) {
-  const { net, warp } = ctx, f = ctx.frame(x, z, warpHeading(warp, lm.x, lm.z, lm.heading));
+/** A small raised island under a junction kiosk or statue left standing in the road: kerb blocks round a paved disc. */
+function island(f: Frame, r: number) {
+  for (let k = 0; k < 16; k++) {
+    const a = (k / 16) * Math.PI * 2;
+    f.boxAt(Math.cos(a) * (r - 0.15), Math.sin(a) * (r - 0.15), 0.3, (2 * Math.PI * r) / 16 + 0.05, 0, 0.3, k % 2 ? 0x2f5fa8 : 0xf1efe8, a);
+  }
+  f.cyl(0, 0, r - 0.3, 0, 0.22, 0x9a958c, 14);
+}
+
+function landmark(ctx: Ctx, lm: Landmark) {
+  const { net, warp } = ctx, { f, island: raised, r } = landmarkFrame(ctx, lm), { x, z } = f;
+  if (raised && lm.kind !== 'traffic-island' && landmarkModel(net, warp, lm)) island(f, r);
   switch (lm.kind) {
     case 'sealdah-station': return sealdah(ctx, f);
     case 'traffic-island': return trafficIsland(ctx, f);
-    case 'statue': if (!near(net, warp, x, z, 25, ['kolkata-sign', 'traffic-island'])) statue(ctx, f); return;
+    case 'statue': {
+      const [ox, oz] = warp.toGame([lm.x, lm.z]);
+      if (!statueSuppressed(net, warp, ox, oz)) statue(ctx, f);
+      return;
+    }
     case 'kolkata-sign': return kolkataSign(f);
     case 'police-kiosk': return policeKiosk(f);
     case 'billboards': return billboards(f, lm);
@@ -87,8 +107,8 @@ function landmark(ctx: Ctx, lm: Landmark, x: number, z: number) {
     // The junction a flyover is named for can sit 100 u off the deck itself (Ultadanga More).
     case 'flyover': if (!flyoverNear(ctx, x, z, 150)) fallbackFlyover(f); return;
     case 'metro-station': {
-      const onLine = metroPrep(ctx).some((m) => m.stations.some((s) => Math.hypot(s.x - x, s.z - z) < 40));
-      if (!onLine) glassEntrance(f, lm.name);
+      const [ox, oz] = warp.toGame([lm.x, lm.z]);
+      if (!onMetroLine(net, warp, ox, oz)) glassEntrance(f, lm.name);
       return;
     }
     case 'metro-portal': {

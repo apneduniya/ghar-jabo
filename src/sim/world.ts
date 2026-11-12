@@ -80,6 +80,14 @@ export class World {
       this.street.blocks.blocked(x, z, pad) || this.solids.blocked(x, z, pad) || !!this.streamed?.blocked(x, z, pad);
   }
 
+  /**
+   * True if the camera (radius `pad`) would be inside something it can't see through: a Sector V building, or beyond
+   * the map a generated building, a landmark model or a structure (task 030; the pull-in behind the player asks it).
+   */
+  camBlocked(x: number, z: number, pad: number) {
+    return this.grid.blocked(x, z, pad) || !!this.streamed?.camBlocked(x, z, pad);
+  }
+
   /** Arrived at the Sealdah forecourt, by whatever got you there. */
   private arrive(mode: ArriveMode) {
     this.player.state = 'gone';

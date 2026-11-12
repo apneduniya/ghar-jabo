@@ -6,7 +6,7 @@
 import { deadEnds } from '../../content/text';
 import { AREA_STYLE, FLOOD_SPOTS, GEN } from '../../content/worldgen';
 import { HALF } from './clip';
-import { clipSegToBox, hash, Hasher, rectRing } from './geom';
+import { clipSegToBox, hash, Hasher, rectRing, segDist } from './geom';
 import { frame, type Obstacles, type SegIndex } from './plots';
 import { areaOf, type Box, type Ctx, footOf, meets, type Street } from './streets';
 import type { GenProp, Pt } from './types';
@@ -21,6 +21,26 @@ function freeSpot(ctx: Ctx, x: number, z: number, idx: SegIndex, ob: Obstacles, 
   for (const c of ob.circles) if (Math.hypot(c.x - x, c.z - z) < c.r) return false;
   return !ctx.water.point(x, z);
 }
+
+/** How far a prop reaches from its spot (about half its length), for the carriageway test. */
+const PROP_REACH: Partial<Record<GenProp['kind'], number>> = { 'parked-car': 2.1, 'parked-bike': 1, 'bus-stop': 2, palm: 0.6, tree: 0.6, stall: 1.5, cart: 1, handcart: 1, shrine: 0.8 };
+
+/**
+ * True if a prop of reach `pad` at (x, z) stands on the carriageway of a net road other than its own (AUDIT.md 14:
+ * where a side street's parking slot or a stop's footpath lands inside a real road at a junction). `own`: a point
+ * on its own street's centre line, which is a net road when the street is real; flyover decks pass overhead.
+ */
+export function onOtherRoad(ctx: Ctx, x: number, z: number, pad: number, own: Pt | null): boolean {
+  for (const [ri, k] of ctx.wn.segmentsIn(x - 30, z - 30, x + 30, z + 30)) {
+    const r = ctx.wn.roads[ri], a = r.p[k - 1], b = r.p[k];
+    if (r.road.bridge === 'flyover' || segDist(x, z, a[0], a[1], b[0], b[1]) >= r.road.w / 2 + pad) continue;
+    if (own && nearLine(r.p, own, 0.6)) continue;
+    return true;
+  }
+  return false;
+}
+
+const nearLine = (p: Pt[], q: Pt, d: number) => p.some((a, i) => i > 0 && segDist(q[0], q[1], a[0], a[1], p[i - 1][0], p[i - 1][1]) < d);
 
 /** Props along one street, kept if they fall in the chunk box. */
 function streetProps(ctx: Ctx, s: Street, cb: Box, idx: SegIndex, ob: Obstacles, out: GenProp[]) {
@@ -43,6 +63,7 @@ function streetProps(ctx: Ctx, s: Street, cb: Box, idx: SegIndex, ob: Obstacles,
       const put = (kind: GenProp['kind'], d: number, extra: Partial<GenProp> = {}, onRoad = false) => {
         const px = x + nx * d, pz = z + nz * d;
         if (!inBox(cb, px, pz) || !freeSpot(ctx, px, pz, idx, ob, onRoad)) return;
+        if (kind !== 'lamp' && onOtherRoad(ctx, px, pz, PROP_REACH[kind] ?? 0.5, s.real ? [x, z] : null)) return;
         out.push({ kind, x: px, z: pz, rot, ...extra });
       };
       const r = h.next();
@@ -85,7 +106,7 @@ export function props(ctx: Ctx, cb: Box, streets: Street[], idx: SegIndex, ob: O
     const side = (st.x - r.x) * Math.sin(r.heading) - (st.z - r.z) * Math.cos(r.heading) >= 0 ? 1 : -1;
     const d = r.r.road.w / 2 + 1.2;
     const x = r.x + Math.sin(r.heading) * side * d, z = r.z - Math.cos(r.heading) * side * d;
-    if (inBox(cb, x, z)) out.push({ kind: 'bus-stop', x, z, rot: r.heading + (side < 0 ? Math.PI : 0), text: st.name });
+    if (inBox(cb, x, z) && !onOtherRoad(ctx, x, z, PROP_REACH['bus-stop']!, [r.x, r.z])) out.push({ kind: 'bus-stop', x, z, rot: r.heading + (side < 0 ? Math.PI : 0), text: st.name });
   }
   // Puddles only where waterlogging is reported (content/worldgen.ts FLOOD_SPOTS), on the road.
   for (const f of FLOOD_SPOTS) {

@@ -90,3 +90,28 @@ describe('structures per chunk over the whole fixture', () => {
     expect(max.n).toBeLessThanOrEqual(30000);
   });
 });
+
+describe('landmark footprints (sim/gen/landmarks.ts) cover what is drawn', () => {
+  it('every ground-level vertex of a model lies inside its footprint, so a footprint off the road is a model off it', async () => {
+    const { landmarkPlace, modelSize } = await import('../../../sim/gen/landmarks');
+    const warp = fixtureWarp('free'), out: string[] = [], kinds = new Set<string>();
+    for (const lm of net.landmarks) {
+      const size = modelSize(lm), key = lm.kind === 'mall' && lm.id.startsWith('city-centre-1') ? 'city-centre' : lm.kind;
+      if (!size || kinds.has(key)) continue;
+      const m = meshes(landmarkAlone(net, warp, lm)).find((q) => q.name === 'structures');
+      if (!m) continue;
+      kinds.add(key);
+      const p = landmarkPlace(net, warp, lm), fx = Math.cos(p.h), fz = Math.sin(p.h), pos = m.geometry.attributes.position;
+      let worst = 0, at = '';
+      for (let i = 0; i < pos.count; i++) {
+        if (pos.getY(i) > 3) continue;
+        const dx = pos.getX(i) - p.x, dz = pos.getZ(i) - p.z, u = dx * fx + dz * fz, v = -dx * fz + dz * fx;
+        const off = Math.min(...size.foot.map(([u0, u1, v0, v1]) => Math.max(u0 - u, u - u1, v0 - v, v - v1, 0)));
+        if (off > worst) { worst = off; at = `u ${u.toFixed(1)} v ${v.toFixed(1)}`; }
+      }
+      if (worst > 0.3) out.push(`${key}: ${worst.toFixed(2)} outside at ${at}`);
+    }
+    expect(kinds.size).toBeGreaterThan(8);
+    expect(out).toEqual([]);
+  });
+});

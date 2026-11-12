@@ -19,6 +19,7 @@ import { unlockAudio } from '../audio/audio';
 import { NO_INTENT, roadAssist, stickToWorld } from '../sim/player';
 import { clearance, nearestRoad } from '../sim/streetlife';
 import { roofs } from '../sim/elevated';
+import { CameraRoof } from '../sim/gen/roofs';
 import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } from '../ui/ui';
 import { input, enableStick, pressButton } from '../input/input';
 import { Look } from '../input/look';
@@ -119,6 +120,12 @@ export function sectorv(): Scene {
 
   // What is overhead (a flyover deck or a station), so the camera can stay underneath it.
   const overhead = roofs(map.roads);
+  // ...and beyond the map, the streamed world's decks, viaduct, stations and rail bridges (task 030).
+  const roofAt = (x: number, z: number) => {
+    const a = overhead(x, z), b = world.streamed?.roofAt(x, z);
+    return a === undefined ? b : b === undefined ? a : Math.min(a, b);
+  };
+  const roofCam = new CameraRoof();
 
   let layer: HTMLElement;
   let actionBtn: HTMLButtonElement;
@@ -348,16 +355,17 @@ export function sectorv(): Scene {
       const reach = Math.hypot(high, back);
       const flat = Math.cos(elev) * reach;
       let dist = flat;
-      for (let k = 1.5; k <= flat; k += 0.75) if (world.grid.blocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
+      for (let k = 1.5; k <= flat; k += 0.75) if (world.camBlocked(p.x - fx * k, p.z - fz * k, 0.6)) { dist = Math.max(2.5, k - 0.75); break; }
       // First frame: snap behind the player instead of gliding in from the map's centre.
-      if (!camReady) { pivot.set(p.x, 0, p.z); camDist = dist; camReady = true; }
+      if (!camReady) { pivot.set(p.x, 0, p.z); camDist = dist; camReady = true; roofCam.reset(); }
       pivot.x += (p.x - pivot.x) * Math.min(1, dt * 10);
       pivot.z += (p.z - pivot.z) * Math.min(1, dt * 10);
       camDist += (dist - camDist) * Math.min(1, dt * (dist < camDist ? 12 : 3)); // in fast at a wall, out gently
       const s = camDist / flat;
-      camera.position.set(pivot.x - fx * camDist, Math.max(0.7, CONTROLS.camPivot + Math.sin(elev) * reach * s), pivot.z - fz * camDist);
-      const roof = Math.min(overhead(camera.position.x, camera.position.z) ?? Infinity, overhead(p.x, p.z) ?? Infinity);
-      if (roof < Infinity) camera.position.y = Math.min(camera.position.y, roof - 1.4);
+      const cx = pivot.x - fx * camDist, cz = pivot.z - fz * camDist;
+      // Under a deck, the viaduct, a station or a rail bridge (Sector V's or the streamed world's), it ducks under.
+      const y = roofCam.apply(dt, roofAt, CONTROLS.camPivot + Math.sin(elev) * reach * s, p.x, p.z, cx, cz);
+      camera.position.set(cx, Math.max(0.7, y), cz);
       // Looking down, the gaze comes in towards the player so they stay on screen.
       const ahead = 6 * (1 - 0.65 * Math.min(0, look.pitch) / CONTROLS.pitchRange[0]);
       camera.lookAt(pivot.x + fx * ahead, 1.2 + Math.max(0, look.pitch) * CONTROLS.camLift, pivot.z + fz * ahead);

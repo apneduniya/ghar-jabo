@@ -17,7 +17,8 @@ import {
   netDeckY, netDecks, portalHalf, stationOver, warpHeading,
 } from './layout';
 import { type BridgeSite, crossingSite, landmarkBridge, parapet, stationGround, underbridge } from './sites';
-import { CHUNK, type Warp, type WorldNet } from './types';
+import { landmarkModel, landmarkPlace } from './landmarks';
+import { CHUNK, type Landmark, type Warp, type WorldNet } from './types';
 
 /** Chunks a line passes through (and their neighbours, for pieces that straddle a border). */
 function chunksOf(l: Line): [number, number][] {
@@ -151,12 +152,30 @@ function landmarkSolids(net: WorldNet, warp: Warp, out: Acc) {
       const site = landmarkBridge(net, warp, lm, x, z);
       if (site) bridgeSolids(site, out);
     } else if (lm.kind === 'flyover' && !flyoverNear(net, warp, x, z, 150)) {
-      const h = warpHeading(warp, lm.x, lm.z, lm.heading), fb = fallbackDeck();
-      for (const p of fb.pieces) {
-        if (p.y - 0.9 < RAMP_CLEAR) out.wide('stand-in flyover ramp', frameBox(x, z, h, -fb.h, fb.h, p.v, p.v + 2.5));
-        if (p.pier) { const [px, pz] = framePt(x, z, h, 0, p.m); out.pier('stand-in flyover pier', circle(px, pz, fb.pierR)); }
-      }
-    }
+      standIn(warp, lm, x, z, out);
+    } else modelSolids(net, warp, lm, out);
+  }
+}
+
+/**
+ * A landmark model's solid parts (AUDIT.md 29), in the frame and sizes the renderer draws it in (landmarks.ts). A
+ * junction kiosk or statue is a round solid; left in the road on its raised island, the lanes route round it.
+ */
+function modelSolids(net: WorldNet, warp: Warp, lm: Landmark, out: Acc) {
+  const model = landmarkModel(net, warp, lm);
+  if (!model) return;
+  const p = landmarkPlace(net, warp, lm);
+  if (p.island) { out.pier('junction island', circle(p.x, p.z, p.r)); return; }
+  if (p.r) { out.off('junction kiosk', circle(p.x, p.z, Math.min(p.r, 1.6))); return; }
+  for (const [u0, u1, v0, v1] of model.solid) out.off(`landmark ${lm.kind}`, frameBox(p.x, p.z, p.h, u0, u1, v0, v1));
+}
+
+/** The stand-in flyover for a `flyover` landmark with no flyover road near it. */
+function standIn(warp: Warp, lm: Landmark, x: number, z: number, out: Acc) {
+  const h = warpHeading(warp, lm.x, lm.z, lm.heading), fb = fallbackDeck();
+  for (const p of fb.pieces) {
+    if (p.y - 0.9 < RAMP_CLEAR) out.wide('stand-in flyover ramp', frameBox(x, z, h, -fb.h, fb.h, p.v, p.v + 2.5));
+    if (p.pier) { const [px, pz] = framePt(x, z, h, 0, p.m); out.pier('stand-in flyover pier', circle(px, pz, fb.pierR)); }
   }
 }
 
@@ -167,7 +186,7 @@ function landmarkSolids(net: WorldNet, warp: Warp, out: Acc) {
  */
 export interface Conflict { kind: string; x: number; z: number; road: string; kept: boolean }
 
-type Item = { kind: string; s: Solid; wide: boolean; merge?: boolean };
+type Item = { kind: string; s: Solid; wide: boolean; merge?: boolean; off?: boolean };
 
 /** Collects solids with their kind; whether each is a conflict is decided afterwards from the lane plan. */
 class Acc {
@@ -175,10 +194,15 @@ class Acc {
   pier(kind: string, s: Solid) { this.items.push({ kind, s, wide: false }); }
   /** `merge`: a flyover ramp's foot, where traffic drives onto it rather than past it (see isFoot). */
   wide(kind: string, s: Solid, merge = false) { this.items.push({ kind, s, wide: true, merge }); }
+  /**
+   * A landmark model's part, placed clear of every carriageway (landmarks.ts): solid, but the lanes needn't move for
+   * it (a big box's projection would otherwise ban lane positions on roads it doesn't touch).
+   */
+  off(kind: string, s: Solid) { this.items.push({ kind, s, wide: false, off: true }); }
 }
 
 /** The lane plan around these items (the ramps' feet don't push lanes aside). */
-const plan = (net: WorldNet, warp: Warp, items: Item[]) => planLanes(warped(net, warp), items.map((it) => it.s), (i) => !!items[i].merge);
+const plan = (net: WorldNet, warp: Warp, items: Item[]) => planLanes(warped(net, warp), items.map((it) => it.s), (i) => !!items[i].merge || !!items[i].off);
 
 function built(net: WorldNet, warp: Warp) {
   return memo(net, warp, 'solids', () => {
