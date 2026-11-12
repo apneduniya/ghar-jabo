@@ -124,3 +124,27 @@ export const TREES = {
   sectorv: { rain: { rain: 80, gulmohar: 20 }, round: { neem: 55, ashoka: 30, banyan: 15 }, median: { neem: 70, ashoka: 30 } },
   wind: { amp: 0.14, flutter: 0.04, near: 40, far: 70 },
 } as const;
+
+/**
+ * Street lighting beyond Sector V (task 031, sim/gen/lamps.ts). Lamps stand on both kerbs of every real road,
+ * `every` units apart along each kerb in game length (so timed mode's squeeze can't thin them out), the two kerbs
+ * staggered by half. One-way primary carriageways (the divided arterials: Bypass, Salt Lake Bypass, APC Rd, CIT Rd,
+ * Bidhan Nagar Rd) look up to `pairReach` beyond their right kerb for the other carriageway; where there is a
+ * median at least `medianGap` wide, a double-arm median light stands in it every `medianEvery`. High masts stand at
+ * the named junctions in `masts` (net landmark ids), `mastRing` units from the junction. `pool`: radius of each
+ * light's soft pool on the ground (render/world/lamps.ts), and how far it sits in front of the post.
+ */
+export const LAMPS = {
+  every: 22,
+  medianEvery: 30,
+  kerb: 0.35,
+  /** Kerb lamps keep out of this share of a landmark's clear zone (a post at the kerb in front of a mall is fine). */
+  zone: 0.5,
+  pairReach: 25,
+  medianGap: 0.8,
+  masts: ['hudco-more-ultadanga', 'chingrighata-salt-lake-bypas', 'phoolbagan-island', 'rajabazar-narkeldanga-main-r', 'cit-more-beliaghata-main-rd-'],
+  mastRing: [8, 30] as [number, number],
+  /** Night opacity of the pools: brighter than Sector V's 0.55, as they are wider and softer (footpath included). */
+  poolGlow: 0.8,
+  pool: { trident: [4.2, 0.8], tube: [3.6, 1.6], median: [5.5, 0], mast: [14, 0] } as Record<'trident' | 'tube' | 'median' | 'mast', [number, number]>,
+};

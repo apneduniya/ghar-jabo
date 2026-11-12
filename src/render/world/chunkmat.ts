@@ -9,6 +9,19 @@ import { asphalt, facadeBlock, facadeClad, facadeOffice, facadeOld, facadeReside
 import { ATLAS_H, ATLAS_W, RECT_COUNT, SIGN_COUNT, TEXT_COLS, TEXT_H, TEXT_ROWS, TEXT_W, TextSlots, Tile, rectUniform, tileRects } from './chunkatlas';
 import { streetAds } from '../../content/text';
 import { SHOP_SIGNS } from './frontage';
+import { addWind } from './trees';
+import { TREES } from '../../content/worldgen';
+
+/**
+ * Wind sway for the chunk shader's foliage only (glow < 0, see chunkprops.ts): addWind (trees.ts) sways every
+ * vertex by height, so its code is lifted out of a stub shader and wrapped in a foliage test.
+ */
+function foliageWind(sh: { vertexShader: string; uniforms: Record<string, unknown> }) {
+  const stub = { vertexShader: '#include <common>\n#include <begin_vertex>', uniforms: sh.uniforms };
+  addWind(stub, true, TREES.wind);
+  const [decl, sway] = stub.vertexShader.split('#include <begin_vertex>');
+  return { decl: decl.replace('#include <common>', ''), sway: `if (glow < 0.0) ${sway.trim()}` };
+}
 
 /** Salt Lake house bay: plastered wall, a wide grilled window under a sunshade (chhajja), a plant pot. */
 function house(g: CanvasRenderingContext2D) {
@@ -124,9 +137,10 @@ export function chunkMaterial(): ChunkMaterial {
     sh.uniforms.uGlowMap = { value: glowMap };
     sh.uniforms.uText = { value: textTex };
     sh.uniforms.uRects = { value: chunkRects() };
+    const wind = foliageWind(sh);
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nattribute float glow;\nattribute float tile;\nvarying float vGlow;\nvarying float vTile;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvGlow = glow;\nvTile = tile;');
+      .replace('#include <common>', `#include <common>\nattribute float glow;\nattribute float tile;\nvarying float vGlow;\nvarying float vTile;${wind.decl}`)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>\nvGlow = glow;\nvTile = tile;\n${wind.sway}`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 uniform float uNight;
@@ -165,9 +179,13 @@ float hash12(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5
       // Ground glow (lamp pools) is a warm light of its own, not the surface lit up.
       if (tileId <= ${Tile.pavers}) chunkGlow = vec3(1.0, 0.62, 0.3);`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-      totalEmissiveRadiance += (tileId <= ${Tile.pavers} ? chunkGlow * 0.5 : diffuseColor.rgb * chunkGlow) * max(vGlow, 0.0) * uNight * 1.6;`);
+      // Lit windows glow warm whatever the wall's tint (like Sector V's emissive 0xffd49a); lamps and signs keep
+      // their own colour.
+      bool facade = tileId >= ${Tile.resi} && tileId <= ${Tile.market};
+      vec3 lit = tileId <= ${Tile.pavers} ? chunkGlow * 0.5 : facade ? vec3(1.0, 0.83, 0.6) * chunkGlow : diffuseColor.rgb * chunkGlow;
+      totalEmissiveRadiance += lit * max(vGlow, 0.0) * uNight * 1.6;`);
   };
-  material.customProgramCacheKey = () => 'chunk-atlas-v1';
+  material.customProgramCacheKey = () => 'chunk-atlas-v2';
 
   return {
     material, text,

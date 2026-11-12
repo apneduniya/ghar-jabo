@@ -91,6 +91,28 @@ test('walking across chunk borders stays inside the meshing slice', async ({ pag
   expect(errors).toEqual([]);
 });
 
+test('at night the streamed streets have lamp pools, a far fog and no Sector V behind you (task 031)', async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors = await boot(page);
+  await page.evaluate(() => { (window as any).gj.run.minute = 21 * 60; });
+  for (const [x, z] of [[-1700, 320], [-2600, 190]]) {
+    const r = await teleport(page, x, z);
+    const s = await page.evaluate(async () => {
+      (window as any).gj.run.minute = 21 * 60;
+      for (let i = 0; i < 3; i++) await new Promise((r) => requestAnimationFrame(r));
+      const st = (window as any).gj.debug.streamed, fog = (window as any).gj.current.scene.fog;
+      return { pools: st.pools.count as number, shown: st.pools.mesh.visible as boolean, far: fog.far as number, reach: st.reach as number, calls: (window as any).gjr.info.render.calls as number };
+    });
+    expect(r.sector).toBe(false);
+    expect(s.pools).toBeGreaterThan(30);
+    expect(s.shown).toBe(true);
+    // Never the old 230 u wall of fog: the night floor keeps the view out past 250 u unless the budget is at risk.
+    expect(s.far).toBeGreaterThan(250);
+    expect(s.calls).toBeLessThanOrEqual(DRAW_CALL_BUDGET);
+  }
+  expect(errors).toEqual([]);
+});
+
 test('minimap shows the streamed roads and the whole network', async ({ page }) => {
   const errors = await boot(page);
   await teleport(page, -2600, 190);

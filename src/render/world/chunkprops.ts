@@ -1,12 +1,13 @@
 // Props of a streamed chunk (GenProp), into the chunk's GeoBuf: trees and palms (the trees.ts kit), trident
-// lamps with night pools (lamps.ts), poles with sagging wire bundles, walls, dead ends with a parody sign, signs,
+// lamps, masts and median lights (their night pools are lamps.ts LampPools), poles with sagging wire bundles, walls, dead ends with a parody sign, signs,
 // hoardings, benches, shrines, and the street life in chunkstalls.ts. `rot` turns local +z toward the road.
 
 import * as THREE from 'three';
 import type { GenProp, GenRoad } from '../../sim/gen/types';
 import { GeoBuf, place } from './chunkgeo';
 import { AD_COUNT, Tile } from './chunkatlas';
-import { lampPool, puddle } from './chunkground';
+import { puddle } from './chunkground';
+import { LampKind } from '../../sim/gen/lamps';
 import { board } from './chunkbuildings';
 import { pickWeighted, type Species, treeKit, VARIANTS } from './trees';
 import { TREES } from '../../content/worldgen';
@@ -15,7 +16,7 @@ import { bike, busStop, C, car, cart, handcart, person, stall } from './chunksta
 /** Text slots for signs: a tile id for the text, or null when none is free. */
 export type TextFn = (text: string, bg?: string, fg?: string) => number | null;
 
-const POST = 0xe8e6df, GLOBE = 0xfff6dc;
+const POST = 0xe8e6df, GLOBE = 0xfff6dc, IRON = 0x55585c;
 const m4 = new THREE.Matrix4();
 /** Foliage is marked with glow −1: the chunk shader dissolves it near the camera (see chunkmat.ts). */
 const FOLIAGE = -1;
@@ -36,21 +37,36 @@ const PALMS: Species[] = ['coconut', 'areca', 'royal'];
 const tree = (buf: GeoBuf, p: GenProp) => kitTree(buf, p, pickWeighted<Species>(TREES.street, h01(p.x, p.z, 5)));
 const palm = (buf: GeoBuf, p: GenProp, k: number) => kitTree(buf, p, PALMS[(p.v ?? k) % 3]);
 
-/** Three-globe trident (Sector V style) or, in the old city, a pole with one tube-light arm. */
-function lamp(buf: GeoBuf, f: THREE.Matrix4, p: GenProp, roads: GenRoad[]) {
-  if ((p.v ?? 0) % 2 === 0) {
+/**
+ * Street lights (sim/gen/lamps.ts LampKind): a three-globe trident (Sector V style), an old-city pole with one
+ * tube-light arm, a tall double-arm median light, or a high mast at a big junction. Local +z faces the road; the
+ * light pools on the ground are one instanced mesh for all chunks (lamps.ts LampPools).
+ */
+function lamp(buf: GeoBuf, f: THREE.Matrix4, p: GenProp) {
+  const v = p.v ?? 0;
+  if (v === LampKind.trident) {
     buf.boxAt(f, 0, 0, 0, 0.32, 0.5, 0.32, 0, C(POST)); buf.boxAt(f, 0, 0.5, 0, 0.14, 4.4, 0.14, 0, C(POST));
     for (const [ax, ay] of [[-0.55, 4.0], [0.55, 4.0], [0, 4.7]]) {
       if (ax) buf.boxAt(f, ax / 2, ay + 0.15, 0, 0.6, 0.06, 0.06, 0, C(POST));
       buf.boxAt(f, ax, ay + 0.2, 0, 0.36, 0.42, 0.36, 0, C(GLOBE), 2.6);
     }
-  } else {
+  } else if (v === LampKind.tube) {
     buf.boxAt(f, 0, 0, 0, 0.22, 6.2, 0.22, 0, C(0x8d8d8d));
     buf.boxAt(f, 0, 5.9, 0.8, 0.08, 0.08, 1.6, 0, C(0x6b6b6b));
     buf.boxAt(f, 0, 5.75, 1.45, 0.16, 0.08, 0.9, 0, C(0xf4f6ff), 2.4);
+  } else if (v === LampKind.median) {
+    // In the median: one arm over each carriageway.
+    buf.boxAt(f, 0, 0, 0, 0.22, 8.4, 0.22, 0, C(IRON));
+    for (const s of [1, -1]) {
+      buf.boxAt(f, 0, 8.3, 1.1 * s, 0.1, 0.1, 2.2, 0, C(IRON));
+      buf.boxAt(f, 0, 8.2, 2.1 * s, 0.32, 0.14, 0.8, 0, C(0xfff2d8), 2.2);
+    }
+  } else {
+    buf.boxAt(f, 0, 0, 0, 0.9, 1.2, 0.9, 0, C(0xb9b4aa));
+    buf.boxAt(f, 0, 1.2, 0, 0.42, 16.5, 0.42, 0, C(IRON));
+    buf.boxAt(f, 0, 17.6, 0, 2.6, 0.18, 2.6, 0, C(IRON));
+    for (const [ax, az] of [[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]]) buf.boxAt(f, ax, 17.3, az, 0.7, 0.3, 0.7, 0, C(0xfff2d8), 2.6);
   }
-  const r = p.rot ?? 0;
-  lampPool(buf, p.x, p.z, Math.sin(r), Math.cos(r), roads, (p.v ?? 0) % 2 ? 2.2 : 2.8);
 }
 
 /** A thin box from a to b (wires, rails), `t` thick. */
@@ -143,7 +159,7 @@ function shrine(buf: GeoBuf, f: THREE.Matrix4) {
 }
 
 /** One prop into the buffer. Poles are only drawn here; chunks.ts strings wires between them. */
-export function buildProp(buf: GeoBuf, prop: GenProp, index: number, textFn: TextFn, roads: GenRoad[] = []) {
+export function buildProp(buf: GeoBuf, prop: GenProp, index: number, textFn: TextFn, _roads: GenRoad[] = []) {
   if (!Number.isFinite(prop.x) || !Number.isFinite(prop.z)) return;
   // Variant picks index colour tables with `%`: negative numbers (chunks west and north of the origin) would read
   // past the start of the table and paint the prop white.
@@ -153,7 +169,7 @@ export function buildProp(buf: GeoBuf, prop: GenProp, index: number, textFn: Tex
   switch (p.kind) {
     case 'tree': tree(buf, p); break;
     case 'palm': palm(buf, p, k); break;
-    case 'lamp': lamp(buf, f, p, roads); break;
+    case 'lamp': lamp(buf, f, p); break;
     case 'pole':
       buf.boxAt(f, 0, 0, 0, 0.26, 7.2, 0.26, 0, C(0x8d8d8d));
       buf.boxAt(f, 0, 6.8, 0, 1.4, 0.1, 0.1, 0, C(0x6b6b6b));

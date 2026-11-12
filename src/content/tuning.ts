@@ -77,16 +77,20 @@ export const SHOP_U = 3.0;
 export const CHUNK_VIEW = {
   /** Meshing time per frame, ms: chunks are built a slice at a time, nearest first. */
   budgetMs: 4,
-  /** Adaptive draw distance: shrink when a frame passes `high` draw calls, grow back under `low` (budget 60). */
-  adapt: { high: 50, low: 42, down: 0.06, up: 0.003, min: 0.55 },
+  /**
+   * Adaptive draw distance: shrink when a frame passes `high` draw calls, grow back under `low` (budget 60). At
+   * night it stops at `minNight` (a short night view is a flat wall of fog: AUDIT.md issue 1) unless a frame passes
+   * `hard`, close to the budget; then it may go on down to `min`, as by day.
+   */
+  adapt: { high: 50, hard: 56, low: 42, down: 0.06, up: 0.003, min: 0.55, minNight: 0.8 },
   /** Fog far (units) inside Sector V and per area beyond it; chunks past the fog are hidden. */
-  fogFar: { sectorv: 340, saltlake: 290, old: 230, generic: 260 },
-  /** Fog near as a share of fog far. */
-  fogNear: 0.36,
+  fogFar: { sectorv: 340, saltlake: 340, old: 320, generic: 330 },
+  /** Fog near as a share of fog far: the haze starts half way out. */
+  fogNear: 0.55,
   /** Over this many units outside the Sector V square, the fog has fully become the area's. */
   fogBlend: 200,
-  /** Hide the whole Sector V map beyond this distance from its origin. */
-  hideSectorV: 600,
+  /** Hide the whole Sector V map once the player is this far outside its square (a plain ground stands in). */
+  hideSectorV: 150,
 };
 
 /** Streamed traffic beside structures (sim/gen/lanes.ts, task 022). */

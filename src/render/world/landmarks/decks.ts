@@ -42,7 +42,8 @@ export function buildDecks(ctx: Ctx) {
       ctx.parts.box(1.6, 0.8, half * 1.7, q.x, y - 1.7, q.z, rot, C.pier);
       ctx.parts.cyl(DECK_PIER.r, y - 1.7, q.x, 0, q.z, C.pier, DECK_PIER.stretch, rot + Math.PI / 2, 10);
     }
-    if (d.style !== 'band') for (const s of marks(d.l, ctx.cx, ctx.cz, 30, 11)) {
+    // Lamps on the parapet of every deck, the band-style flyovers included (AUDIT.md issue 5).
+    for (const s of marks(d.l, ctx.cx, ctx.cz, 30, 11)) {
       const y = deckY(d, s);
       if (y < 1) continue;
       const q = sample(d.l, s), nx = q.dz, nz = -q.dx, o = half - 0.15;
