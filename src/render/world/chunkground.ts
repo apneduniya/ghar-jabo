@@ -67,7 +67,7 @@ export function buildRoad(buf: GeoBuf, r: GenRoad, all: GenRoad[]) {
     buf.ribbon(r.p, r.w + foot * 2, FOOT_Y, PATH_COL, Tile.pavers, PAVER_UV);
     for (const side of [1, -1]) kerb(buf, r, side, all);
   }
-  if (r.w >= 6 && r.cls !== 'lane' && !r.tram) markings(buf, r, y);
+  if (r.w >= 6 && r.cls !== 'lane' && !r.tram) markings(buf, r, y, all);
   if (r.tram) tramRails(buf, r, y);
 }
 
@@ -92,10 +92,27 @@ function kerb(buf: GeoBuf, r: GenRoad, side: number, all: GenRoad[]) {
   }
 }
 
-/** Dashed white centre line. */
-function markings(buf: GeoBuf, r: GenRoad, y: number) {
+/** Is (x, z) on the surface of another ground carriageway running across (dx, dz) (not a continuation or a deck)? */
+function crossedAt(all: GenRoad[], r: GenRoad, x: number, z: number, dx: number, dz: number) {
+  for (const o of all) {
+    if (o === r || (o.bridge === 'flyover') !== (r.bridge === 'flyover')) continue;
+    for (let i = 1; i < o.p.length; i++) {
+      const [ax, az] = o.p[i - 1], [bx, bz] = o.p[i], L = Math.hypot(bx - ax, bz - az);
+      if (L < 1e-3 || segDist(x, z, ax, az, bx, bz) >= o.w / 2) continue;
+      if (Math.abs(((bx - ax) * dx + (bz - az) * dz) / L) < 0.9) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Dashed white centre line, left out where another carriageway crosses it at an angle: junctions have none, and where
+ * squeezed carriageways meet (timed, e.g. KNI Avenue at Ultadanga) their dashes would criss-cross.
+ */
+export function markings(buf: GeoBuf, r: GenRoad, y: number, all: GenRoad[] = []) {
   const my = y + 0.012;
   along(r.p, 5, 1, (x, z, dx, dz) => {
+    if ([-1.1, 0, 1.1].some((t) => crossedAt(all, r, x + dx * t, z + dz * t, dx, dz))) return;
     const hx = dx * 1.1, hz = dz * 1.1, wx = -dz * 0.09, wz = dx * 0.09;
     // Corner order chosen so the quad faces up for any direction (w is always 90° clockwise of d).
     buf.quad([x - hx - wx, my, z - hz - wz], [x - hx + wx, my, z - hz + wz], [x + hx + wx, my, z + hz + wz], [x + hx - wx, my, z + hz - wz], [0, 1, 0], WHITE, QUAD_UV);
