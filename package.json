@@ -32,8 +32,12 @@
   },
   "size-limit": [
     {
-      "name": "game JS (gzipped)",
-      "path": "dist/assets/*.js",
+      "name": "game JS a player downloads (brotli; the ?fixture=1 and landmark debug chunks only load for developers)",
+      "path": [
+        "dist/assets/*.js",
+        "!dist/assets/debug-*.js",
+        "!dist/assets/source-*.js"
+      ],
       "limit": "250 KB"
     }
   ]
