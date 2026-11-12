@@ -124,7 +124,7 @@ export const voices = {
 
   // --- Phone ------------------------------------------------------------------------------------------------
   'ma-ring': {
-    site: 'phone', plays: 'Ma calling card appears (app/main.ts momCall; the lead wires it: outside task 034)',
+    site: 'phone', plays: 'you answer Ma\'s call (app/main.ts momCall)',
     who: 'Ma, on speaker, half worried, half furious',
     bn: 'কী রে, কখন আসবি? ভাত ঠান্ডা হয়ে যাচ্ছে!',
     roman: 'Ki re, kokhon ashbi? Bhaat thanda hoye jachhe!',

@@ -12,6 +12,7 @@ import { sectorv } from '../stages/sectorv';
 import { station } from '../stages/station';
 import { result } from '../stages/result';
 import { watchForUpdates } from './update';
+import { voice } from '../audio/voice';
 
 game.register('sectorv', sectorv);
 game.register('station', station);
@@ -44,6 +45,7 @@ function momCall() {
     b.remove();
     if (answered) {
       run.stats.momAnswered++;
+      voice('ma-ring'); // Ma on speaker as you pick up (a recording, once Adarsh records it)
       run.addMinutes(3);
       notify('Call with Ma: 3 min', '"Haan Ma, ashchhi. Haan. Haan. Rakhchhi."', 'good');
     } else {

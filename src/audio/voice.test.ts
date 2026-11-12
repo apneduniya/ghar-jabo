@@ -40,6 +40,8 @@ describe('voice manifest', () => {
       if (['bus', 'street', 'rapinah'].includes(voices[id].site)) expect(src, id).toContain(`'${id}'`);
     }
     expect(ids.filter((id) => voices[id].site === 'station').length).toBeGreaterThanOrEqual(3);
+    const phone = fs.readFileSync('src/app/main.ts', 'utf8');
+    for (const id of ids) if (voices[id].site === 'phone') expect(phone, id).toContain(`voice('${id}')`);
   });
   it('the recordings index lists exactly the voice files present, and only known ids', () => {
     const files = fs.readdirSync('public/sounds/voice').filter((f) => f.endsWith('.mp3')).map((f) => f.replace(/\.mp3$/, ''));
