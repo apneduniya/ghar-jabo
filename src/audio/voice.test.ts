@@ -40,6 +40,8 @@ describe('voice manifest', () => {
       if (['bus', 'street', 'rapinah'].includes(voices[id].site)) expect(src, id).toContain(`'${id}'`);
     }
     expect(ids.filter((id) => voices[id].site === 'station').length).toBeGreaterThanOrEqual(3);
+    const station = fs.readFileSync('src/sim/station.ts', 'utf8') + fs.readFileSync('src/sim/stationride.ts', 'utf8');
+    for (const id of ids) if (voices[id].site === 'station') expect(station, id).toContain(`'${id}'`);
     const phone = fs.readFileSync('src/app/main.ts', 'utf8');
     for (const id of ids) if (voices[id].site === 'phone') expect(phone, id).toContain(`voice('${id}')`);
   });

@@ -18,7 +18,10 @@ export type GameEvent =
   | { type: 'arrive'; mode: ArriveMode }
   | { type: 'end'; ending: 'still-sector-v' }
   /** A voice line (content/voice.ts): Adarsh's recording, or its fallback until there is one. */
-  | { type: 'voice'; id: VoiceId };
+  | { type: 'voice'; id: VoiceId }
+  // The metro stage (task 033): a hint line under the HUD, and the metro's own ending.
+  | { type: 'hint'; text: string }
+  | { type: 'end'; ending: 'howrah-express' };
 
 export class Events {
   list: GameEvent[] = [];

@@ -132,7 +132,7 @@ export const voices = {
     secs: 2.5, fallback: { kind: 'text' }, duck: true, delay: 0.5,
   },
 
-  // --- Green Line metro (stages/station.ts: the lead wires these after task 033 merges) ---------------------
+  // --- Green Line metro (sim/station.ts, sim/stationride.ts) ---------------------
   'metro-next-sealdah': {
     site: 'station', plays: 'On the train, the stop before Sealdah ("Agla station: Sealdah"), instead of sfx.chime',
     who: 'Our own calm metro voice (a parody: do not imitate the real announcer)',

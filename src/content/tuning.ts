@@ -202,3 +202,64 @@ export const CROWD = {
   /** How fast a walker gets up to speed or stops (1/s). */
   accel: 3,
 };
+
+/** The Sector V metro stage (task 033, sim/station.ts). The station runs along +x: concourse, ticket gates,
+ * escalator, then the platform with the track on its -z side. Units as above, seconds. */
+export const STATION = {
+  /** Walls: the walkable box (on the platform, the edge at edgeZ replaces zMin). Start spot. */
+  xMin: -1.5, xMax: 97, zMin: -5.6, zMax: 6.2,
+  start: [1, 0.3] as [number, number],
+  /** Ticket gates across the concourse: lane i is centred at gateZ0 + i × gateGap and open gateHalf each side. */
+  gateX: 12, gateLanes: 6, gateZ0: -4.7, gateGap: 2, gateHalf: 0.55, gateDepth: 0.4,
+  /** Share of gates that work (at least one always does). */
+  gateWorks: 0.65,
+  /** Seconds between "red gate" toasts while you keep walking into one. */
+  gateNag: 3,
+  /** Escalator: x range, its rails (z), the keep-left split (people stand on the +z side), how fast it carries you. */
+  esc: [22, 34] as [number, number],
+  escZ: [-1.7, 2.7] as [number, number],
+  escSplit: 0.5,
+  escSpeed: 3,
+  /** Platform x range, the edge (the track is beyond it, -z), and the door centres along the stopped train. */
+  plat: [36, 96] as [number, number],
+  edgeZ: -3.6,
+  doors: [44, 52, 60, 68, 76, 84],
+  /** You board within doorReach of a door along x and doorEdge of the edge. */
+  doorReach: 1.1,
+  doorEdge: 0.9,
+  /** Train: cars; it stops with car 0 centred at stopX, comes in from enterX and is gone past goneX. */
+  cars: 6, carLen: 8.8, stopX: 39.6, enterX: -80, goneX: 140,
+  /** Arrival speed: distance left × arriveK, between arriveMin and arriveMax units/s. Leaving speed. */
+  arriveK: 1.5, arriveMin: 0.5, arriveMax: 30, leaveSpeed: 18,
+  /** Seconds: first train after you reach the platform, the next after one leaves, doors open, warning before. */
+  firstTrain: 4, nextTrain: 6, doorsOpen: 6, doorWarn: 2,
+  /** The news ticker line this long after reaching the platform. */
+  tickerAfter: 2,
+  crowd: {
+    /** Platform people: base + perCrowd × run.crowd. Some queue at the gates; standers every escGap on the right. */
+    base: 18, perCrowd: 26, gateQueue: 6, escGap: 1.4,
+    /** Bodies touch within reach; you move them push × overlap, they move you pushBack[0] + crowd × pushBack[1]. */
+    reach: 0.75, push: 0.4, pushBack: [0.3, 0.4] as [number, number],
+    /** While shoving: a bump this often (s), and a toast with this chance. */
+    shoveEvery: 0.6, shoveToast: 0.25,
+    /** Share of the platform that rushes the doors, how fast, and how fast the rest drift back to their spot. */
+    boardShare: 0.6, rushSpeed: 4, homeDrift: 0.3,
+  },
+  ride: {
+    /** Seconds between stations; Sealdah's doors stay open exitSecs. */
+    legSecs: 2, exitSecs: 2.4,
+    /** Chance of a seat: below seatCrowd, else. */
+    seatCrowd: 0.7, seat: [0.7, 0.25] as [number, number],
+    /** Drowsiness per second: base + (minutes past lateFrom) / lateDiv; each tap takes off `wake`. */
+    drowsyBase: 0.12, lateFrom: 20 * 60, lateDiv: 500, wake: 0.2,
+    /** Standing: a HOLD ON tap at most this many seconds before the brakes keeps you upright. */
+    holdWindow: 0.6,
+    /** The train's speed past the camera (which rides beside it on the platform), and where it wraps: back by
+     * five cars, so the train looks continuous and the camera never leaves the platform. */
+    speed: 30, wrapX: 66, wrapTo: 22,
+    /** Seconds before the stage changes: arriving, falling asleep, missing Sealdah. */
+    arriveDelay: 1, asleepDelay: 1.8, missDelay: 1.6,
+  },
+  /** Camera (stage): orbit distance back and height (portrait, landscape), kept inside this box. */
+  cam: { back: [7.5, 6.5] as [number, number], high: [5.2, 4.4] as [number, number], x: [-1, 96.5] as [number, number], z: [-5.2, 7] as [number, number], yMax: 6.2 },
+};
