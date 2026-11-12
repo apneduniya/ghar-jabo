@@ -56,7 +56,7 @@ export class World {
   constructor(readonly map: MapData, readonly run: Run, readonly rng: Rng, start: { x: number; z: number }, net: WorldNet | null = null) {
     this.streamed = net ? new Streamed(net, run.mode, run.seed) : null;
     this.graph = new RoadGraph(map, this.streamed?.graphRoads(), elevatedLayout(map).lanes);
-    this.traffic = new Traffic(map, this.graph, rng, this.streamed?.route(map));
+    this.traffic = new Traffic(map, this.graph, rng, this.streamed?.route(map), run.mode === 'free' ? T.traffic.openRoadFree : T.traffic.openRoad);
     this.grid = new BuildingGrid(map.buildings.map((b) => b.p));
     this.water = new WaterMask(map.water ?? [], map.roads);
     this.street = layoutStreet(map, this.grid);

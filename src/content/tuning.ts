@@ -21,7 +21,10 @@ export const T = {
     laneOffset: 0.28, // fraction of road width from the centre line to a lane (keep left)
     pierClear: 1.65, // half a bus plus a margin, beside a pier in the middle of the road
     medianPier: 1.6, // a pier this close to a road's centre line stands in its median: lanes move out around it
-    openRoad: 1.4, // speed factor beyond the Sector V square (1.3 before divided roads kept their true spacing, 029)
+    // Speed factor beyond the Sector V square. Timed: 1.4 keeps the run winnable now that divided roads keep their
+    // true spacing (029 made the squeezed bus line 2% longer). Free roam is true scale and has no deadline: 1.3.
+    openRoad: 1.4,
+    openRoadFree: 1.3,
     followGap: 1.6,
     spawnEvery: [0.25, 0.6] as [number, number],
     /** Share of each kind when spawning (buses come from their route, not from here). */

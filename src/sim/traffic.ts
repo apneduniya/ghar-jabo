@@ -95,7 +95,8 @@ export class Traffic {
    * the line. Stops flagged `thin` (beyond the map, where the timed world squeezes real stops close together) are
    * kept one per T.bus.minStopGap of route.
    */
-  constructor(map: MapData, private graph: RoadGraph, private rng: Rng, route: BusLine = { path: map.busPath, stops: map.stops }) {
+  /** `open`: speed factor beyond the Sector V square (T.traffic.openRoad timed, openRoadFree in free roam). */
+  constructor(map: MapData, private graph: RoadGraph, private rng: Rng, route: BusLine = { path: map.busPath, stops: map.stops }, readonly open = T.traffic.openRoad) {
     const way = (ref: Pt[]): BusWay => {
       const { line, decks } = busLane(graph, ref);
       let last = -Infinity;
@@ -256,7 +257,7 @@ export class Traffic {
 
     for (const v of this.vehicles) {
       // Beyond the Sector V square the roads open up a little (and the timed world is squeezed anyway).
-      const open = Math.abs(v.x) > 360 || Math.abs(v.z) > 360 ? tr.openRoad : 1;
+      const open = Math.abs(v.x) > 360 || Math.abs(v.z) > 360 ? this.open : 1;
       let target = v.base * open * (1 - jam * tr.jamSlow[v.kind]);
       if (v.routeDir && !v.retired && this.wayOf(v).stops.some((st) => Math.abs(st.s - v.s) < T.bus.stopRadius)) target = Math.min(target, T.bus.stopSlow);
       // Slow for the bend ahead: full speed straight on, DRIVE.bendSpeed round a right angle.

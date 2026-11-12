@@ -233,6 +233,12 @@ describe('the streamed world beyond the map', () => {
     return w;
   }
 
+  it('only the timed world speeds traffic up beyond Sector V (free roam keeps true-scale pace)', () => {
+    expect(streamWorld('timed').traffic.open).toBe(T.traffic.openRoad);
+    expect(streamWorld('free').traffic.open).toBe(T.traffic.openRoadFree);
+    expect(T.traffic.openRoadFree).toBeLessThan(T.traffic.openRoad);
+  }, 30_000);
+
   it('drives the warped network: Sealdah is reachable from Sector V on the road graph', () => {
     for (const mode of ['timed', 'free'] as const) {
       const w = streamWorld(mode);
