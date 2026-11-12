@@ -31,6 +31,10 @@ const SAMPLE_T: [number, number][] = [...new Set(net.landmarks.filter((_, i) => 
 }))].map((k) => k.split(',').map(Number) as [number, number]);
 const samples = (mode: 'free' | 'timed') => (mode === 'free' ? SAMPLE : SAMPLE_T);
 
+/** CPU time used by this test process so far, ms (vitest runs each file in its own process). */
+const proc = (globalThis as unknown as { process: { cpuUsage(): { user: number; system: number } } }).process;
+const cpuMs = () => { const u = proc.cpuUsage(); return (u.user + u.system) / 1000; };
+
 describe('generateChunk', () => {
   it('is deterministic', () => {
     for (const [cx, cz] of SAMPLE.slice(0, 5)) {
@@ -120,12 +124,12 @@ describe('generateChunk', () => {
     for (const [mode, warp, xs, zs] of [['free', free, [-14, -9], [-3, 4]], ['timed', timed, [-7, -2], [-3, 2]]] as const) {
       for (let cx = xs[0]; cx <= xs[1]; cx++) for (let cz = zs[0]; cz <= zs[1]; cz++) {
         const job = chunkJob(net, warp, mode, cx, cz, 99);
-        const t0 = Date.now();
-        for (let t = Date.now(); ; t = Date.now()) {
+        const t0 = cpuMs();
+        for (let t = cpuMs(); ; t = cpuMs()) {
           const r = job.next();
-          slices.push(Date.now() - t);
+          slices.push(cpuMs() - t);
           if (r.done) {
-            whole.push(Date.now() - t0);
+            whole.push(cpuMs() - t0);
             if (cx === xs[0] && cz === zs[0]) expect(JSON.stringify(r.value)).toBe(JSON.stringify(generateChunk(net, warp, mode, cx, cz, 99)));
             break;
           }
@@ -134,8 +138,9 @@ describe('generateChunk', () => {
     }
     const pct = (xs: number[], q: number) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length * q)];
     const mean = whole.reduce((a, b) => a + b, 0) / whole.length;
-    console.log(`chunk gen: ${mean.toFixed(1)} ms per chunk (mean of ${whole.length}), slices p50 ${pct(slices, 0.5)} ms, p95 ${pct(slices, 0.95)} ms, max ${Math.max(...slices)} ms`);
-    // Generous bounds: this runs on a shared server next to other builds; the report above is what matters.
+    console.log(`chunk gen (CPU): ${mean.toFixed(1)} ms per chunk (mean of ${whole.length}), slices p50 ${pct(slices, 0.5)} ms, p95 ${pct(slices, 0.95)} ms, max ${Math.max(...slices)} ms`);
+    // CPU time of this test process (cpuMs), not wall time: on the shared server other builds' load used to push the
+    // wall-clock p95 past 12 ms although the slicing was fine.
     expect(pct(slices, 0.95)).toBeLessThanOrEqual(12);
     expect(mean).toBeLessThan(60);
   }, 60_000);
