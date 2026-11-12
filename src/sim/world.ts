@@ -97,6 +97,7 @@ export class World {
   private arrive(mode: ArriveMode) {
     this.player.state = 'gone';
     this.events.sfx('win');
+    if (mode === 'bus') this.events.voice('bus-arrive-sealdah');
     this.events.toast(arriveLine.title, arriveLine.line);
     this.events.push({ type: 'arrive', mode });
   }
@@ -205,6 +206,7 @@ export class World {
     if ((v.hangers ?? 0) >= 3 && this.rng.chance(B.crowdedBounce)) {
       this.events.toast('JAYGA NEI!', 'Conductor: "Pichhone egiye jaan!" There is no pichhone.');
       this.events.sfx('bad');
+      this.events.voice('bus-full');
       p.knockDown(Math.sin(v.heading), -Math.cos(v.heading), 3);
       return;
     }
@@ -218,6 +220,7 @@ export class World {
     if (this.run.stats.busHops === 1) this.events.notify(this.rng.pick(ticker.bus), '', 'news');
     if (v.routeDir === -1) this.events.notify('Conductor: "College More! College More!"', 'Wrong way. This bus is going back into Sector V.', 'bad');
     else if (v.depotAt) this.events.notify('Conductor: "Karunamoyee obdhi!"', 'This bus might not go all the way.', 'app');
+    this.events.voice(v.routeDir === -1 ? 'bus-wrong-way' : v.depotAt ? 'bus-depot-warning' : 'bus-sealdah');
   }
 
   private hopOff(fell: boolean) {
@@ -268,6 +271,7 @@ export class World {
     if (v.depotAt && v.routeDir === 1 && v.s >= v.depotAt) {
       this.events.toast('DEPOT!', 'Conductor: "Ar jabe na! Sobai namun!"');
       this.events.sfx('bad');
+      this.events.voice('bus-depot');
       // Out of service: it runs empty to the depot (it never swings across the median to turn round in the road).
       v.depotAt = undefined;
       v.retired = true;
@@ -279,7 +283,7 @@ export class World {
     if (this.streamed?.atSealdah(p.x, p.z)) { this.arrive('bus'); return; }
     if (v.gone || v.s >= way.line.length - 2) {
       if (v.routeDir === 1) this.arrive('bus');
-      else { this.events.toast('COLLEGE MORE', 'Conductor: "Last stop! Namun!" Wrong bus, dada.'); this.hopOff(false); }
+      else { this.events.toast('COLLEGE MORE', 'Conductor: "Last stop! Namun!" Wrong bus, dada.'); this.events.voice('bus-last-stop'); this.hopOff(false); }
     }
   }
 
@@ -302,6 +306,7 @@ export class World {
     if (cap.state === 'waiting') {
       if (cap.waitT === 0) {
         this.events.sfx('ting');
+        this.events.voice('captain-arrived');
         this.events.notify(`Captain ${cap.name} has arrived`, cap.plan === 'wrong' ? '…somewhere else. Run!' : 'Right there. Hop on before he changes his mind.', 'app');
       }
       cap.waitT += dt;
@@ -388,6 +393,7 @@ export class World {
       this.run.stats.ditched++;
       this.events.toast('RIDE ENDED', this.rng.pick(['Captain: "Petrol khatam, dada."', 'Captain: "Ekhane namun, ami ar jabo na."', 'Captain: "Barir pashe eshe gechhi. Bye."']));
       this.events.sfx('cancel');
+      this.events.voice('captain-ditch');
       this.events.push({ type: 'photo', drama: 2.6, burst: 'NAMUN!' });
       p.state = 'foot';
       p.rideId = 0;

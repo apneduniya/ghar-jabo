@@ -47,12 +47,23 @@ export const clips = {
     file: 'hawker-fish-talapia.mp3', gain: 0.6, loop: false, licence: 'CC BY 4.0',
     credit: '"fish hawker in Kolkata" by rain+, trimmed', source: 'https://freesound.org/s/548482/',
   },
+  // Placeholders for voice lines until Adarsh's recordings exist (content/voice.ts fallbacks).
+  conductorSealdah: {
+    file: 'conductor-sealdah-x3-proto.mp3', gain: 0.8, loop: false, licence: 'CC0',
+    credit: '"Sealdah" spoken in Bangla by Titodutta, sped up and looped three times',
+    source: 'https://commons.wikimedia.org/wiki/File:LL-Q9610_(ben)-Titodutta-%E0%A6%B6%E0%A6%BF%E0%A6%AF%E0%A6%BC%E0%A6%BE%E0%A6%B2%E0%A6%A6%E0%A6%B9.wav',
+  },
+  wordSealdah: {
+    file: 'word-sealdah.mp3', gain: 0.8, loop: false, licence: 'CC0',
+    credit: '"Sealdah" spoken in Bangla by Titodutta',
+    source: 'https://commons.wikimedia.org/wiki/File:LL-Q9610_(ben)-Titodutta-%E0%A6%B6%E0%A6%BF%E0%A6%AF%E0%A6%BC%E0%A6%BE%E0%A6%B2%E0%A6%A6%E0%A6%B9.wav',
+  },
 } satisfies Record<string, Clip>;
 
 export type ClipId = keyof typeof clips;
 
-/** Load order after the first tap: the shankh plays on that very tap, then the beds, then the rest. */
-export const loadOrder: ClipId[] = ['shankh', 'traffic', 'crows', 'busHorn', 'rain', 'hawker', 'hawkerFish', 'dhaak'];
+/** Load order after the first tap: the shankh plays on that very tap, then the beds, then the rest (voice placeholders last). */
+export const loadOrder: ClipId[] = ['shankh', 'traffic', 'crows', 'busHorn', 'rain', 'hawker', 'hawkerFish', 'dhaak', 'conductorSealdah', 'wordSealdah'];
 
 export const ambience = {
   /** Traffic horn bed gain at jam 0 and jam 1 (see Run.jam). */

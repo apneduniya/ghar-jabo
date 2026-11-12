@@ -1,4 +1,5 @@
 import type { ArriveMode } from './run';
+import type { VoiceId } from '../content/voice';
 
 // What the sim tells the presentation layers: they turn these into toasts, sounds, camera shake and stage changes.
 
@@ -15,7 +16,9 @@ export type GameEvent =
   | { type: 'stage'; to: 'station' }
   /** Reached the Sealdah forecourt (the streamed world's finish). */
   | { type: 'arrive'; mode: ArriveMode }
-  | { type: 'end'; ending: 'still-sector-v' };
+  | { type: 'end'; ending: 'still-sector-v' }
+  /** A voice line (content/voice.ts): Adarsh's recording, or its fallback until there is one. */
+  | { type: 'voice'; id: VoiceId };
 
 export class Events {
   list: GameEvent[] = [];
@@ -23,5 +26,6 @@ export class Events {
   toast(title: string, line = '') { this.push({ type: 'toast', title, line }); }
   notify(title: string, body = '', tone: 'app' | 'metro' | 'news' | 'bad' | 'good' = 'app') { this.push({ type: 'notify', title, body, tone }); }
   sfx(name: Sfx) { this.push({ type: 'sfx', name }); }
+  voice(id: VoiceId) { this.push({ type: 'voice', id }); }
   drain(): GameEvent[] { const l = this.list; this.list = []; return l; }
 }

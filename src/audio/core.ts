@@ -5,6 +5,8 @@ const MASTER = 0.5;
 
 export let ctx: AudioContext | null = null;
 export let master: GainNode | null = null;
+/** The ambience beds (traffic, crows, rain) go through this, so a voice line can duck them (audio/voice.ts). */
+export let beds: GainNode | null = null;
 let muted = false;
 const unlockHooks: (() => void)[] = [];
 
@@ -19,6 +21,8 @@ export function unlockAudio() {
   master = ctx.createGain();
   master.gain.value = muted ? 0 : MASTER;
   master.connect(ctx.destination);
+  beds = ctx.createGain();
+  beds.connect(master);
   for (const fn of unlockHooks.splice(0)) fn();
 }
 

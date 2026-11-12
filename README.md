@@ -47,6 +47,8 @@ list; the tram bell and metro door sounds are synthesised):
 - Dhaak (Durga Puja drums): AnneshaGhosh, freesound.org/s/592301 (CC BY 4.0)
 - Central Kolkata street ambience: Jean-François Cavro, radio aporee / archive.org (Public Domain Mark)
 - Musical bus horn: SoundEnsemble, freesound.org/s/508540 (CC0)
-- Spoken Bangla place names: Titodutta, Lingua Libre / Wikimedia Commons (CC0)
+- Spoken Bangla place names: Titodutta, Lingua Libre / Wikimedia Commons (CC0); the conductor's "Sealdah ×3"
+  placeholder is cut from the same recording
+<!-- Voice lines (docs/VOICE.md): add "Voice lines: Adarsh" here with the first real file in public/sounds/voice/. -->
 
 Brand names in the game are parodies. It is not affiliated with any company, transport operator or app.

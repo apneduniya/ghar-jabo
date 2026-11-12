@@ -25,6 +25,7 @@ import { sceneLayer, el, hint, notify, setDateline, showHud, toast, shakeUi } fr
 import { input, enableStick, pressButton } from '../input/input';
 import { Look } from '../input/look';
 import { sfx } from '../audio/audio';
+import { voice } from '../audio/voice';
 import { Ambience } from '../audio/ambience';
 import { floods } from '../content/sectorv';
 import { CONTROLS, T } from '../content/tuning';
@@ -157,6 +158,13 @@ export function sectorv(): Scene {
   // The point the camera orbits (eases after the player) and its current distance (eases after walls).
   const pivot = new THREE.Vector3();
   let camDist = 0;
+  // Opening shot (task 034): a wide, high look at the college gate and the Street No. 2 junction, gliding down
+  // behind the student. Any touch, swipe or key cuts it short. Not when coming back from the metro.
+  const OPEN = { secs: 2.5, back: 22, side: 13, high: 18, ahead: 16 };
+  let opening: { t: number; armed: boolean; from: THREE.Vector3; at: THREE.Vector3 } | null = null;
+  let openFirst: number[] = [];
+  const chaseAt = new THREE.Vector3(), chaseDir = new THREE.Vector3();
+  const returning = run.elapsed > 1 || run.stats.modesTried.includes('metro');
 
   /** The stick, read in the camera's yaw right now (the camera never turns by itself on foot). */
   function intentFromInput(): Intent {
@@ -183,6 +191,7 @@ export function sectorv(): Scene {
       case 'toast': toast(e.title, e.line); break;
       case 'notify': notify(e.title, e.body, e.tone); break;
       case 'sfx': sfx[e.name](); break;
+      case 'voice': voice(e.id); break;
       case 'shake': shake.kick(e.amp, e.secs); if (e.amp > 0.5) shakeUi(); break;
       case 'hitstop': game.hitStop = Math.max(game.hitStop, e.secs); break;
       case 'slowmo': game.timeScale = e.scale; setTimeout(() => { game.timeScale = 1; }, e.secs * 1000); break;
@@ -295,6 +304,31 @@ export function sectorv(): Scene {
       hint('College gate, Street No. 2. Hop a bus, book a bike, or find the metro.');
       ambience.start();
       setTimeout(() => hint(''), 6000);
+      if (returning) return;
+      // Behind the student down the street, out over the stalls' side, high enough for the gate, junction and sky.
+      const fx = Math.cos(look.yaw), fz = Math.sin(look.yaw);
+      const from = new THREE.Vector3(gate.x - fx * OPEN.back - gate.nx * OPEN.side, OPEN.high, gate.z - fz * OPEN.back - gate.nz * OPEN.side);
+      opening = { t: 0, armed: false, from, at: new THREE.Vector3(gate.x + fx * OPEN.ahead, 3, gate.z + fz * OPEN.ahead) };
+      game.debug.opening = () => ({ active: !!opening, first: openFirst, player: [world.player.x, world.player.z] });
+  }
+
+  /** Blend the chase camera (already placed) from the opening shot; any input ends it. */
+  function openingShot(dt: number) {
+    if (!opening) return;
+    const touched = input.tap || input.mx || input.mz || input.lookYaw || input.lookPitch || input.turn || input.jump || input.action || input.phone;
+    // The tap that pressed PLAY can land in the first frame: listen from the second one.
+    if (opening.armed && touched) { opening = null; return; }
+    opening.armed = true;
+    opening.t += dt;
+    const k = Math.min(1, opening.t / OPEN.secs), e = k * k * (3 - 2 * k);
+    const p = world.player;
+    // Where the chase camera looks: about as far ahead of it as the student is.
+    camera.getWorldDirection(chaseDir);
+    chaseAt.copy(camera.position).addScaledVector(chaseDir, Math.hypot(camera.position.x - p.x, camera.position.z - p.z));
+    camera.position.lerpVectors(opening.from, camera.position, e);
+    camera.lookAt(chaseAt.lerpVectors(opening.at, chaseAt, e));
+    if (!openFirst.length) openFirst = camera.position.toArray();
+    if (k >= 1) opening = null;
   }
 
   function playUpdate(dt: number) {
@@ -372,6 +406,7 @@ export function sectorv(): Scene {
       // Looking down, the gaze comes in towards the player so they stay on screen.
       const ahead = 6 * (1 - 0.65 * Math.min(0, look.pitch) / CONTROLS.pitchRange[0]);
       camera.lookAt(pivot.x + fx * ahead, 1.2 + Math.max(0, look.pitch) * CONTROLS.camLift, pivot.z + fz * ahead);
+      openingShot(dt);
       shake.apply(camera, dt);
       actors.billboard(camera);
       built.cull(camera.position.x, camera.position.z);

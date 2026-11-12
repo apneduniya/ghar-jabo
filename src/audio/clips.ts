@@ -2,7 +2,7 @@
 // frame and first sounds never wait. A clip that is missing or fails to decode is skipped silently.
 
 import { clips, loadOrder, ambience, type ClipId } from '../content/sounds';
-import { ctx, master, onUnlock } from './core';
+import { beds, ctx, master, onUnlock } from './core';
 
 const buffers = new Map<ClipId, AudioBuffer>();
 /** One-shots asked for before their clip arrived: play on arrival if still fresh. */
@@ -50,7 +50,7 @@ export function onClipLoaded(fn: (id: ClipId) => void): () => void {
  * Play a one-shot. Returns false if the clip isn't loaded (yet). With `wait`, a clip still loading plays
  * when it arrives, as long as that's within `wait` seconds.
  */
-export function playClip(id: ClipId, opts: { gain?: number; wait?: number } = {}): boolean {
+export function playClip(id: ClipId, opts: { gain?: number; wait?: number; when?: number } = {}): boolean {
   const buf = buffers.get(id);
   if (!ctx || !master) return false;
   if (!buf) {
@@ -62,8 +62,13 @@ export function playClip(id: ClipId, opts: { gain?: number; wait?: number } = {}
   const g = ctx.createGain();
   g.gain.value = clips[id].gain * (opts.gain ?? 1);
   src.connect(g).connect(master);
-  src.start();
+  src.start(ctx.currentTime + (opts.when ?? 0));
   return true;
+}
+
+/** Length of a loaded clip in seconds (0 if it isn't loaded). */
+export function clipSecs(id: ClipId): number {
+  return buffers.get(id)?.duration ?? 0;
 }
 
 /** A looping bed. Starts silently once its clip is loaded; `setLevel` glides the gain. */
@@ -91,7 +96,7 @@ export class Bed {
     this.src.loopEnd = buf.duration - Math.min(0.03, buf.duration / 4);
     this.gain = ctx.createGain();
     this.gain.gain.value = 0;
-    this.src.connect(this.gain).connect(master);
+    this.src.connect(this.gain).connect(beds ?? master);
     this.src.start(0, Math.random() * buf.duration * 0.5);
     this.setLevel(this.level);
   }

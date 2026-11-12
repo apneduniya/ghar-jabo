@@ -2,7 +2,8 @@
 // Webel More junction, and a hawker calling now and then on the café strip.
 
 import { ambience as A } from '../content/sounds';
-import { Bed, playClip } from './clips';
+import { Bed } from './clips';
+import { voice } from './voice';
 import { hawkerGap, hornBedGain, inSpot, rainBedGain, type Spot } from './mix';
 
 export class Ambience {
@@ -29,7 +30,8 @@ export class Ambience {
     if (this.hawkerIn > 0) return;
     this.hawkerIn = hawkerGap(Math.random());
     this.flip = !this.flip;
-    playClip(this.flip ? 'hawker' : 'hawkerFish');
+    // Adarsh's jhalmuri and cha calls once recorded; until then the rain+ hawker clips (content/voice.ts).
+    voice(this.flip ? 'hawker-jhalmuri' : 'hawker-cha');
   }
 
   stop() {
