@@ -21,7 +21,7 @@ export const T = {
     laneOffset: 0.28, // fraction of road width from the centre line to a lane (keep left)
     pierClear: 1.65, // half a bus plus a margin, beside a pier in the middle of the road
     medianPier: 1.6, // a pier this close to a road's centre line stands in its median: lanes move out around it
-    openRoad: 1.3, // speed factor beyond the Sector V square
+    openRoad: 1.4, // speed factor beyond the Sector V square (1.3 before divided roads kept their true spacing, 029)
     followGap: 1.6,
     spawnEvery: [0.25, 0.6] as [number, number],
     /** Share of each kind when spawning (buses come from their route, not from here). */

@@ -19,7 +19,7 @@ const C = {
 /** A bridge where the layout puts it (sim/gen/layout.ts): frame at the site, u along the road, v across. */
 export function buildBridge(ctx: Ctx, b: BridgeSite) {
   const f = ctx.frame(b.x, b.z, b.h);
-  if (b.kind === 'under') railUnder(f, b.width, b.roadW, b.emb);
+  if (b.kind === 'under') railUnder(f, b.width, b.roadW, b.emb, b.ab);
   else canalBridge(f, b.width, b.roadW, b.ornate, b.water, b.par);
 }
 
@@ -62,17 +62,19 @@ function ironRailing(f: Frame, u0: number, u1: number, v: number) {
 }
 
 /** A steel plate-girder rail bridge across the road (rail corridor `width` along the road) on brick abutments. */
-export function railUnder(f: Frame, width: number, roadW: number, embs?: [number, number]) {
-  const { S, w, emb: [e0, e1] } = underbridge({ width, roadW, emb: embs }), H = LM.railClearance;
+export function railUnder(f: Frame, width: number, roadW: number, embs?: [number, number], abs?: [[number, number], [number, number]]) {
+  const { S, w, emb: [e0, e1], ab } = underbridge({ width, roadW, emb: embs, ab: abs }), H = LM.railClearance;
   for (const s of [-1, 1]) {
-    // Abutment walls beside the footpaths, and the embankment carrying on beyond them (short of any other road).
-    const emb = s < 0 ? e0 : e1;
-    f.box(-w - 1, w + 1, s * S, s * (S + 1.6), 0, H + 0.3, C.brick);
+    // Abutment walls beside the footpaths, and the embankment carrying on beyond them (short of any other road);
+    // both stop short of a road passing beside the bridge (sim/gen/sites.ts abutments).
+    const emb = s < 0 ? e0 : e1, [a0, a1] = ab[s < 0 ? 0 : 1];
+    if (a1 - a0 < 0.5) continue;
+    f.box(Math.max(a0, -w - 1), Math.min(a1, w + 1), s * S, s * (S + 1.6), 0, H + 0.3, C.brick);
     if (emb > 2) {
-      f.box(-w - 1.4, w + 1.4, s * (S + 1.6), s * (S + emb), 0, H - 0.4, C.earth);
-      f.box(-w - 1.4, w + 1.4, s * (S + 1.6), s * (S + emb), H - 0.4, H + 0.2, C.grass);
+      f.box(a0, a1, s * (S + 1.6), s * (S + emb), 0, H - 0.4, C.earth);
+      f.box(a0, a1, s * (S + 1.6), s * (S + emb), H - 0.4, H + 0.2, C.grass);
     }
-    for (const u of [-w - 1.2, w + 1.2]) f.box(u - 0.5, u + 0.5, s * S - 0.2, s * S + 0.2, 0, H + 0.8, C.brick); // pilasters
+    for (const u of [-w - 1.2, w + 1.2]) if (u - 0.5 >= a0 && u + 0.5 <= a1) f.box(u - 0.5, u + 0.5, s * S - 0.2, s * S + 0.2, 0, H + 0.8, C.brick); // pilasters
   }
   // Plate girders on the two faces, cross deck between, ballast, sleepers and two tracks.
   for (const u of [-w, w]) {

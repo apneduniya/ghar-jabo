@@ -10,7 +10,7 @@
 import { rectSegDist, type Rect } from './geom';
 import { laneFree } from './lanes';
 import { type Line, inSectorV } from './lines';
-import { framePt, groundRoadsNear, memo, metroLayout, roadNear, warpHeading } from './layout';
+import { framePt, groundRoadsNear, memo, metroLayout, netLines, roadNear, warpHeading } from './layout';
 import type { Landmark, LandmarkKind, NetRoad, Warp, WorldNet } from './types';
 
 /** A box in a model's frame: u0..u1 along its facing, v0..v1 across. */
@@ -110,10 +110,19 @@ const reachOf = (rects: FrameRect[]) => Math.max(...rects.map(([u0, u1, v0, v1])
 const DIRS = [0, 0.5, -0.5, 1, -1, Math.PI / 2, -Math.PI / 2, 2.2, -2.2, Math.PI];
 const TURNS = [0, 0.2, -0.2, 0.4, -0.4];
 
+/** Flyover decks near (x, z): a building may not stand under one either (its columns and ramps are there). */
+function decksNear(net: WorldNet, warp: Warp, x: number, z: number, r: number): Roads {
+  const all = memo(net, warp, 'deck roads', () => netLines(net, warp).filter(({ r: road }) => road.bridge === 'flyover').map((it) => {
+    const xs = it.l.p.map((p) => p[0]), zs = it.l.p.map((p) => p[1]), m = it.r.w / 2;
+    return { ...it, box: [Math.min(...xs) - m, Math.min(...zs) - m, Math.max(...xs) + m, Math.max(...zs) + m] };
+  }));
+  return all.filter(({ box: b }) => x > b[0] - r && x < b[2] + r && z > b[1] - r && z < b[3] + r);
+}
+
 /** A set-back model: where it stands clear of every carriageway (its warped spot if it already is). */
 function placeModel(net: WorldNet, warp: Warp, x: number, z: number, h: number, rects: FrameRect[]): Placement {
   const reach = reachOf(rects);
-  const fits = (px: number, pz: number, ph: number) => !inSectorV(px, pz) && !rectsOnRoad(groundRoadsNear(net, warp, px, pz, reach + 4), px, pz, ph, rects, LANDMARK_KERB);
+  const fits = (px: number, pz: number, ph: number) => !inSectorV(px, pz) && !rectsOnRoad([...groundRoadsNear(net, warp, px, pz, reach + 4), ...decksNear(net, warp, px, pz, reach + 4)], px, pz, ph, rects, LANDMARK_KERB);
   if (fits(x, z, h)) return { x, z, h, island: false, r: 0, moved: 0 };
   for (let d = 1.5; d <= 150; d += 1.5) for (const t of TURNS) for (const a of DIRS) {
     const back = h + Math.PI + a, px = x + Math.cos(back) * d, pz = z + Math.sin(back) * d;

@@ -7,7 +7,8 @@
 // A flyover way rises from a free end (one no other flyover way joins) over LM.flyoverRamp; joined ways stay level.
 // - EM Bypass: blue-and-white kerb blocks and a blue spear-top railing along the median (stadium_bypass_h90).
 
-import type { NetRoad, Pt } from '../../../sim/gen/types';
+import type { Pt } from '../../../sim/gen/types';
+import { medianLines } from '../../../sim/gen/medians';
 import { LM } from '../../../content/landmarks';
 import { DECK_MIN_Y, DECK_PIECE, DECK_PIER, DECK_PIER_PHASE, DECK_PIER_Y, type NetDeck, deckHalf, deckPierAt, flyoverNear as netFlyoverNear, netDeckY, netDecks } from '../../../sim/gen/layout';
 import { intervals, marks, pieces, sample } from './clip';
@@ -105,15 +106,13 @@ function diamond(ctx: Ctx, p: S, q: S, side: number, half: number, y: number) {
   ctx.parts.quad(Q(mx, mz, y - 0.95), Q(q.x, q.z, y - 0.5), Q(mx, mz, y - 0.1), Q(p.x, p.z, y - 0.5), C.blue);
 }
 
-const isBypass = (r: NetRoad) => !r.bridge && /bypass|eastern metropolitan/i.test(r.name ?? '');
-
-/** The EM Bypass median: blue-and-white kerb blocks under a blue spear-top railing. */
+/**
+ * The EM Bypass median: blue-and-white kerb blocks under a blue spear-top railing, once per carriageway pair, midway
+ * between their inner edges, with a gap at every junction (sim/gen/medians.ts; its collision is in solids.ts).
+ */
 export function buildMedians(ctx: Ctx) {
-  for (const { r, l } of ctx.roads()) {
-    if (!isBypass(r)) continue;
-    // Two-way: the median is the centre line. One-way (keep left): it's on the right of travel.
-    const o = r.oneway ? r.w / 2 + 0.6 : 0; // + is the right of travel, (-dz, dx)
-    const at = (s: number) => { const q = sample(l, s); return { ...q, x: q.x - q.dz * o, z: q.z + q.dx * o }; };
+  for (const l of medianLines(ctx.net, ctx.warp)) {
+    const at = (s: number) => sample(l, s);
     for (const [a, b] of pieces(intervals(l, ctx.cx, ctx.cz), 1.5)) {
       const p = at(a), q = at(b);
       ctx.parts.span([p.x, p.z], [q.x, q.z], 0.25, 1.1, 0, Math.floor((a + b) / 3) % 2 ? C.kerbB : C.kerbW);

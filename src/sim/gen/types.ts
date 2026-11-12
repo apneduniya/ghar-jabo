@@ -28,6 +28,11 @@ export interface NetRoad {
   p: Pt[];
   /** Corridor ids this road belongs to (A_saltlake_phoolbagan, ...). */
   corridors: string[];
+  /**
+   * Per vertex of p, how far tools/build-world.py moved it off its OSM line to give a divided road a real median
+   * (real units), or null. The timed warp keeps this spacing true (sim/gen/roadwarp.ts). Optional.
+   */
+  off?: (Pt | null)[];
   /** A continuous hawker row along one side (1: left of the direction of p, -1: right), e.g. Sealdah's walk-in. */
   hawkers?: 1 | -1;
 }

@@ -8,6 +8,7 @@ import { ChunkStore } from './stream';
 import { makeCtx } from './ctx';
 import { LAMPS } from '../../content/worldgen';
 import { LampKind, lampPool } from './lamps';
+import { roadToGame } from './roadwarp';
 import type { GenProp, Pt } from './types';
 
 const net = loadNet(worldJson);
@@ -29,7 +30,7 @@ function project(p: Pt[], x: number, z: number) {
 function lampsAlong(store: ChunkStore, roadName: string, cls?: string) {
   const roads = net.roads.filter((r) => r.name === roadName && !r.bridge && (!cls || r.cls === cls));
   return roads.map((road) => {
-    const p = road.p.map((q) => store.warp.toGame(q));
+    const p = roadToGame(road, store.warp, 12).p; // as the game warps it (divided roads keep true spacing)
     // Chunks unload behind a long road: keep every chunk's lamps as it goes by.
     const seen = new Map<string, GenProp[]>();
     for (const [x, z] of p) {
@@ -43,7 +44,7 @@ function lampsAlong(store: ChunkStore, roadName: string, cls?: string) {
 /** Every net carriageway in game coordinates (with a box for quick rejects), and the canal/rail crossings. */
 function world(store: ChunkStore) {
   const roads = net.roads.map((r) => {
-    const p = r.p.map((q) => store.warp.toGame(q));
+    const p = roadToGame(r, store.warp, 12).p;
     const xs = p.map((q) => q[0]), zs = p.map((q) => q[1]);
     return { r, p, box: [Math.min(...xs) - r.w, Math.min(...zs) - r.w, Math.max(...xs) + r.w, Math.max(...zs) + r.w] };
   });

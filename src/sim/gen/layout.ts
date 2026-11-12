@@ -7,8 +7,9 @@
 import { LM } from '../../content/landmarks';
 import { type Line, nearestOn, prepLine, sample } from './lines';
 import { laneFree, lanesPass } from './lanes';
-import { T } from '../../content/tuning';
+import { LANE_ROOM, T } from '../../content/tuning';
 import type { AreaKind, MetroLine, NetRoad, Pt, Warp, WorldNet } from './types';
+import { warped } from './net';
 
 const memos = new WeakMap<WorldNet, WeakMap<Warp, Map<string, unknown>>>();
 
@@ -24,7 +25,7 @@ export function memo<T>(net: WorldNet, warp: Warp, key: string, fn: () => T): T 
 
 /** Every network road, warped into game space. */
 export function netLines(net: WorldNet, warp: Warp): { r: NetRoad; l: Line }[] {
-  return memo(net, warp, 'roads', () => net.roads.map((r) => ({ r, l: prepLine(r.p, warp, 16) })));
+  return memo(net, warp, 'roads', () => net.roads.map((r) => ({ r, l: prepLine(r.p, warp, 16, r.off) })));
 }
 
 export interface RoadHit { r: NetRoad; d: number; x: number; z: number; dx: number; dz: number; w: number }
@@ -235,17 +236,21 @@ export function onCarriageway(roads: { r: NetRoad; l: Line }[], x: number, z: nu
   return false;
 }
 
+/** A pier off the road stands this far beyond the kerb: T.traffic.pierClear past a bus overhanging the kerb. */
+const PIER_KERB = T.traffic.pierClear + LANE_ROOM.overKerb - LANE_ROOM.busHalf + 0.05;
+
 /**
- * True if a round pier of radius r at (x, z), heading (dx, dz) along its line, leaves every road it's in passable:
- * strictly, the default lane passes it or it stands in a two-way road's median; else the lane may have to move.
+ * True if a round pier of radius r at (x, z), heading (dx, dz) along its line, stands clear of every carriageway (in
+ * a divided road's median gap, or off the road), or on the centre line of a two-way road running along its line
+ * (its median: the lanes either side pass it). Never merely where a lane could squeeze round it (AUDIT.md 8).
  */
-function pierPassable(roads: { r: NetRoad; l: Line }[], x: number, z: number, dx: number, dz: number, r: number, strict: boolean) {
+function pierPassable(roads: { r: NetRoad; l: Line }[], x: number, z: number, dx: number, dz: number, r: number) {
   for (const { r: road, l } of roads) {
     const n = roadNear(l, x, z);
-    if (n.d >= road.w / 2 + r + 0.3) continue;
+    // Clear of the widest a lane may run (a bus overhanging the kerb by LANE_ROOM.overKerb), as lanes.ts judges it.
+    if (n.d >= road.w / 2 + r + PIER_KERB) continue;
     if (Math.abs(n.dx * dx + n.dz * dz) < 0.9) return false;
-    const median = !road.oneway && Math.abs(n.side) < T.traffic.medianPier;
-    if (strict ? !laneFree(road.w, road.oneway, n.side, r) && !median : !lanesPass(road.w, road.oneway, n.side, r)) return false;
+    if (road.oneway || Math.abs(n.side) >= T.traffic.medianPier || !laneFree(road.w, road.oneway, n.side, r)) return false;
   }
   return true;
 }
@@ -253,17 +258,17 @@ function pierPassable(roads: { r: NetRoad; l: Line }[], x: number, z: number, dx
 /**
  * Where the pier of a line's mark at arc length s stands (arc length), or null for none. A pier (radius r) landing
  * on a road the line crosses at an angle, or in the lane of a carriageway the line runs across, slides along the
- * line off it, like the real viaduct's longer span over a junction. In a median it stays put: the lanes pass it
- * (lanes.ts). Along a carriageway with nowhere better, it stays where the lane can move round it.
+ * line off it, like the real viaduct's longer span over a junction. In a median it stays put. Where nowhere within
+ * ±5.6 is clear of every carriageway there is no pier (the span is longer there).
  */
 export function pierAt(net: WorldNet, warp: Warp, l: Line, key: string, s: number, r: number): number | null {
   return memo(net, warp, `pier ${key} ${s.toFixed(2)}`, () => {
     const q0 = sample(l, s), roads = groundRoadsNear(net, warp, q0.x, q0.z, 30);
-    for (const strict of [true, false]) for (let k = 0; k <= 16; k++) {
+    for (let k = 0; k <= 16; k++) {
       const d = (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 0.7, t = s + d;
       if (t < 0 || t > l.len) continue;
       const q = sample(l, t);
-      if (pierPassable(roads, q.x, q.z, q.dx, q.dz, r, strict)) return t;
+      if (pierPassable(roads, q.x, q.z, q.dx, q.dz, r)) return t;
     }
     return null;
   });
@@ -288,7 +293,7 @@ const key = (p: Pt) => `${Math.round(p[0])},${Math.round(p[1])}`;
 export function netDecks(net: WorldNet, warp: Warp): NetDeck[] {
   return memo(net, warp, 'decks', () => {
     const roads = net.roads.filter(isFlyover);
-    const lines = roads.map((r) => prepLine(r.p, warp)), reals = roads.map((r, i) => realArc(r.p, lines[i]));
+    const lines = roads.map((r) => prepLine(r.p, warp, 8, r.off)), reals = roads.map((r, i) => realArc(r.p, lines[i]));
     const nodes = new Map<string, { deg: number; d: number; edges: { to: string; w: number }[] }>();
     const node = (k: string) => { let n = nodes.get(k); if (!n) nodes.set(k, (n = { deg: 0, d: Infinity, edges: [] })); return n; };
     roads.forEach((r, i) => {
@@ -307,7 +312,7 @@ export function netDecks(net: WorldNet, warp: Warp): NetDeck[] {
         if (n.d + e.w < m.d) { m.d = n.d + e.w; open.push(e.to); }
       }
     }
-    return roads.map((r, i) => {
+    const out = roads.map((r, i) => {
       const [rx, rz] = r.p[0], style = styleOf(net, warp, r, rx, rz);
       const Y = style === 'diamond' ? LM.flyoverY.ultadanga : style === 'panel' ? LM.flyoverY.sealdah : LM.flyoverY.other;
       const dS = nodes.get(key(r.p[0]))!.d, dE = nodes.get(key(r.p[r.p.length - 1]))!.d;
@@ -316,8 +321,22 @@ export function netDecks(net: WorldNet, warp: Warp): NetDeck[] {
         tram: !!r.tram || style === 'panel' && /vidyapati/i.test(r.name ?? ''), real: reals[i],
       };
     });
+    // The deck level at each vertex of the warped way the traffic graph drives (AUDIT.md 18), by its polyline.
+    const wn = warped(net, warp);
+    for (const d of out) {
+      const wr = wn.roads.find((x) => x.road === d.r);
+      if (wr) DECK_LEVELS.set(wr.p, wr.p.map(([x, z]) => netDeckY(d, nearestOn(d.l, x, z).s)));
+    }
+    return out;
   });
 }
+
+const DECK_LEVELS = new WeakMap<Pt[], number[]>();
+/**
+ * The deck level at each vertex of a flyover way's warped polyline (WarpedNet.roads[i].p, the very array), once
+ * netDecks has run for its (net, warp); undefined for any other polyline.
+ */
+export const deckLevels = (p: Pt[]) => DECK_LEVELS.get(p);
 
 function styleOf(net: WorldNet, warp: Warp, r: NetRoad, rx: number, rz: number): DeckStyle {
   const n = r.name ?? '';

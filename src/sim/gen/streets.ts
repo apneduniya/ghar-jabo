@@ -350,14 +350,25 @@ function allMapEnds(ctx: Ctx): Street[] {
   return out;
 }
 
-/** Real road ends that lead nowhere (not on the square edge, not at Sealdah, not on another road): timed dead ends. */
+/**
+ * Real road ends that lead nowhere (not on the square edge, not at Sealdah, not on another road): timed dead ends.
+ * Only on roads that leave the corridor band (AUDIT.md 17): never on a corridor road itself (the other carriageway
+ * of the road you travel), and only where the end is at least CAP_CLEAR from every corridor road.
+ */
 export interface LooseEnd { p: Pt; rot: number; w: number; key: number }
+/** A timed dead end stands at least this far from every corridor road. */
+const CAP_CLEAR = 30;
 const looseCache = new WeakMap<WarpedNet, LooseEnd[]>();
 export function looseEnds(ctx: Ctx): LooseEnd[] {
   const hit = looseCache.get(ctx.wn);
   if (hit) return hit;
   const ends: LooseEnd[] = [];
+  const nearCorridor = (e: Pt) => ctx.wn.segmentsIn(e[0] - CAP_CLEAR, e[1] - CAP_CLEAR, e[0] + CAP_CLEAR, e[1] + CAP_CLEAR).some(([ri, kk]) => {
+    const q = ctx.wn.roads[ri];
+    return q.road.corridors.length > 0 && segDist(e[0], e[1], q.p[kk - 1][0], q.p[kk - 1][1], q.p[kk][0], q.p[kk][1]) < CAP_CLEAR + q.road.w / 2;
+  });
   for (const r of ctx.wn.roads) {
+    if (r.road.corridors.length) continue;
     const n = r.p.length;
     for (const [e, o, k] of [[r.p[0], r.p[1], 1], [r.p[n - 1], r.p[n - 2], n - 1]] as [Pt, Pt, number][]) {
       if (Math.max(Math.abs(e[0]), Math.abs(e[1])) <= HALF + 0.5) continue;
@@ -368,7 +379,7 @@ export function looseEnds(ctx: Ctx): LooseEnd[] {
         const q = ctx.wn.roads[ri];
         if (segDist(e[0], e[1], q.p[kk - 1][0], q.p[kk - 1][1], q.p[kk][0], q.p[kk][1]) < q.road.w / 2 + 2) { joined = true; break; }
       }
-      if (!joined) ends.push({ p: e, rot: Math.atan2(e[1] - o[1], e[0] - o[0]), w: r.road.w, key: r.key * 2 + (k === 1 ? 0 : 1) });
+      if (!joined && !nearCorridor(e)) ends.push({ p: e, rot: Math.atan2(e[1] - o[1], e[0] - o[0]), w: r.road.w, key: r.key * 2 + (k === 1 ? 0 : 1) });
     }
   }
   looseCache.set(ctx.wn, ends);
