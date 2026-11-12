@@ -8,6 +8,7 @@
     "  new:<slug> needs a footprint: ll = [[lat, lon], ...] (preferred) or p = [[x, z], ...] in game units.",
     "  src: where the numbers came from and how the footprint was matched. Keep it honest about uncertainty.",
     "pois: name -> {ll: [lat, lon]} or {osm: <node id in osm-pois.json / osm-streets.json>}, plus src.",
+    "roads: keyed by OSM way id -> {w: carriageway width in game units (default by class, build-map.py WIDTH)}, plus src.",
     "Street View panos and satellite tiles are in research/streetview/img/ (gitignored); survey notes in research/streetview/*.md."
   ],
   "buildings": {
@@ -137,6 +138,9 @@
       "n": null,
       "src": "The OSM name on this house is crude vandalism; don't ship it. Levels stay from OSM."
     }
+  },
+  "roads": {
+    "310458360": { "w": 4, "src": "NORTH.md §3 'Gate A re-shoot' (a0z_h40, a0z_h15, p1z_h310): the road under Sector V station past Gate A is one lane plus an auto kerb lane, about 7-8 m kerb to kerb (8 m = 4 u), not the 18 m a 'primary' gets. The whole OSM way is this road: beside the at-grade end of the NE-bound flyover deck from Wipro More, under the station past Gate A, to where it joins the Bypass carriageway past IT Centre." }
   },
   "pois": {
     "tiu": { "ll": [22.57603, 88.42844], "src": "OSM amenity=university node for Techno India University (unchanged)." },

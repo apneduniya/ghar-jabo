@@ -1,8 +1,8 @@
 // The two metro stations on Biswa Bangla Sarani (research/streetview/NORTH.md §3-4), side by side:
 // - Salt Lake Sector V (Green Line terminus), canal side: an elevated box on piers, grey and copper-brown panels,
 //   a curved blue truss roof with skylight strips over the platforms, open parking below, Gate A on the service
-//   road (gateA below), a peach bank block over the road NE of it, the yellow name tower, and a stair tower on
-//   Chavipatty Rd at Gate B (the station spans the canal).
+//   road (gateA below), a peach bank block over the road NE of it, the yellow name tower, and Gate B on Chavipatty Rd
+//   (gateB below; the station spans the canal).
 // - IT Centre (Orange Line): a beige box straddling the road on piers, with the big trilingual sign and roundel.
 // - An enclosed steel-truss skywalk between them.
 
@@ -11,10 +11,10 @@ import { sign } from '../gfx';
 import { north as N } from '../../content/sectorv';
 import { northSigns } from '../../content/text';
 import { at, type Box, local, stations } from '../../sim/elevated';
-import { itPierRects, itPiers, itStair, itStairRect, type LocalRect, SV_PIER_HALF, svGateA, svGround, svPiers } from '../../sim/structures';
+import { itPierRects, itPiers, itStair, itStairRect, type LocalRect, SV_PIER_HALF, svGateA, svGateB, svGround, svPiers } from '../../sim/structures';
 import { auto } from '../models';
 import type { Pt, Road } from '../../sim/mapdata';
-import { heading, type Parts, type V3 } from './northkit';
+import { hash, heading, type Parts, type V3 } from './northkit';
 
 const C = {
   pier: 0xb9b2a8, underside: 0xd8b896, core: 0x9da2a5, grey: 0xa7abae, copper: 0x9a5a38, glass: 0x86a3b4,
@@ -85,7 +85,7 @@ function sectorV(parts: Parts, b: Box, roads: Road[]) {
   for (const t of [t0, t1]) lb(parts, b, -h - 0.5, h + 0.5, t - 0.15, t + 0.15, ROOF - 0.4, ROOF + 0.1, C.roof);
 
   // Ground level: parking behind low walls on the Chavipatty side, Gate A on the service road.
-  const g = svGround(b, roads);
+  const g = svGround(b);
   rb(parts, b, g.parkWall, 0, 0.8, C.wall);
   g.cars.forEach((c, i) => {
     rb(parts, b, c, 0.3, 1.1, [0xe8e8e8, 0xb83a32, 0x3b4b63, 0xc9c9c9, 0x6b6b6b, 0xe8e8e8, 0x2e6fae][i % 7]);
@@ -102,11 +102,7 @@ function sectorV(parts: Parts, b: Box, roads: Road[]) {
   signs.push(board(b, northSigns.bank, 3.6, 0.7, -h, 0.44, 13.8, 0, -1, '#f6d24a', '#b0322a'));
   signs.push(board(b, northSigns.sectorVBn, 3.8, 0.95, -h, 0.44, 11.6, 0, -1, '#f6d24a', '#2a2a2a'));
   signs.push(board(b, northSigns.sectorVBn, 3.8, 0.95, -h - 2.06, 2.5, 11.6, -1, 0, '#f6d24a', '#2a2a2a'));
-  // Stair tower at Gate B on Chavipatty Rd, with the bilingual name (c4_h60).
-  const [gs, gt] = g.gateBAt;
-  rb(parts, b, g.gateB, 0, 11.2, C.tower);
-  lb(parts, b, gs - 3.2, gs + 3.2, gt - 1.7, gt + 2.4, 11.2, 11.6, C.beigeDark);
-  signs.push(board(b, northSigns.sectorVBn, 5.4, 0.9, gs, gt + 2.26, 9.4, 0, 1, '#efe6d4', '#2b2b2b'));
+  signs.push(...gateB(parts, b));
   return signs;
 }
 
@@ -191,9 +187,9 @@ function gateA(parts: Parts, b: Box): THREE.Object3D[] {
     parts.quad(p3(b, s, f - 0.02, y), p3(b, s1, f - 0.02, y), p3(b, s1, f - 0.02, y + 0.6), p3(b, s, f - 0.02, y + 0.6), c, 0, false);
   }
   // Paved forecourt and footpath, blue-and-white kerb.
-  lb(parts, b, A.forecourt, m1, 0.9, f, 0, 0.1, 0xc7b29c);
+  lb(parts, b, A.forecourt, m1, A.kerb, f, 0, 0.1, 0xc7b29c);
   lb(parts, b, A.forecourt, b0, f, back, 0, 0.1, 0xc7b29c);
-  for (let s = A.forecourt, i = 0; s < m1 + 6; s += 1, i++) lb(parts, b, s, s + 1, 0.75, 0.95, 0, 0.22, i % 2 ? 0x2f4f9a : 0xeeeeee);
+  for (let s = A.forecourt, i = 0; s < m1 + 6; s += 1, i++) lb(parts, b, s, s + 1, A.kerb, A.kerb + 0.2, 0, 0.22, i % 2 ? 0x2f4f9a : 0xeeeeee);
   // White railing along the kerb: posts, two rails and coloured square frames.
   const r = g.rail, rt = (r.t0 + r.t1) / 2;
   for (const y of [0.35, 1.1]) lb(parts, b, r.s0, r.s1, r.t0, r.t1, y, y + 0.06, 0xf2f2f0);
@@ -238,8 +234,9 @@ function gateA(parts: Parts, b: Box): THREE.Object3D[] {
     if (side < 0) m.rotation.y = Math.PI;
     board3.add(m);
   });
-  // Its long side runs across the road at an angle, so it reads from Wipro More and from the NE.
-  board3.position.set(bx - b.n[0] * 0.55, 3.75, bz - b.n[1] * 0.55);
+  // Its long side runs across the road at an angle, so it reads from Wipro More and from the NE; it hangs over the
+  // footpath, behind the kerb.
+  board3.position.set(bx + b.n[0] * 0.5, 3.75, bz + b.n[1] * 0.5);
   board3.rotation.y = rot + Math.PI / 2 - 0.4;
   out.push(board3);
   // Autos queued nose to tail at the kerb, facing up the road.
@@ -249,5 +246,69 @@ function gateA(parts: Parts, b: Box): THREE.Object3D[] {
     a.rotation.y = rot;
     out.push(a);
   }
+  return out;
+}
+
+/** Gate B's mosaic: red-orange and yellow tiles (gbz_h195). */
+const TILES = [0xd8452b, 0xe8b33a, 0xe07a2e, 0xc9382a, 0xf0cf55, 0xe39a3a];
+const HAND = 0xa9adb0, TILE = 0.3;
+
+/**
+ * Gate B on Chavipatty Rd (Street View Jan 2026, gbz_h195, g_gb): a doorway in the station's NW face with a black "B"
+ * plate; NE of it the sloped stair enclosure (grey stone base, a red-orange-yellow mosaic with three grey hand
+ * gestures and a white disc, a sloped band of blue-trimmed glazing over it); a steel-railed ramp along the face up to
+ * the door, open at the door end; the "drop off point" plate on the base; the station's name over the door.
+ */
+function gateB(parts: Parts, b: Box): THREE.Object3D[] {
+  const B = N.gateB, g = svGateB(), f = B.face, d = B.door, hw = B.doorW / 2, out: THREE.Object3D[] = [];
+  const [b0, b1] = B.block, [e0, e1, y0, y1] = B.stair, [r0, r1, rt] = B.ramp, fr = f + 0.02;
+  const top = (s: number) => y0 + ((y1 - y0) * (s - e0)) / (e1 - e0); // the sloped top of the mosaic
+  /** A panel on the NW face (facing +t) from s0 to s1: bottom edge ya (at s0) to yb (at s1), top edge yc to yd. */
+  const face = (s0: number, s1: number, ya: number, yb: number, yc: number, yd: number, c: number, t = fr, glow = 0) =>
+    parts.quad(p3(b, s1, t, yb), p3(b, s0, t, ya), p3(b, s0, t, yc), p3(b, s1, t, yd), c, glow, false);
+  for (const r of g.block) rb(parts, b, r, 0, U, C.tower);
+  lb(parts, b, d - hw, d + hw, f - B.recess, f, 2.9, U, C.tower); // lintel
+  // Inside the doorway: dark, a stair rising away from the road, a light, the "B" plate over it.
+  lb(parts, b, d - hw, d + hw, f - B.recess, f - B.recess + 0.05, 0, 2.9, 0x23262a);
+  for (let k = 0; k < 6; k++) lb(parts, b, d - hw + 0.1, d + hw - 0.1, f - B.recess + 0.05, f - 0.25 - k * 0.14, 0, 0.22 * (k + 1), 0x8f8f8a);
+  lb(parts, b, d - hw, d + hw, f - 0.08, f - 0.02, 2.75, 2.9, 0x2d2d2d, 0.6);
+  out.push(board(b, 'B', 1.1, 0.5, d, f + 0.14, 3.25, 0, 1, '#141414', '#ffffff'));
+  // The enclosure's face: stone base, mosaic up to the slope, the hands and the disc, glazing with blue trim.
+  face(b0, d - hw, 0, 0, 1.2, 1.2, 0x6f7275);
+  face(d + hw, b1, 0, 0, 1.2, 1.2, 0x6f7275);
+  for (let s = e0, i = 0; s < e1 - 0.01; s += TILE, i++) {
+    const s1 = Math.min(e1, s + TILE), ta = top(s), tb = top(s1);
+    for (let y = 1.2, j = 0; y < Math.min(ta, tb) - 0.01; y += TILE, j++) {
+      const c = TILES[Math.floor(hash(i * 31 + j * 7) * TILES.length)], last = y + TILE >= Math.min(ta, tb);
+      face(s, s1, y, y, last ? ta : y + TILE, last ? tb : y + TILE, c);
+    }
+    face(s, s1, ta, tb, ta + 0.12, tb + 0.12, C.roof); // blue trim, glazing, blue trim
+    face(s, s1, ta + 0.12, tb + 0.12, ta + 0.9, tb + 0.9, C.glass, fr, 0.6);
+    face(s, s1, ta + 0.9, tb + 0.9, ta + 1.02, tb + 1.02, C.roof);
+    if (i % 4 === 0) face(s - 0.04, s + 0.04, ta, ta, ta + 1.0, ta + 1.0, C.roof, fr + 0.01);
+  }
+  const hf = fr + 0.02;
+  const hand = (s: number, fingers: number[]) => { // a palm and its fingers (heights), pointing up
+    face(s - 0.55, s + 0.55, 1.4, 1.4, 2.5, 2.5, HAND, hf);
+    fingers.forEach((h, k) => { if (h > 0) face(s - 0.53 + k * 0.28, s - 0.33 + k * 0.28, 2.5, 2.5, 2.5 + h, 2.5 + h, HAND, hf); });
+  };
+  hand(e0 + 1.0, [0.6, 0.85, 0.9, 0.75]); // open palm
+  hand(e0 + 2.6, [0, 0.85, 0.9, 0.7]); // thumb and finger in a ring
+  face(e0 + 1.95, e0 + 2.25, 2.5, 2.5, 2.85, 2.85, HAND, hf);
+  face(e0 + 3.8, e0 + 4.9, 1.4, 1.4, 3.4, 1.5, HAND, hf); // palms together
+  const disc = new THREE.CircleGeometry(0.42, 16), [dx, dz] = at(b, e0 + 3.4, hf);
+  disc.rotateY(Math.atan2(b.n[0], b.n[1]));
+  disc.translate(dx, top(e0 + 3.4) - 0.5, dz);
+  parts.add(disc, 0xf2f2ee);
+  // The ramp: a paved strip along the face, steel posts and two rails on its outer edge, a handrail on the wall.
+  lb(parts, b, b0, b1, f, rt, 0, 0.08, 0xb9b3a8);
+  const r = g.rail;
+  for (const y of [0.55, 1.0]) lb(parts, b, r.s0, r.s1, r.t0, r.t1, y, y + 0.05, 0xbfc3c7);
+  for (let s = r0; s <= r1 + 0.01; s += 1.25) lb(parts, b, s - 0.03, s + 0.03, r.t0, r.t1, 0, 1.05, 0xbfc3c7);
+  lb(parts, b, d + hw, b1, f + 0.05, f + 0.1, 0.9, 0.95, 0xbfc3c7);
+  // The "drop off point" plate on the base by the ramp's low end, and the station's name over the door.
+  lb(parts, b, b1 - 2.0, b1 - 1.2, fr, fr + 0.02, 0.45, 1.15, 0xe9c84a);
+  northSigns.dropOff.forEach((text, i) => out.push(board(b, text, 0.7, 0.13, b1 - 1.6, fr + 0.04, 0.72 - i * 0.16, 0, 1, '#e9c84a', '#1d2a6b')));
+  out.push(board(b, northSigns.sectorVBn, 5.4, 0.9, d + 3, 16.0, 6.6, 0, 1, '#efe6d4', '#2b2b2b'));
   return out;
 }

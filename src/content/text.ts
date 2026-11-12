@@ -203,6 +203,8 @@ export const northSigns = {
   itCentreBn: 'আইটি সেন্টার',
   /** The navy name board on Gate A's pillar, in three scripts. */
   gateA: ['সল্টলেক সেক্টর V', 'सॉल्ट लेक सेक्टर V', 'SALT LAKE SECTOR V'],
+  /** The yellow plate on Gate B's stone base by the ramp (gbz_h195). */
+  dropOff: ['DROP OFF POINT', 'FOR DIVYANG'],
 };
 
 /** Dead ends in the timed run (side streets that don't go to Sealdah). Situations, never communities. */

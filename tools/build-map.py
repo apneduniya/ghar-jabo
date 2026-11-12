@@ -1,7 +1,8 @@
 """Convert OpenStreetMap extracts (research/map/*.json) into the game's compact map: public/data/sectorv.json.
 
 Game units: x = east, z = south (so north is -z), SCALE units per metre. Centre = the Street 13 x Street 2 junction.
-Street View corrections live in research/map/overrides.json (keyed by OSM way id, 'r<relation id>' or 'new:<slug>').
+Street View corrections live in research/map/overrides.json (keyed by OSM way id, 'r<relation id>' or 'new:<slug>'),
+road widths measured on Street View included (overrides 'roads': OSM way id -> {w}).
 Map data (c) OpenStreetMap contributors, ODbL.
 """
 import heapq, json, math, os, sys
@@ -31,6 +32,7 @@ log = []
 WIDTH = {'primary': 9, 'trunk': 9, 'secondary': 7, 'tertiary': 5, 'primary_link': 4.5, 'secondary_link': 4.5,
          'tertiary_link': 4, 'residential': 3.4, 'unclassified': 3.4, 'service': 2.6}
 roads, road_ids = [], set()
+ROAD_FIX = {int(k): v for k, v in overrides.get('roads', {}).items() if not k.startswith('_')}   # Street View widths
 
 
 def add_road(e, need_inside=HALF):
@@ -39,7 +41,9 @@ def add_road(e, need_inside=HALF):
     pts = [to_game(g['lat'], g['lon']) for g in e['geometry']]
     if not any(inside_sq(p, need_inside) for p in pts): return
     road_ids.add(e['id'])
-    roads.append({'n': t.get('name', ''), 'k': t['highway'], 'w': WIDTH[t['highway']],
+    w = ROAD_FIX.get(e['id'], {}).get('w', WIDTH[t['highway']])
+    if e['id'] in ROAD_FIX: log.append(f"road w{e['id']} width {WIDTH[t['highway']]} -> {w} (overrides)")
+    roads.append({'n': t.get('name', ''), 'k': t['highway'], 'w': w,
                   'b': 1 if t.get('bridge') not in (None, 'no') else 0, 'o': 1 if t.get('oneway') == 'yes' else 0,
                   'p': simplify(pts, 0.6)})
 

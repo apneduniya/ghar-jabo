@@ -116,6 +116,21 @@ export function gateADoor(): Pt {
   return at(sv, N.gateA.door, N.gateA.stand);
 }
 
+/** Where you stand in Gate B's doorway, in the station's north-west face on Chavipatty Rd (north.gateB). */
+export function gateBDoor(): Pt {
+  const { sv } = stations();
+  return at(sv, N.gateB.door, N.gateB.stand);
+}
+
+/**
+ * Where a turned-away player steps from each doorway (Gate A, Gate B), 3 u: out of the trigger and onto open ground.
+ * Gate A's forecourt is narrow, so back along it to the SW; Gate B straight out onto Chavipatty Rd.
+ */
+export function gateStepsOut(): Pt[] {
+  const { sv } = stations();
+  return [[-sv.u[0] * 3, -sv.u[1] * 3], [sv.n[0] * 3, sv.n[1] * 3]];
+}
+
 // --- The Nabadiganta flyover: two decks, one per direction.
 
 export interface Deck { road: Road; p: Pt[]; d: number[]; total: number; w: number; ne: boolean; rampA: number; rampB: number; flatB: number }
