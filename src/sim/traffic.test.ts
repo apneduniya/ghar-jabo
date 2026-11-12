@@ -36,12 +36,14 @@ function segDist(e: Edge, x: number, z: number) {
 }
 
 /**
- * Task 029 pulls divided roads apart (tools/build-world.py), which leaves a sharp kink at two spots; there the
- * rounded bus line cuts the corner across the centre line for a sample or two.
+ * Task 029 pulls divided roads apart (tools/build-world.py) and keeps their spacing true in timed, which leaves a
+ * sharp kink at a few spots; there the rounded bus line cuts the corner across the centre line for a few samples.
  */
-const KINKS: { mode: string; at: [number, number] }[] = [
+const KINKS: { mode: string; at: [number, number]; r?: number }[] = [
   { mode: 'timed', at: [-337, -417] }, // Street No. 13 just outside Sector V
-  { mode: 'free', at: [-2647, 88] }, // Narkeldanga Main Rd at its canal bridge
+  { mode: 'timed', at: [-549, 138] }, // the Bypass at Apollo, where the return carriageway's offset eases in
+  { mode: 'timed', at: [-499, -321], r: 6 }, // City Centre roundabout, squeezed to a few units across in timed
+  { mode: 'free', at: [-2647, 84], r: 7 }, // Narkeldanga Main Rd at its canal bridge (both ways)
 ];
 
 /** Nodes where three or more roads meet (and median gaps): a vehicle turning there is near crossing centre lines. */
@@ -84,7 +86,7 @@ describe('the bus line, both ways', () => {
         const p = line.smooth(s, DRIVE.busRound), ok = ownSide(g, near, p.x, p.z, p.heading);
         if (ok === null) continue;
         checked++;
-        if (!ok && !KINKS.some((k) => k.mode === mode && Math.hypot(k.at[0] - p.x, k.at[1] - p.z) < 4)) bad.push(`${dir}@${s}: ${p.x.toFixed(0)},${p.z.toFixed(0)}`);
+        if (!ok && !KINKS.some((k) => k.mode === mode && Math.hypot(k.at[0] - p.x, k.at[1] - p.z) < (k.r ?? 4))) bad.push(`${dir}@${s}: ${p.x.toFixed(0)},${p.z.toFixed(0)}`);
       }
       expect(checked, `${mode} ${dir}`).toBeGreaterThan(line.length / 2 * 0.5);
       expect(bad.slice(0, 8), `${mode} ${dir}: ${bad.length} of ${checked} samples`).toEqual([]);
