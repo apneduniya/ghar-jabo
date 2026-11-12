@@ -200,3 +200,6 @@ kbd { background: rgba(255,255,255,.16); border-radius: 4px; padding: 0 5px; fon
   .hud-date { margin-top: 0; max-width: 150px; }
   .stream { left: calc(var(--sa-l) + 140px); }
 }
+
+/* A newer build is served: tap to reload (app/update.ts). Top centre, above everything, out of the thumbs' way. */
+.update-banner { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 8px); left: 50%; transform: translateX(-50%); z-index: 50; background: var(--yellow); color: var(--ink); font-weight: 800; font-size: 14px; padding: 10px 16px; border-radius: 14px; box-shadow: 0 4px 0 rgba(0,0,0,.3); white-space: nowrap; }

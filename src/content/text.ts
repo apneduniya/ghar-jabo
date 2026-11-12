@@ -225,3 +225,6 @@ export const deadEnds = [
 
 /** Arriving at the Sealdah forecourt in the streamed world. */
 export const arriveLine = { title: 'SEALDAH!', line: 'The forecourt. Somewhere in there is your train home.' };
+
+/** Banner when a newer build is served than the one this tab is running (app/update.ts). */
+export const NEW_VERSION = 'Notun version esheche · tap to reload';

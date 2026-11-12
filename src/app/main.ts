@@ -11,10 +11,12 @@ import { rand } from '../render/gfx';
 import { sectorv } from '../stages/sectorv';
 import { station } from '../stages/station';
 import { result } from '../stages/result';
+import { watchForUpdates } from './update';
 
 game.register('sectorv', sectorv);
 game.register('station', station);
 game.register('result', result);
+watchForUpdates();
 
 addEventListener('keydown', (e) => {
   if (e.key === 'm' || e.key === 'M') toggleMute();
