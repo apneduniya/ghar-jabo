@@ -6,7 +6,7 @@ import { LM } from '../content/landmarks';
 import { north } from '../content/sectorv';
 import { at, flyoverDecks, isCanalBridge, roofs, stations } from './elevated';
 import { clipMap } from './gen/clip';
-import { framePt, metroLayout, netDeckY, netDecks, stationOver } from './gen/layout';
+import { framePt, metroLayout, metroPierAt, netDeckY, netDecks, stationOver } from './gen/layout';
 import { crossingSite, parapet } from './gen/sites';
 import { marks, sample } from './gen/lines';
 import { loadNet } from './gen/net';
@@ -233,12 +233,15 @@ describe('the streamed world: what its structures stand on is solid', () => {
       for (const s of marks(mp.l, cx, cz, LM.pierStep)) {
         const y = mp.y(s);
         if (y === null || y < 9 || stationOver(mp, s)) continue;
-        const q = sample(mp.l, s);
+        const sp = metroPierAt(net, w.streamed!.store.warp, mp, s); // where the pier really stands (or none)
+        if (sp === null) continue;
+        const q = sample(mp.l, sp);
         w.streamed!.store.fill(q.x, q.z);
         expect(w.walkBlocked(q.x, q.z, R)).toBe(true);
         // Halfway to the next pier, under the deck, the structure leaves you be.
-        const m = sample(mp.l, s + LM.pierStep / 2);
-        expect(grid.blocked(m.x, m.z, R)).toBe(false);
+        // (2 u off the line: the Bypass median railing runs right under the viaduct's centre line.)
+        const m = sample(mp.l, sp + LM.pierStep / 2);
+        expect(grid.blocked(m.x + m.dz * 2, m.z - m.dx * 2, R)).toBe(false);
         // Walk at it along the line from 5 units off.
         const from = w.freeSpotNear(q.x - q.dz * 5, q.z + q.dx * 5);
         if (Math.hypot(from.x - q.x, from.z - q.z) > 7) continue;
@@ -265,8 +268,10 @@ describe('the streamed world: what its structures stand on is solid', () => {
         }
         if (y >= 4.5) { // the underside is well over head height
           // Off the columns (which sit on the line every few metres), half a deck to the side.
-          const o = d.r.w / 2 - 1;
-          expect(grid.blocked(q.x + q.dz * o, q.z - q.dx * o, R), `${mode} under deck ${q.x.toFixed(0)},${q.z.toFixed(0)}`).toBe(false);
+          const o = d.r.w / 2 - 1, ux = q.x + q.dz * o, uz = q.z - q.dx * o;
+          // Where deck ways fork (Vidyapati Setu), the spot may be under the other way's low ramp: not this deck's.
+          if (netDecks(net, warp).some((e) => e !== d && e.l.p.some((p) => Math.hypot(p[0] - ux, p[1] - uz) < e.r.w / 2 + 3))) continue;
+          expect(grid.blocked(ux, uz, R), `${mode} under deck ${q.x.toFixed(0)},${q.z.toFixed(0)}`).toBe(false);
           high++;
         }
       }

@@ -42,6 +42,8 @@ export interface Vehicle {
   /** Picks the livery/model variant in the renderer. */
   variant: number;
   x: number; z: number; heading: number;
+  /** Height above the ground: on a streamed flyover deck, its level (task 029); else 0. */
+  y?: number;
   speed: number;
   base: number;
   len: number; width: number;
@@ -70,7 +72,11 @@ export interface Vehicle {
 export interface BusLine { path: Pt[]; stops: { n: string; p: Pt; thin?: boolean }[] }
 
 /** One direction of the bus line: its own lane, start to end, and the stops along it. */
-export interface BusWay { line: Polyline; stops: { s: number; name: string }[] }
+export interface BusWay {
+  line: Polyline; stops: { s: number; name: string }[];
+  /** The flyover deck edges the line drives (its buses ride at their level: RoadGraph.deckYAt). */
+  decks?: Edge[];
+}
 
 // A Rapi-Nah captain rides the ordinary lane: he has to pull up right by the kerb point he was sent to.
 const laneFrac = (v: Vehicle) => (v.kind === 'bike' && !v.captain ? DRIVE.bikeLane : T.traffic.laneOffset);
@@ -91,7 +97,7 @@ export class Traffic {
    */
   constructor(map: MapData, private graph: RoadGraph, private rng: Rng, route: BusLine = { path: map.busPath, stops: map.stops }) {
     const way = (ref: Pt[]): BusWay => {
-      const line = busLane(graph, ref);
+      const { line, decks } = busLane(graph, ref);
       let last = -Infinity;
       const stops = route.stops
         .map((st) => ({ ...line.project(st.p[0], st.p[1]), name: st.n, thin: st.thin }))
@@ -100,7 +106,7 @@ export class Traffic {
         // Stops a stone's throw apart (Wipro, Nicco Park, Japani Gate) are one slow crawl past, not three.
         .filter((p) => { const keep = p.s - last >= (p.thin ? T.bus.minStopGap : T.bus.stopRadius * 2); if (keep) last = p.s; return keep; })
         .map((p) => ({ s: p.s, name: p.name }));
-      return { line, stops };
+      return { line, stops, decks };
     };
     this.ways = { 1: way(route.path), [-1]: way([...route.path].reverse()) } as Record<1 | -1, BusWay>;
   }
@@ -159,6 +165,10 @@ export class Traffic {
   private place(v: Vehicle) {
     const p = v.routeDir ? this.wayOf(v).line.smooth(v.s, DRIVE.busRound) : v.road?.track.smooth(v.road.u, DRIVE.round);
     if (p) { v.x = p.x; v.z = p.z; v.heading = p.heading; }
+    // On a flyover deck: ride at its level. A graph vehicle by its edge; a bus by the deck edges its line drives.
+    const e = v.edge;
+    if (v.routeDir) v.y = this.graph.deckYAt(v.x, v.z, Math.cos(v.heading), Math.sin(v.heading), this.wayOf(v).decks ?? []);
+    else v.y = e?.deck ? (e.ya ?? 0) + ((e.yb ?? 0) - (e.ya ?? 0)) * (v.s / (e.len || 1)) : 0;
   }
 
   /** Heading `look` units further along the vehicle's path. */
@@ -321,7 +331,7 @@ export class Traffic {
  * its own carriageway and never runs against a one-way, then rounded (DRIVE.round) and thinned to the points
  * that matter. With no route on the graph it falls back to the drawn line, offset to the left.
  */
-function busLane(graph: RoadGraph, ref: Pt[]): Polyline {
+function busLane(graph: RoadGraph, ref: Pt[]): { line: Polyline; decks: Edge[] } {
   const edges = graph.routeAlong(ref, DRIVE.busTol);
   let raw: Pt[];
   if (edges) raw = edges.flatMap((e) => laneEnds(e, T.traffic.laneOffset));
@@ -341,7 +351,7 @@ function busLane(graph: RoadGraph, ref: Pt[]): Polyline {
     const turned = !(Math.abs(wrap(p.heading - lastH)) < 0.004);
     if (!prev || turned || Math.hypot(p.x - prev[0], p.z - prev[1]) > 30 || s + 1 > L) { out.push([p.x, p.z]); lastH = p.heading; }
   }
-  return new Polyline(out);
+  return { line: new Polyline(out), decks: (edges ?? []).filter((e) => e.deck) };
 }
 
 function captainSpeed(v: Vehicle, cruise: number, dist: number) {

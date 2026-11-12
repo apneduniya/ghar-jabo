@@ -82,7 +82,7 @@ export class Actors {
         l.roll += (want - l.roll) * Math.min(1, dt * LEAN.ease);
       }
       l.x = v.x; l.z = v.z; l.heading = v.heading;
-      m.position.set(v.x, 0.05, v.z);
+      m.position.set(v.x, 0.05 + (v.y ?? 0), v.z);
       // Models face +x; three.js turns anticlockwise seen from above, and our z points south.
       m.rotation.y = -v.heading;
       m.rotation.x = l.roll;

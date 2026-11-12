@@ -1,6 +1,7 @@
 // A directed road graph from the real map, for traffic. Vehicles drive on the left of each road.
 
 import { isFlyover } from './elevated';
+import { deckLevels } from './gen/layout';
 import type { MapData, Pt } from './mapdata';
 import type { Rng } from './rng';
 
@@ -18,6 +19,8 @@ export interface Edge {
   link?: boolean;
   /** A streamed flyover deck (traffic runs over the structures below, not between them). */
   deck?: boolean;
+  /** A deck's level at its start and end (sim/gen/layout.ts deckLevels). */
+  ya?: number; yb?: number;
 }
 
 /** A streamed road for the graph: lane(a, b, k) for segment p[k - 1] to p[k], null for the default (sim/gen/lanes.ts). */
@@ -25,13 +28,18 @@ export interface ExtraRoad { p: Pt[]; w: number; oneway: boolean; deck?: boolean
 
 /** A turn sharper than this (cosine between directions) is a U-turn. */
 const UTURN_DOT = -0.8;
-/** How far apart (units) the two carriageways of a divided streamed road may be for a junction to join both. */
-const STITCH_REACH = 7.5;
+/**
+ * How far apart (units) the two carriageways of a divided streamed road may be for a junction to join both: centre
+ * to centre, two 9 u carriageways either side of the Green Line's 3.8 u median (tools/build-world.py), and a bit.
+ */
+const STITCH_REACH = 15;
 
 export const TRAFFIC_ROADS = new Set(['primary', 'secondary', 'tertiary', 'primary_link', 'secondary_link', 'tertiary_link']);
 
 export class RoadGraph {
   edges: Edge[] = [];
+  /** The deck edges with their levels (deckYAt). */
+  private decks: Edge[] = [];
   /** Outgoing edge ids per node. */
   out: number[][] = [];
   nodes: Pt[] = [];
@@ -84,15 +92,35 @@ export class RoadGraph {
   }
 
   private addLine({ p, w, oneway, deck, lane }: ExtraRoad) {
+    const ys = deck ? deckLevels(p) : undefined;
     for (let i = 1; i < p.length; i++) {
       const a = this.node(p[i - 1]), b = this.node(p[i]);
       if (a === b) continue;
       const ln = lane?.(p[i - 1], p[i], i) ?? undefined;
       for (const e of oneway ? [this.add(a, b, w)] : [this.add(a, b, w), this.add(b, a, w)]) {
         if (e && ln !== undefined) e.lane = ln;
-        if (e && deck) e.deck = true;
+        if (e && deck) {
+          e.deck = true;
+          if (ys) { const fwd = e.from === a; e.ya = fwd ? ys[i - 1] : ys[i]; e.yb = fwd ? ys[i] : ys[i - 1]; this.decks.push(e); }
+        }
       }
     }
+  }
+
+  /**
+   * How high a vehicle at (x, z) heading (dx, dz) rides: on one of these deck edges (default: all) running its way
+   * under it (within its carriageway), the deck's level there; else 0.
+   */
+  deckYAt(x: number, z: number, dx: number, dz: number, decks: Edge[] = this.decks): number {
+    let y = 0;
+    for (const e of decks) {
+      if (Math.abs(e.dx * dx + e.dz * dz) < 0.9) continue;
+      if (Math.abs((e.ax + e.bx) / 2 - x) > e.len / 2 + e.width || Math.abs((e.az + e.bz) / 2 - z) > e.len / 2 + e.width) continue;
+      const t = Math.max(0, Math.min(e.len, (x - e.ax) * e.dx + (z - e.az) * e.dz));
+      if (Math.hypot(e.ax + e.dx * t - x, e.az + e.dz * t - z) > e.width / 2 + 0.5) continue;
+      y = Math.max(y, (e.ya ?? 0) + ((e.yb ?? 0) - (e.ya ?? 0)) * (t / (e.len || 1)));
+    }
+    return y;
   }
 
   private node(p: Pt) {

@@ -77,6 +77,8 @@ export interface BridgeSite {
   emb?: [number, number];
   /** 'over': each parapet's run along u on the -v and +v sides (short of a road joining at the bridge). */
   par?: [[number, number], [number, number]];
+  /** 'under': each abutment's run along u on the -v and +v sides (short of a road passing beside the bridge). */
+  ab?: [[number, number], [number, number]];
 }
 
 type CrossingLike = { kind: 'canal' | 'rail'; over: boolean; width: number; x: number; z: number; heading: number };
@@ -87,7 +89,7 @@ type CrossingLike = { kind: 'canal' | 'rail'; over: boolean; width: number; x: n
  * roadW their full width.
  */
 function framed(net: WorldNet, warp: Warp, x: number, z: number, h: number, w0: number, uR: number) {
-  const roads = groundRoadsNear(net, warp, x, z, 30), dx = Math.cos(h), dz = Math.sin(h);
+  const roads = groundRoadsNear(net, warp, x, z, 45), dx = Math.cos(h), dz = Math.sin(h); // as far as a parapet or embankment reaches
   const ext = [0, 0];
   [-1, 1].forEach((e, k) => {
     for (let u = -uR; u <= uR + 1e-6; u += uR / Math.ceil(uR / 2)) {
@@ -100,6 +102,9 @@ function framed(net: WorldNet, warp: Warp, x: number, z: number, h: number, w0: 
     }
   });
   if (ext[0] <= 0 && ext[1] <= 0) return { x, z, roadW: w0, roads };
+  // At most the road and its pair across a real median (AUDIT.md 16): never a slip road or a squeezed junction too.
+  const cap = 2 * w0 + MEDIAN_MAX;
+  if (ext[0] + ext[1] > cap) { const k = cap / (ext[0] + ext[1]); ext[0] *= k; ext[1] *= k; }
   const c = (ext[1] - ext[0]) / 2, [cx, cz] = framePt(x, z, h, 0, c);
   return { x: cx, z: cz, roadW: Math.max(w0, ext[0] + ext[1]), roads };
 }
@@ -115,6 +120,23 @@ function embankments(roads: { r: NetRoad; l: Line }[], b: Omit<BridgeSite, 'emb'
     }
     return Math.max(1.6, emb);
   }) as [number, number];
+}
+
+/** The widest median framed with its road: the Green Line's piers need 3.8 (tools/build-world.py MEDIAN_METRO). */
+const MEDIAN_MAX = 4.5;
+
+/** A rail bridge's abutment runs either side (see BridgeSite.ab): from the middle out, until a road passes beside it. */
+function abutments(roads: { r: NetRoad; l: Line }[], b: Omit<BridgeSite, 'ab'>): [[number, number], [number, number]] {
+  const { S, w } = underbridge(b), L = w + 1.4;
+  // Clear of the carriageway by a bus's room (a lane may hang over the kerb: lanes.ts), not just the kerb.
+  const clear = (u: number, s: number) => [S - 0.2, S + 0.8, S + 1.6].every((v) => { const [x, z] = framePt(b.x, b.z, b.h, u, s * v); return !onCarriageway(roads, x, z, 2.4); });
+  return [-1, 1].map((s) => {
+    if (!clear(0, s)) return [0, 0];
+    let u0 = 0, u1 = 0;
+    while (u1 < L && clear(Math.min(L, u1 + 0.5), s)) u1 = Math.min(L, u1 + 0.5);
+    while (u0 > -L && clear(Math.max(-L, u0 - 0.5), s)) u0 = Math.max(-L, u0 - 0.5);
+    return [u0, u1];
+  }) as [[number, number], [number, number]];
 }
 
 /** A road bridge's parapet runs either side (see BridgeSite.par): from the middle out, until a road joins. */
@@ -144,7 +166,7 @@ export function crossingSite(net: WorldNet, warp: Warp, c: CrossingLike, x: numb
     const f = framed(net, warp, x, z, h, fit ? fit.w : 7, c.width / 2 + (under ? 1.4 : 2.5));
     if (under) {
       const b = { x: f.x, z: f.z, h, kind: 'under' as const, width: c.width, roadW: f.roadW, ornate: false, water: false };
-      return { ...b, emb: embankments(f.roads, b) };
+      return { ...b, emb: embankments(f.roads, b), ab: abutments(f.roads, b) };
     }
     const b = { x: f.x, z: f.z, h, kind: 'over' as const, width: c.width, roadW: f.roadW, ornate: c.kind === 'canal' && OLD.has(areaNear(net, warp, x, z)), water: c.kind === 'canal' };
     return { ...b, par: parapets(f.roads, b) };
@@ -164,7 +186,7 @@ export function landmarkBridge(net: WorldNet, warp: Warp, lm: { kind: string; x:
     return { ...b, par: parapets(f.roads, b) };
   }
   const b = { x: f.x, z: f.z, h, kind: 'under' as const, width: 9, roadW: f.roadW, ornate: false, water: false };
-  return { ...b, emb: embankments(f.roads, b) };
+  return { ...b, emb: embankments(f.roads, b), ab: abutments(f.roads, b) };
 }
 
 /**
@@ -176,4 +198,7 @@ export const parapet = (b: { width: number; roadW: number; par?: [[number, numbe
   return { L, e: b.roadW / 2 + 1.6, runs: b.par ?? [[-L, L], [-L, L]] as [[number, number], [number, number]] };
 };
 /** A rail bridge over the road: abutment line beside the footpaths, the corridor's half width, embankment depths. */
-export const underbridge = (b: { width: number; roadW: number; emb?: [number, number] }) => ({ S: b.roadW / 2 + 3.5, w: b.width / 2, emb: b.emb ?? [16, 16] as [number, number] });
+export const underbridge = (b: { width: number; roadW: number; emb?: [number, number]; ab?: [[number, number], [number, number]] }) => {
+  const w = b.width / 2, L = w + 1.4;
+  return { S: b.roadW / 2 + 3.5, w, emb: b.emb ?? [16, 16] as [number, number], ab: b.ab ?? [[-L, L], [-L, L]] as [[number, number], [number, number]] };
+};

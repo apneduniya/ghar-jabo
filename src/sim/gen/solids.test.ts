@@ -27,9 +27,27 @@ const ALLOWED: { kinds: string[]; roads: string[]; max: number; why: string }[] 
   },
 ];
 
+/**
+ * Timed, elsewhere (task 029: a ramp foot on another carriageway is a conflict, never a wall across it). At Sealdah
+ * the Parikshit Roy Lane arm of Vidyapati Setu comes down onto Parikshit Roy Lane, which the squeeze puts right
+ * under its last low pieces. They're left out of the collision, so the lane stays open.
+ */
+const ALLOWED_ELSEWHERE: { kinds: string[]; roads: string[]; max: number; why: string }[] = [
+  { kinds: ['flyover ramp'], roads: ['Parikshit Roy Lane'], max: 3, why: 'Parikshit Roy Lane arm\'s foot over the lane it joins' },
+];
+
 describe('structure conflicts', () => {
+  // Vidyapati Setu's APC Rd arm comes down beside the start of the Sealdah walk-in strip (the surveyed walk leaves
+  // APC Rd on its east kerb, right beside the ramp's foot): a few low ramp pieces reach over the 4 u walk. They're
+  // left walkable (out of the collision); nothing drives there.
+  const walkIn = new Set(net.roads.filter((r) => r.hawkers).map((r) => r.id));
+  const rampOnWalk = (c: { kind: string; road: string }) => c.kind === 'flyover ramp' && walkIn.has(c.road);
+
   it('free roam (true scale): nothing stands where traffic cannot pass', () => {
-    expect(structureConflicts(net, makeWarp('free'))).toEqual([]);
+    const c = structureConflicts(net, makeWarp('free'));
+    expect(c.filter(rampOnWalk).length).toBeLessThanOrEqual(8);
+    expect(c.filter(rampOnWalk).every((x) => !x.kept)).toBe(true);
+    expect(c.filter((x) => !rampOnWalk(x))).toEqual([]);
   });
 
   it('timed: only the listed squeeze at Subhas Sarobar, and all of it walkable', () => {
@@ -39,9 +57,11 @@ describe('structure conflicts', () => {
       const hits = c.filter((x) => a.kinds.includes(x.kind) && a.roads.includes(x.road));
       expect(hits.length, a.why).toBeLessThanOrEqual(a.max);
     }
-    const listed = (x: (typeof c)[number]) => ALLOWED.some((a) => a.kinds.includes(x.kind) && a.roads.includes(x.road));
+    const elsewhere = (x: (typeof c)[number]) => rampOnWalk(x) || ALLOWED_ELSEWHERE.some((a) => a.kinds.includes(x.kind) && a.roads.includes(x.road));
+    for (const a of ALLOWED_ELSEWHERE) expect(c.filter((x) => a.kinds.includes(x.kind) && a.roads.includes(x.road)).length, a.why).toBeLessThanOrEqual(a.max);
+    const listed = (x: (typeof c)[number]) => elsewhere(x) || ALLOWED.some((a) => a.kinds.includes(x.kind) && a.roads.includes(x.road));
     expect(c.filter((x) => !listed(x)).map((x) => `${x.kind} on ${x.road} at ${x.x.toFixed(0)},${x.z.toFixed(0)}`)).toEqual([]);
-    for (const x of c) {
+    for (const x of c.filter((y) => !elsewhere(y))) {
       expect(Math.hypot(x.x - portal.x, x.z - portal.z), `${x.kind} at ${x.x.toFixed(0)},${x.z.toFixed(0)}`).toBeLessThan(40);
       expect(x.kept, 'a conflict is left walkable').toBe(false);
     }

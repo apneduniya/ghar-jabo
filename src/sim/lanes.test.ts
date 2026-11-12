@@ -37,7 +37,7 @@ describe('streamed traffic lanes and structures', () => {
         checked++;
         // The lane centre plus half a bus must clear every solid.
         if (grid.blocked(q.x, q.z, LANE_ROOM.busHalf)) bad.push(`${q.x.toFixed(0)},${q.z.toFixed(0)}`);
-        else if (piers.blocked(q.x, q.z, 2)) besidePier++; // a bus passing a pier close by
+        else if (piers.blocked(q.x, q.z, 4)) besidePier++; // a bus passing a pier in the median beside it
       }
     }
     expect(checked).toBeGreaterThan(1000);

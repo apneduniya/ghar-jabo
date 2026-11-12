@@ -5,6 +5,7 @@
 // between chunks have no gaps and no doubles.
 
 import { CHUNK, type Pt, type Warp } from './types';
+import { roadToGame } from './roadwarp';
 import { SECTOR_V_HALF } from '../../content/landmarks';
 
 export interface Line {
@@ -16,17 +17,12 @@ export interface Line {
   len: number;
 }
 
-/** Densify a real polyline every `step` real units, warp it into game space and measure it. */
-export function prepLine(real: Pt[], warp: Warp, step = 8): Line {
-  const p: Pt[] = [], at: number[] = [];
-  for (let i = 0; i < real.length; i++) {
-    at.push(p.length);
-    p.push(warp.toGame(real[i]));
-    if (i + 1 === real.length) break;
-    const [ax, az] = real[i], [bx, bz] = real[i + 1];
-    const n = Math.ceil(Math.hypot(bx - ax, bz - az) / step);
-    for (let k = 1; k < n; k++) p.push(warp.toGame([ax + ((bx - ax) * k) / n, az + ((bz - az) * k) / n]));
-  }
+/**
+ * Densify a real polyline every `step` real units, warp it into game space and measure it. `off`: a net road's
+ * per-vertex moves (NetRoad.off), kept at true length through the warp (roadwarp.ts).
+ */
+export function prepLine(real: Pt[], warp: Warp, step = 8, off?: (Pt | null)[]): Line {
+  const { p, at } = roadToGame({ p: real, off }, warp, step);
   const d = [0];
   for (let i = 1; i < p.length; i++) d.push(d[i - 1] + Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]));
   return { p, d, at: at.map((i) => d[i]), len: d[d.length - 1] ?? 0 };

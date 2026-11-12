@@ -1,7 +1,7 @@
 // What the streamed world's structures stand on, as collision solids (see sim/solids.ts): metro piers, the low part
 // of metro and flyover ramps, the walled cut and tunnel portal, elevated stations' pier pairs and stair towers,
-// flyover columns, the stand-in flyover's ramps and column, bridge parapets and rail-bridge abutments with their
-// embankment. Everything comes from the same layout as the renderer (layout.ts, lines.ts), at the same arc
+// flyover columns, the stand-in flyover's ramps and column, the Bypass median railing, bridge parapets and rail-bridge
+// abutments with their embankment. Everything comes from the same layout as the renderer (layout.ts, lines.ts), at the same arc
 // positions per chunk, so what you see is what stops you. Under the high decks and over bridges stays open.
 // Computed once per (net, warp) and filed by chunk; a solid near a border is filed in every chunk it reaches.
 
@@ -10,14 +10,15 @@ import { box, boxAlong, circle, type Solid } from '../solids';
 import { chunkKey } from './chunks';
 import { type Line, inSectorV, intervals, marks, pieces, sample } from './lines';
 import { type LanePlan, planLanes } from './lanes';
+import { MEDIAN_HALF, medianLines } from './medians';
 import { warped } from './net';
 import {
   DECK_MIN_Y, DECK_PIECE, DECK_PIER, DECK_PIER_PHASE, DECK_PIER_Y, DECK_SLAB, METRO_PIER_MIN_Y, METRO_PIER_R, METRO_SOFFIT, RAMP_CLEAR,
-  STATION_MIN_Y, type NetDeck, deckHalf, deckPierAt, fallbackDeck, flyoverNear, framePt, memo, metroLayout, metroPierAt,
-  netDeckY, netDecks, portalHalf, stationOver, warpHeading,
+  STATION_MIN_Y, type NetDeck, deckHalf, deckPierAt, fallbackDeck, flyoverNear, framePt, groundRoadsNear, memo, metroLayout,
+  metroPierAt, netDeckY, netDecks, onCarriageway, portalHalf, stationOver, warpHeading,
 } from './layout';
 import { type BridgeSite, crossingSite, landmarkBridge, parapet, stationGround, underbridge } from './sites';
-import { CHUNK, type Warp, type WorldNet } from './types';
+import { CHUNK, type Pt, type Warp, type WorldNet } from './types';
 
 /** Chunks a line passes through (and their neighbours, for pieces that straddle a border). */
 function chunksOf(l: Line): [number, number][] {
@@ -94,10 +95,18 @@ function metroSolids(net: WorldNet, warp: Warp, out: Acc) {
 /**
  * A flyover ramp's foot: the pieces within the deck's half width + 4 of either end of the deck. Ground traffic
  * there is driving onto the ramp (or off it), not past it, so the lanes don't move round them (lanes.ts skip).
+ * But not where the foot stands on another ground carriageway, one that carries on beside or under the ramp (AUDIT.md
+ * 9: VIP Rd under the Ultadanga ramps): there the lanes judge it like any structure, and if they can't pass it is a
+ * conflict (reported, left out of the collision), never a wall across the road.
  */
-function isFoot(d: NetDeck, s: Solid) {
-  const reach = deckHalf(d) + 4;
-  return [d.l.p[0], d.l.p[d.l.p.length - 1]].some(([x, z]) => Math.hypot(s.x - x, s.z - z) < reach);
+function isFoot(net: WorldNet, warp: Warp, d: NetDeck, s: Solid) {
+  const reach = deckHalf(d) + 4, ends = [d.l.p[0], d.l.p[d.l.p.length - 1]];
+  if (!ends.some(([x, z]) => Math.hypot(s.x - x, s.z - z) < reach)) return false;
+  // Roads that continue the deck at its end (the ramp's own approach) don't count.
+  const joins = (l: { p: Pt[] }) => [l.p[0], l.p[l.p.length - 1]].some((q) => ends.some((e) => Math.hypot(q[0] - e[0], q[1] - e[1]) < 1));
+  const others = groundRoadsNear(net, warp, s.x, s.z, 12).filter((it) => it.r !== d.r && it.r.cls !== 'lane' && !joins(it.l));
+  const [ux, uz] = [s.ux, s.uz];
+  return !onCarriageway(others, s.x, s.z, -0.5) && !onCarriageway(others, s.x + ux * s.hl, s.z + uz * s.hl, -0.5) && !onCarriageway(others, s.x - ux * s.hl, s.z - uz * s.hl, -0.5);
 }
 
 function deckSolids(net: WorldNet, warp: Warp, out: Acc) {
@@ -105,7 +114,7 @@ function deckSolids(net: WorldNet, warp: Warp, out: Acc) {
     const half = deckHalf(d);
     for (const [a, b] of allPieces(d.l, DECK_PIECE)) {
       const y = netDeckY(d, (a + b) / 2), s = ramp(d.l, a, b, half);
-      if (y >= DECK_MIN_Y && y - DECK_SLAB < RAMP_CLEAR) out.wide('flyover ramp', s, isFoot(d, s));
+      if (y >= DECK_MIN_Y && y - DECK_SLAB < RAMP_CLEAR) out.wide('flyover ramp', s, isFoot(net, warp, d, s));
     }
     for (const m of allMarks(d.l, LM.flyoverPierStep, DECK_PIER_PHASE)) {
       if (netDeckY(d, m) < DECK_PIER_Y) continue;
@@ -115,6 +124,14 @@ function deckSolids(net: WorldNet, warp: Warp, out: Acc) {
       const q = sample(d.l, s), r = DECK_PIER.r, e = r * DECK_PIER.stretch - r;
       out.pier('flyover pier', boxAlong([q.x - q.dx * e, q.z - q.dz * e], [q.x + q.dx * e, q.z + q.dz * e], 0, r));
     }
+  }
+}
+
+/** The Bypass median railing (medians.ts): a thin wall along it, in the renderer's 2.5 u pieces. */
+function medianSolids(net: WorldNet, warp: Warp, out: Acc) {
+  for (const l of medianLines(net, warp)) for (const [a, b] of allPieces(l, 2.5)) {
+    const p = sample(l, a), q = sample(l, b);
+    out.wide('median railing', boxAlong([p.x, p.z], [q.x, q.z], MEDIAN_HALF));
   }
 }
 
@@ -130,11 +147,17 @@ function bridgeSolids(b: BridgeSite, out: Acc) {
     }
     return;
   }
-  const { S, w, emb } = underbridge(b);
+  const { S, emb, ab } = underbridge(b);
   for (const s of [-1, 1]) {
-    out.wide('rail bridge abutment', frameBox(b.x, b.z, b.h, -w - 1.4, w + 1.4, s * (S - 0.2), s * (S + 1.6))); // with its pilasters
-    const e = emb[s < 0 ? 0 : 1];
-    if (e > 2) out.wide('rail embankment', frameBox(b.x, b.z, b.h, -w - 1.4, w + 1.4, s * (S + 1.6), s * (S + e)));
+    const [u0, u1] = ab[s < 0 ? 0 : 1]; // short of a road passing beside the bridge
+    if (u1 - u0 < 0.5) continue;
+    // In short pieces, like the parapets: the lanes judge each against the road's curve (lanes.ts).
+    const e = emb[s < 0 ? 0 : 1], n = Math.ceil((u1 - u0) / 2.5);
+    for (let k = 0; k < n; k++) {
+      const a0 = u0 + ((u1 - u0) * k) / n, a1 = u0 + ((u1 - u0) * (k + 1)) / n;
+      out.wide('rail bridge abutment', frameBox(b.x, b.z, b.h, a0, a1, s * (S - 0.2), s * (S + 1.6))); // with its pilasters
+      if (e > 2) out.wide('rail embankment', frameBox(b.x, b.z, b.h, a0, a1, s * (S + 1.6), s * (S + e)));
+    }
   }
 }
 
@@ -185,6 +208,7 @@ function built(net: WorldNet, warp: Warp) {
     const acc = new Acc();
     metroSolids(net, warp, acc);
     deckSolids(net, warp, acc);
+    medianSolids(net, warp, acc);
     landmarkSolids(net, warp, acc);
     const first = plan(net, warp, acc.items), kept: Item[] = [], conflicts: Conflict[] = [];
     acc.items.forEach((it, i) => {

@@ -15,7 +15,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(HERE, 'map'))
 sys.path.insert(0, HERE)
 from geo import HALF, simplify, simplify_ring, to_game, signed_area, point_in  # noqa: E402
-from world_snap import simplify_keeping, snap_line, snap_point  # noqa: E402
+from world_snap import separate, simplify_keeping, snap_line, snap_point  # noqa: E402
 
 RES = os.path.join(ROOT, 'research', 'routes')
 OUT = os.path.join(ROOT, 'public', 'data', 'world.json')
@@ -130,6 +130,24 @@ for w in list(used):
         a, b = (wp[-1][0] - wp[0][0], wp[-1][1] - wp[0][1]), (cp[-1][0] - cp[0][0], cp[-1][1] - cp[0][1])
         if a[0] * b[0] + a[1] * b[1] < -0.5 * math.hypot(*a) * math.hypot(*b): used[c] = set(used[w])
 
+# Whole flyovers, not the few metres a corridor touches (AUDIT.md 15): every way of a named flyover that one of the
+# used ways joins, deck and approaches, so the deck rises from its real feet and spans what it really spans. Vidyapati
+# Setu also links APC Rd to Sealdah by road: cars ride the setu down to Parikshit Roy Lane (GAPS.md §3).
+FULL_FLYOVER = re.compile(r'^(Vidyapati Flyover|Parikshit Roy Lane Flyover|Sealdah Beliaghata Flyover|Ultadanga Flyover)$')
+
+
+def ends(w): return [(round(q['lat'], 7), round(q['lon'], 7)) for q in (ways[w]['geometry'][0], ways[w]['geometry'][-1])]
+
+
+fly = {w for w, e in osm_roads.items() if FULL_FLYOVER.match(e['tags'].get('name') or '')}
+grow = [w for w in used if w in fly]
+reach = {q for w in grow for q in ends(w)}
+while grow:
+    grow = []
+    for w in fly - set(used):
+        if any(q in reach for q in ends(w)):
+            used[w] = set(); grow.append(w); reach.update(ends(w))
+
 tram_lines = [[g(q['lat'], q['lon']) for q in e['geometry']] for e in railwater if e['type'] == 'way' and e['tags'].get('railway') == 'tram']
 rail_lines = [[g(q['lat'], q['lon']) for q in e['geometry']] for e in railwater if e['type'] == 'way' and e['tags'].get('railway') in ('rail', 'construction')]
 water_polys = []
@@ -148,6 +166,26 @@ def bridge_kind(pts):
     if any(point_in(w, p[0], p[1]) for w in water_polys for p in mid): return 'canal'
     if any(line_d(p, r) < 6 for r in rail_lines for p in mid): return 'rail'
     return 'flyover'
+
+
+FLYOVER_MIN_LEN = 80  # as src/sim/elevated.ts: a shorter OSM "bridge" is a canal (or drain) crossing at grade
+
+
+def layer_of(t):
+    try: return int(t.get('layer', '0').split(';')[0])
+    except ValueError: return 0
+
+
+def deck_kind(t, pts, geom):
+    """
+    A road bridge's kind (AUDIT.md 10). A named flyover, a viaduct or a layer-2 deck is a flyover. Otherwise it's
+    what it crosses (canal, rail), and a flyover only if the OSM bridge is at least FLYOVER_MIN_LEN long, measured
+    along the real way: Bidhan Nagar Rd's short bridge by the Beliaghata Canal is a canal bridge, not a deck.
+    """
+    if re.search(r'Flyover|Setu', t.get('name') or '') or t.get('bridge') == 'viaduct' or layer_of(t) >= 2: return 'flyover'
+    k = bridge_kind(pts)
+    if k != 'flyover': return k
+    return 'flyover' if length([g(q['lat'], q['lon']) for q in geom]) >= FLYOVER_MIN_LEN else 'canal'
 
 
 def is_tram(pts):
@@ -179,9 +217,13 @@ for w, cs in used.items():
     try: lanes = int(t['lanes'].split(';')[0])
     except (KeyError, ValueError): lanes = LANES[k] if ow else LANES[k] * (1 if k == 'lane' else 2) // (1 if ow else 1)
     if not ow and 'lanes' not in t: lanes = max(2, LANES[k])
-    r = {'name': t.get('name'), 'cls': k, 'lanes': lanes, 'oneway': ow,
-         'w': round(max(WIDTH[k], lanes * 3.3 if ow else lanes * 3.0), 1), 'p': pts, 'corridors': sorted(cs)}
-    if t.get('bridge') in ('yes', 'viaduct'): r['bridge'] = bridge_kind(pts)
+    # A one-way carriageway: 3 u a lane (the Sector V map's Salt Lake Bypass is 3 lanes in 9 u, at the scale the
+    # vehicles are drawn), not 3.3; its pair is the other carriageway, with a median between (separate()).
+    width = max(6.0 if k == 'primary' else WIDTH[k], lanes * 3.0) if ow else max(WIDTH[k], lanes * 3.0)
+    r = {'name': t.get('name'), 'cls': k, 'lanes': lanes, 'oneway': ow, 'w': round(width, 1), 'p': pts, 'corridors': sorted(cs)}
+    # A named flyover's ways are all deck, approaches included: the deck rises from where the real ramps start.
+    if t.get('bridge') in ('yes', 'viaduct') or (FULL_FLYOVER.match(t.get('name') or '') and w in fly):
+        r['bridge'] = deck_kind(t, pts, ways[w]['geometry'])
     if is_tram(pts): r['tram'] = True
     roads.append(r)
 
@@ -215,6 +257,13 @@ for key, cs in tails.items():
 def key_of(r): return (r.get('name'), r['cls'], r['lanes'], r['oneway'], r.get('bridge'), r.get('tram', False), tuple(r['corridors']), r['w'])
 
 
+def turns_back(a, b):
+    """True if b, joined after a, heads back the way a came (a U-turn: the other one-way carriageway)."""
+    if len(a) < 2 or len(b) < 2: return False
+    u = (a[-1][0] - a[-2][0], a[-1][1] - a[-2][1]); v = (b[1][0] - b[0][0], b[1][1] - b[0][1])
+    return u[0] * v[0] + u[1] * v[1] < -0.5 * (math.hypot(*u) * math.hypot(*v) or 1) or math.dist(a[0], b[-1]) < 1
+
+
 def merge(roads):
     """Joins roads with identical attributes end to start, so the network is a few long polylines."""
     changed = True
@@ -226,6 +275,8 @@ def merge(roads):
         for i, r in enumerate(roads):
             if i in dead: continue
             hits = [j for j in ends.get((key_of(r), tuple(r1(r['p'][-1]))), []) if j != i and j not in dead]
+            # Never the other carriageway of a divided road coming back (it would make one looped road).
+            hits = [j for j in hits if not turns_back(r['p'], roads[j]['p'])]
             if len(hits) == 1:
                 j = hits[0]
                 r['p'] = r['p'] + roads[j]['p'][1:]
@@ -289,6 +340,24 @@ for r in roads:
                 else: pts.append(r1(q['cut']))
             else: pts.append(r1(q))
         if len(pts) >= 2 and length(pts) > 1: net_roads.append({**r, 'p': pts})
+
+# --- Divided roads: a real median between the carriageways (AUDIT.md 6) ---------------------------------------------
+# Under the Green and Orange Lines the median carries the piers (radius 1.06 u, kept 0.85 u off each kerb: a bus may
+# overhang the kerb, src/sim/gen/layout.ts PIER_KERB).
+MEDIAN, MEDIAN_METRO = 1.6, 3.8
+metro_raw = [[q['game'] for q in corr['metro']['polyline']]] + [
+    [g(q['lat'], q['lon']) for q in e['geometry']] for e in railwater
+    if e['type'] == 'way' and e['tags'].get('name') == 'New Garia - Airport (Line 6)']
+_med = {}
+
+
+def median(q):
+    k = (round(q[0] / 4), round(q[1] / 4))
+    if k not in _med: _med[k] = MEDIAN_METRO if any(line_d(q, line) < 16 for line in metro_raw) else MEDIAN
+    return _med[k]
+
+
+separate(net_roads, lambda q: abs(cheb(q) - HALF) < 0.05, median)
 
 map_ends = [{'p': m['p'], 'd': [round(m['d'][0], 3), round(m['d'][1], 3)], 'w': m['r']['w'], 'k': m['r']['k']}
             for m in map_cuts if not m['used'] and not m['r']['b']]

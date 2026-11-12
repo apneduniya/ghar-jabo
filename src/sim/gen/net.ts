@@ -2,6 +2,7 @@
 
 import { GEN } from '../../content/worldgen';
 import { densify, strHash } from './geom';
+import { roadToGame } from './roadwarp';
 import type { AreaKind, Landmark, NetRoad, Pt, Warp, WorldNet } from './types';
 
 /** Parses world.json (already JSON-decoded) into a WorldNet, filling defaults the builder leaves out. */
@@ -60,7 +61,7 @@ export class WarpedNet {
   constructor(readonly net: WorldNet, readonly warp: Warp) {
     const w = (p: Pt) => warp.toGame(p);
     this.roads = net.roads.map((road, i) => {
-      const p = densify(road.p, 12).map(w);
+      const p = roadToGame(road, warp, 12).p; // a divided road's carriageways keep their true spacing
       const cum = [0];
       for (let k = 1; k < p.length; k++) cum.push(cum[k - 1] + Math.hypot(p[k][0] - p[k - 1][0], p[k][1] - p[k - 1][1]));
       return { road, i, key: strHash(road.id), p, cum, box: boxOf(p) };
